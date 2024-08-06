@@ -44,8 +44,6 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
 
   const formattedAsset = asset?.response?.data;
 
-  console.log("asset", asset);
-
   return (
     <div className="flex items-center w-full h-[70px] px-3 py-1 border-b border-borderColor ">
       <div
@@ -53,7 +51,13 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
         onClick={handleTokenSelectorOpening}
       >
         <div className="flex items-center">
-          <div className="w-[30px] h-[30px] bg-gray-500 rounded-full" />
+          <img
+            className="w-[30px] h-[30px] bg-gray-500 rounded-full"
+            src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
+              assetBuffer?.symbol,
+              true
+            )}.png`}
+          />
           <p className="text-white text-lg ml-3 mr-1">
             {formatSymbol(assetBuffer.symbol)}
           </p>

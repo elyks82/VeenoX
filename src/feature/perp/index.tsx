@@ -4,6 +4,7 @@ import { useQuery, useWalletConnector } from "@orderly.network/hooks";
 import { API } from "@orderly.network/types";
 import { useAccount } from "wagmi";
 import { Favorites } from "./layouts/favorites";
+import { OpenTrade } from "./layouts/open-trade";
 import { Orderbook } from "./layouts/orderbook";
 import { TokenInfo } from "./layouts/token-info";
 
@@ -28,7 +29,9 @@ export const Perp = ({ asset }: PerpProps) => {
         <div className="col-span-2 border-r border-borderColor">
           <Orderbook asset={asset} />
         </div>
-        <div className="col-span-2 border-r border-borderColor"></div>
+        <div className="col-span-2">
+          <OpenTrade />
+        </div>
       </div>
       {/* <pre className="text-sm">
         <button onClick={() => connect({ connector: connectors[3] })}>

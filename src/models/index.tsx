@@ -40,18 +40,9 @@ export interface FuturesAssetProps {
   "24h_volume": number;
 }
 
-export interface MarketTradesFetchProps {
-  success: boolean;
-  timestamp: number;
-  data: {
-    rows: MarketTradesProps[];
-  };
-}
-
-export interface MarketTradesProps {
-  symbol: string;
+export interface TradesProps {
   side: string;
-  executed_price: number;
-  executed_quantity: number;
-  executed_timestamp: number;
+  price: number;
+  size: number;
+  ts: number;
 }

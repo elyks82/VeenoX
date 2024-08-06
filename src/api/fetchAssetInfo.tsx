@@ -14,9 +14,9 @@ export const fetchAssetInfo = async (
 
   const handleColorChange = () => {
     if (newPrice > prevPrice) {
-      return "text-green-500";
+      return "text-green";
     } else if (newPrice < prevPrice) {
-      return "text-red-500";
+      return "text-red";
     } else {
       return "text-white";
     }

@@ -25,6 +25,8 @@ const config: Config = {
         primary: "rgba(19, 22, 39, 1)",
         secondary: "rgba(21, 25, 41, 1)",
         terciary: "rgba(28, 32, 48, 1)",
+        green: "rgb(14 203 129)",
+        red: "rgb(234 57 67)",
         font: {
           DEFAULT: "rgba(255, 255, 255, 1)",
           80: "rgba(255, 255, 255, 0.8)",
@@ -36,6 +38,12 @@ const config: Config = {
           DEFAULT: "rgba(200, 200, 200, 0.2)",
           DARK: "rgba(140, 140, 140, 0.1)",
         },
+      },
+      height: {
+        "calc-leverage-height": "calc(100% - 143px)",
+      },
+      inset: {
+        "calc-slide-long": "calc(50% - 4px)",
       },
       keyframes: {
         fadeIn: {

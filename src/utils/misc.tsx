@@ -2,10 +2,13 @@ export const addressSlicer = (address: `0x${string}` | undefined) => {
   return address?.slice(0, 6) + "..." + address?.slice(-4);
 };
 
-export const formatSymbol = (symbol: string) => {
+export const formatSymbol = (symbol: string, isOnlySymbol?: boolean) => {
   const isPerp = symbol.includes("PERP");
   try {
     const formatted = symbol.replace("PERP", "").slice(1).replace("_", "/");
+    if (isOnlySymbol) {
+      return formatted.split("/")[0].toUpperCase();
+    }
     if (isPerp) {
       return formatted;
     }
@@ -193,3 +196,18 @@ export function formatAmount(amount: number | string, decimals = 2) {
       : "")
   );
 }
+
+export const getFormattedDate = (date: number) => {
+  if (!date) return null;
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+
+  const formattedDate = new Date(date).toLocaleDateString(undefined, options);
+  return formattedDate;
+};

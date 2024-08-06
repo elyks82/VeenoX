@@ -34,7 +34,7 @@ export const Favorites = () => {
           </span>
           <span
             className={`${
-              item.price_change_24h > 0 ? "text-green-600" : "text-red-600"
+              item.price_change_24h > 0 ? "text-green" : "text-red"
             } ml-2`}
           >
             {item.price_change_24h}%

@@ -34,3 +34,36 @@ body {
     text-wrap: balance;
   }
 }
+
+.mix-blend-multiply {
+  mix-blend-mode: multiply;
+}
+
+.bg-change-green {
+  filter: invert(1) sepia(1) saturate(10) hue-rotate(100deg);
+}
+
+.bg-change-red {
+  filter: invert(1) sepia(1) saturate(10) hue-rotate(-100deg);
+}
+
+input {
+  border: none;
+  background: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Pour Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.custom-slider {
+  background: red;
+  color: red;
+}
