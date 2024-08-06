@@ -25,6 +25,13 @@ const config: Config = {
         primary: "rgba(19, 22, 39, 1)",
         secondary: "rgba(21, 25, 41, 1)",
         terciary: "rgba(28, 32, 48, 1)",
+        font: {
+          DEFAULT: "rgba(255, 255, 255, 1)",
+          80: "rgba(255, 255, 255, 0.8)",
+          60: "rgba(255, 255, 255, 0.6)",
+          40: "rgba(255, 255, 255, 0.4)",
+          20: "rgba(255, 255, 255, 0.2)",
+        },
         borderColor: {
           DEFAULT: "rgba(200, 200, 200, 0.2)",
           DARK: "rgba(140, 140, 140, 0.1)",
