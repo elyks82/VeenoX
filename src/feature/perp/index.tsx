@@ -1,34 +1,31 @@
 "use client";
+import { FuturesAssetProps } from "@/models";
 import { useQuery, useWalletConnector } from "@orderly.network/hooks";
 import { API } from "@orderly.network/types";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount } from "wagmi";
 import { Favorites } from "./layouts/favorites";
 import { TokenInfo } from "./layouts/token-info";
 
-export const Trade = () => {
+type PerpProps = {
+  asset: FuturesAssetProps;
+};
+
+export const Perp = ({ asset }: PerpProps) => {
   const { data, error, isLoading } = useQuery<API.Symbol[]>("/v1/public/info");
   const { address, isDisconnected } = useAccount();
   console.log("account", address);
   const wallet = useWalletConnector();
-  const { connect, connectors, pendingConnector } = useConnect({
-    onError: () => {
-      //   setStatus("error");
-    },
-    onSuccess() {
-      //   Cookies.set(`user-address`, address, {
-      //     secure: process.env.NODE_ENV !== "development",
-      //     sameSite: "strict",
-      //   });
-      console.log("connected");
-    },
-  });
+
   return (
     <>
-      <div className="flex w-full">
-        <div className="flex flex-col w-2/3 border-r border-borderColor">
+      <div className="grid grid-cols-10 w-full border-b border-borderColor">
+        <div className="col-span-6 border-r border-borderColor">
           <Favorites />
-          <TokenInfo />
+          <TokenInfo asset={asset} />
+          <img src="/chart.png" className="h-[600px]" />
         </div>
+        <div className="col-span-2 border-r border-borderColor"></div>
+        <div className="col-span-2 border-r border-borderColor"></div>
       </div>
       {/* <pre className="text-sm">
         <button onClick={() => connect({ connector: connectors[3] })}>

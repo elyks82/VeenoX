@@ -30,6 +30,15 @@ const config: Config = {
           DARK: "rgba(140, 140, 140, 0.1)",
         },
       },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0%" },
+          "100%": { opacity: "100%" },
+        },
+      },
+      animation: {
+        fadeIn: "fadeIn 0.5s ease-out",
+      },
     },
   },
   plugins: [],

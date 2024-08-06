@@ -1,6 +1,6 @@
 "use client";
 import { Tooltip } from "@/components/tooltip";
-import { addressSlicer } from "@/utils/address";
+import { addressSlicer } from "@/utils/misc";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";

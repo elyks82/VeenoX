@@ -1,4 +1,6 @@
+import { GeneralProvider } from "@/context";
 import { Header } from "@/layouts/header";
+import ReactQueryProvider from "@/lib/react-query/provider";
 import WagmiProvider from "@/lib/wagmi/provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -23,12 +25,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {" "}
         <WagmiProvider>
           <OrderlyProvider>
-            <Header />
-
-            {children}
+            <ReactQueryProvider>
+              <GeneralProvider>
+                <Header />
+                {children}
+              </GeneralProvider>
+            </ReactQueryProvider>
           </OrderlyProvider>
         </WagmiProvider>
       </body>
