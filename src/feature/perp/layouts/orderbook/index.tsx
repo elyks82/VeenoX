@@ -18,28 +18,14 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
     OrderbookSection.ORDERBOOK
   );
 
-  const [data, { onDepthChange, isLoading, onItemClick, depth, allDepths }] =
+  const [data, { isLoading, onItemClick, depth, allDepths }] =
     useOrderbookStream(asset?.symbol, undefined, {
       level: 12,
       padding: true,
     });
 
-  const calculateWeightedAverage = (orders) => {
-    let totalAmount = 0;
-    let totalValue = 0;
-
-    for (let i = 0; i < orders.length; i++) {
-      let price = orders[i][0];
-      let amount = orders[i][1];
-      totalAmount += amount;
-      totalValue += price * amount;
-    }
-
-    return totalValue / totalAmount;
-  };
-
-  const bestBid = data?.bids[0][0];
-  const bestAsk = data?.asks[data.asks.length - 1][0];
+  const bestBid: number | undefined = (data?.bids as [number[]])[0][0];
+  const bestAsk = (data?.asks as [])[(data.asks as []).length - 1][0];
   const spread = bestAsk - bestBid;
 
   return (
@@ -81,11 +67,11 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
             <tbody>
               {isLoading
                 ? "Loading..."
-                : data?.asks.map((ask, i: number) => (
+                : (data?.asks || []).map((ask: number[], i: number) => (
                     <tr
                       key={i}
                       className="text-font-80 text-xs"
-                      onClick={() => onItemClick(ask[0])}
+                      //   onClick={() => onItemClick(ask[0])}
                     >
                       <td
                         className={`pl-2.5 ${
@@ -108,7 +94,7 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
                 >
                   <div className="whitespace-nowrap flex justify-between items-center">
                     <p className="text-sm text-white font-bold ">
-                      {getFormattedAmount(data?.middlePrice)}
+                      {getFormattedAmount((data?.middlePrice as any) || 0)}
                     </p>
                     <span className="text-[13px] text-white">Spread</span>
                     <span className="text-[13px] text-white">
@@ -117,22 +103,13 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
                   </div>
                 </td>
               </tr>
-
-              {/* <tfoot className="bg-terciary py-2">
-                <tr>
-                  <th scope="row" className="col-span-2 pl-2.5 w-fit ">
-                 
-                  </th>
-                  <td className="pl-2.5">33</td>
-                </tr>
-              </tfoot> */}
               {isLoading
                 ? "Loading..."
-                : data?.bids.map((bid, i: number) => (
+                : (data?.bids || []).map((bid: number[], i: number) => (
                     <tr
                       key={i}
                       className="text-font-80 text-xs"
-                      onClick={() => onItemClick(bid[0])}
+                      //   onClick={() => onItemClick(bid[0])}
                     >
                       <td
                         className={`pl-2.5 ${

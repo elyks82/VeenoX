@@ -4,9 +4,15 @@ import { cn } from "@/utils/cn";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import * as React from "react";
 
+type SliderProps = React.ComponentPropsWithoutRef<
+  typeof SliderPrimitive.Root
+> & {
+  isBuy: boolean;
+};
+
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
+  SliderProps
 >(({ className, isBuy, ...props }, ref) => (
   <SliderPrimitive.Root
     ref={ref}

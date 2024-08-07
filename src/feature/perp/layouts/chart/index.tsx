@@ -1,7 +1,8 @@
+import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
 import { useWS } from "@orderly.network/hooks";
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Timezone } from "../../../../../public/static/charting_library/charting_library";
 import { DISABLED_FEATURES, ENABLED_FEATURES } from "./constant";
 import { Datafeed } from "./datafeed";
@@ -9,23 +10,18 @@ import { widgetOptionsDefault } from "./helper";
 import { overrides } from "./theme";
 
 interface TradingViewChartProps {
-  baseAsset: any;
+  asset: FuturesAssetProps;
   mobile?: boolean;
   custom_css_url?: string;
-  extraCss?: string;
-  isPair?: boolean;
-  setPairTrades: Dispatch<SetStateAction<any[]>>;
-  setFadeIn?: Dispatch<SetStateAction<string[]>>;
-  isUsd?: boolean;
-  shouldLoadMoreTrade?: boolean;
+  className?: string;
 }
 
 const TradingViewChart = ({
   asset,
   mobile = false,
   custom_css_url = "../themed.css",
-  className,
-}) => {
+  className = "",
+}: TradingViewChartProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const ws = useWS();
   const chartInit = () => {
@@ -35,7 +31,7 @@ const TradingViewChart = ({
         if (!ref.current) return;
 
         const tvWidget = new Widget({
-          datafeed: Datafeed(asset, ws),
+          datafeed: Datafeed(asset, ws) as any,
           symbol: formatSymbol(asset?.symbol),
           container: ref.current,
           container_id: ref.current.id,
@@ -60,7 +56,6 @@ const TradingViewChart = ({
         (window as any).tvWidget = tvWidget;
 
         (window as any).tvWidget.onChartReady(() => {
-          // setIsChartLoaded(true);
           (window as any).tvWidget?.applyOverrides(overrides() || {});
         });
       }

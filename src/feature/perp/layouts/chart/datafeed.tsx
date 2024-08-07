@@ -1,21 +1,22 @@
 import { fetchMarketHistory } from "@/api/fetchMarketHistory";
+import { CustomBarProps, FuturesAssetProps } from "@/models";
 import { resolutionToTimeframe } from "@/utils/misc";
+import { WS } from "@orderly.network/net";
 
 export const supportedResolutions = [
   "1",
+  "3",
   "5",
   "15",
   "60",
   "120",
   "240",
-  "24H",
+  "1D",
   "7D",
-  "30D",
+  "1M",
 ];
 
-const lastBarsCache = new Map();
-
-export const Datafeed = (asset, ws) => ({
+export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
   onReady: (callback: Function) => {
     callback({ supported_resolutions: supportedResolutions });
   },
@@ -41,9 +42,9 @@ export const Datafeed = (asset, ws) => ({
     onResolve(params);
   },
   getBars: async (
-    symbolInfo,
+    symbolInfo: string,
     resolution: string,
-    periodParams,
+    periodParams: { from: number; to: number; firstDataRequest: boolean },
     onResult: Function
   ) => {
     const { from, to, firstDataRequest } = periodParams;
@@ -56,8 +57,8 @@ export const Datafeed = (asset, ws) => ({
     const data = await fetchMarketHistory(params);
 
     if (data && data.s === "ok" && data.o) {
-      const bars = data.t.map((timestamp, index) => ({
-        time: timestamp * 1000, // Convert back to milliseconds
+      const bars = data.t.map((timestamp: number, index: number) => ({
+        time: timestamp * 1000,
         open: data.o[index],
         high: data.h[index],
         low: data.l[index],
@@ -66,27 +67,18 @@ export const Datafeed = (asset, ws) => ({
       }));
       if (bars.length) {
         onResult(bars, { noData: false });
-        if (firstDataRequest) {
-          lastBarsCache.set(asset.symbol, bars[bars.length - 1]);
-        }
       } else {
         onResult([], { noData: true });
       }
     } else {
       onResult([], { noData: true });
     }
-
-    if (periodParams.firstDataRequest) {
-      lastBarsCache.set(asset.symbol, data[data.data.length - 1]);
-    }
   },
   searchSymbols: () => {},
   subscribeBars: (
-    symbolInfo,
-    resolution,
-    onRealtimeCallback,
-    subscriberUID,
-    onResetCacheNeededCallback
+    symbolInfo: string,
+    resolution: string,
+    onRealtimeCallback: (arg0: CustomBarProps) => void
   ) => {
     const timeframe = resolutionToTimeframe(resolution);
     const unsubscribe = ws.subscribe(
@@ -98,7 +90,7 @@ export const Datafeed = (asset, ws) => ({
       {
         onMessage: (data: any) => {
           if (data && data) {
-            const bar = {
+            const bar: CustomBarProps = {
               time: data.endTime,
               open: data.open,
               high: data.high,
@@ -112,14 +104,10 @@ export const Datafeed = (asset, ws) => ({
       }
     );
     () => {
-      // Unsubscribes when the component unloads
-      unsubscribe();
+      if (unsubscribe) unsubscribe();
     };
   },
-  unsubscribeBars: (subscriberUID) => {
-    console.log("Unsubscribe", asset.symbol + "-" + subscriberUID);
-    // sockets.get(baseAsset.name + "-" + subscriberUID).close();
-  },
+  unsubscribeBars: () => {},
   getMarks: () => ({}),
   getTimeScaleMarks: () => ({}),
   getServerTime: () => ({}),
