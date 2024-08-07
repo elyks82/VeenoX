@@ -1,5 +1,5 @@
 import { fetchMarketHistory } from "@/api/fetchMarketHistory";
-import { useWS } from "@orderly.network/hooks";
+import { resolutionToTimeframe } from "@/utils/misc";
 
 export const supportedResolutions = [
   "1",
@@ -15,7 +15,7 @@ export const supportedResolutions = [
 
 const lastBarsCache = new Map();
 
-export const Datafeed = (asset) => ({
+export const Datafeed = (asset, ws) => ({
   onReady: (callback: Function) => {
     callback({ supported_resolutions: supportedResolutions });
   },
@@ -33,7 +33,7 @@ export const Datafeed = (asset) => ({
         10000000000000000
       ),
       has_intraday: true,
-      intraday_multipliers: ["1", "15", "30", "60"],
+      intraday_multipliers: ["1", "3", "5", "15", "30", "60"],
       supported_resolution: supportedResolutions,
       volume_precision: 8,
       data_status: "streaming",
@@ -46,16 +46,14 @@ export const Datafeed = (asset) => ({
     periodParams,
     onResult: Function
   ) => {
+    const { from, to, firstDataRequest } = periodParams;
     const params = {
       symbol: "PERP_SOL_USDC",
       timeframe: resolution,
-      from: 1709148690,
-      to: 1723028730,
+      from: from,
+      to: to,
     };
-    const { from, to, firstDataRequest } = periodParams;
-    console.log(params);
     const data = await fetchMarketHistory(params);
-    console.log("data", data);
 
     if (data && data.s === "ok" && data.o) {
       const bars = data.t.map((timestamp, index) => ({
@@ -66,7 +64,6 @@ export const Datafeed = (asset) => ({
         close: data.c[index],
         volume: data.v[index],
       }));
-      console.log("bars", bars);
       if (bars.length) {
         onResult(bars, { noData: false });
         if (firstDataRequest) {
@@ -91,11 +88,7 @@ export const Datafeed = (asset) => ({
     subscriberUID,
     onResetCacheNeededCallback
   ) => {
-    console.log("Subscribing to bars", asset.symbol + "-" + subscriberUID);
-    const timeframe = "1m";
-    const ws = useWS();
-    console.log("resolution", resolution);
-    console.log("subscriber", subscriberUID);
+    const timeframe = resolutionToTimeframe(resolution);
     const unsubscribe = ws.subscribe(
       {
         id: `${asset?.symbol}@kline_${timeframe}`,
@@ -104,7 +97,17 @@ export const Datafeed = (asset) => ({
       },
       {
         onMessage: (data: any) => {
-          console.log("HERE IS : ", data);
+          if (data && data) {
+            const bar = {
+              time: data.endTime,
+              open: data.open,
+              high: data.high,
+              low: data.low,
+              close: data.close,
+              volume: data.volume,
+            };
+            onRealtimeCallback(bar);
+          }
         },
       }
     );

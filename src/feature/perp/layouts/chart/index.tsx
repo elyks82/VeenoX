@@ -1,5 +1,6 @@
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
+import { useWS } from "@orderly.network/hooks";
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import { Timezone } from "../../../../../public/static/charting_library/charting_library";
 import { DISABLED_FEATURES, ENABLED_FEATURES } from "./constant";
@@ -26,6 +27,7 @@ const TradingViewChart = ({
   className,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const ws = useWS();
   const chartInit = () => {
     if (!asset) return () => {};
     import("../../../../../public/static/charting_library").then(
@@ -33,7 +35,7 @@ const TradingViewChart = ({
         if (!ref.current) return;
 
         const tvWidget = new Widget({
-          datafeed: Datafeed(asset),
+          datafeed: Datafeed(asset, ws),
           symbol: formatSymbol(asset?.symbol),
           container: ref.current,
           container_id: ref.current.id,
