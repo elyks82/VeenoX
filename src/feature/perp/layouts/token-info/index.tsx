@@ -3,8 +3,6 @@ import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
-import { useQuery as useOrderlyQuery } from "@orderly.network/hooks";
-import { API } from "@orderly.network/types";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
@@ -18,11 +16,13 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
   const { prevPrice, isPriceChanged, setPrevPrice, setIsPriceChanged } =
     useGeneralContext();
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
-  const {
-    data: perpAssets,
-    error,
-    isLoading: isPerpAssetLoading,
-  } = useOrderlyQuery<API.Symbol[]>("/v1/public/futures");
+  //   const {
+  //     data: perpAssets,
+  //     error,
+  //     isLoading: isPerpAssetLoading,
+  //   } = useOrderlyQuery<API.Symbol[]>("/v1/public/futures");
+
+  const perpAssets = [];
 
   const handleTokenSelectorOpening = () => {
     setIsTokenSelectorOpen((prev) => !prev);

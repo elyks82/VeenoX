@@ -19,7 +19,7 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
   );
 
   const [data, { onDepthChange, isLoading, onItemClick, depth, allDepths }] =
-    useOrderbookStream(asset.symbol, undefined, {
+    useOrderbookStream(asset?.symbol, undefined, {
       level: 12,
       padding: true,
     });

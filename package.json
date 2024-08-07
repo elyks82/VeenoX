@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@orderly.network/hooks": "^1.5.10",
+    "@orderly.network/trading-view": "^1.5.10",
+    "@orderly.network/types": "^1.5.10",
     "@radix-ui/react-slider": "^1.2.0",
     "@tanstack/react-query": "^5.51.21",
     "next": "14.2.5",

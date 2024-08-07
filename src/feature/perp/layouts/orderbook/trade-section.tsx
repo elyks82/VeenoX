@@ -1,18 +1,14 @@
 import { FuturesAssetProps } from "@/models";
 import { getFormattedAmount, getFormattedDate } from "@/utils/misc";
 import { useMarketTradeStream } from "@orderly.network/hooks";
-import { useEffect } from "react";
 
 type TradeSectionProps = {
   asset: FuturesAssetProps;
 };
 
 export const TradeSection = ({ asset }: TradeSectionProps) => {
-  const { data: trades, isLoading } = useMarketTradeStream(asset.symbol);
+  const { data: trades, isLoading } = useMarketTradeStream(asset?.symbol);
 
-  useEffect(() => {
-    console.log("trades", trades);
-  }, [trades]);
   return (
     <div className="max-h-[670px] overflow-y-scroll relative">
       <table className="w-full">

@@ -1,8 +1,8 @@
 "use client";
 import { FuturesAssetProps } from "@/models";
-import { useQuery, useWalletConnector } from "@orderly.network/hooks";
-import { API } from "@orderly.network/types";
+import { useWalletConnector } from "@orderly.network/hooks";
 import { useAccount } from "wagmi";
+import TradingViewChart from "./layouts/chart";
 import { Favorites } from "./layouts/favorites";
 import { OpenTrade } from "./layouts/open-trade";
 import { Orderbook } from "./layouts/orderbook";
@@ -13,10 +13,24 @@ type PerpProps = {
 };
 
 export const Perp = ({ asset }: PerpProps) => {
-  const { data, error, isLoading } = useQuery<API.Symbol[]>("/v1/public/info");
   const { address, isDisconnected } = useAccount();
-  console.log("account", address);
   const wallet = useWalletConnector();
+
+  const options = {
+    symbol: "PERP_BTC_USDC",
+    timeframe: "1D",
+    from: 1709459200,
+    to: 1729459200,
+  };
+
+  // const { data, refetch } = useQuery("marketHistory", () =>
+  //   fetchMarketHistory(options)
+  // );
+  // useEffect(() => {
+  //   const resp = fetchMarketHistory(options);
+  //   console.log(resp);
+  // }, [asset]);
+  // console.log("data", data);
 
   return (
     <>
@@ -24,7 +38,7 @@ export const Perp = ({ asset }: PerpProps) => {
         <div className="col-span-6 border-r border-borderColor">
           <Favorites />
           <TokenInfo asset={asset} />
-          <img src="/chart.png" className="h-[600px]" />
+          <TradingViewChart asset={asset} className={""} />
         </div>
         <div className="col-span-2 border-r border-borderColor">
           <Orderbook asset={asset} />
