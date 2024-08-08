@@ -26,7 +26,9 @@ const config: Config = {
         secondary: "rgba(21, 25, 41, 1)",
         terciary: "rgba(28, 32, 48, 1)",
         green: "rgb(14 203 129)",
+        "green-opacity-10": "rgba(14, 203, 129,0.1)",
         red: "rgb(234 57 67)",
+        "red-opacity-10": "rgba(234, 57, 67, 0.1)",
         font: {
           DEFAULT: "rgba(255, 255, 255, 1)",
           80: "rgba(255, 255, 255, 0.8)",

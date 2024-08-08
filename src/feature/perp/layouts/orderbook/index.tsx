@@ -21,12 +21,32 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
   const [data, { isLoading, onItemClick, depth, allDepths }] =
     useOrderbookStream(asset?.symbol, undefined, {
       level: 12,
-      padding: true,
+      padding: false,
     });
 
-  const bestBid: number | undefined = (data?.bids as [number[]])[0][0];
-  const bestAsk = (data?.asks as [])[(data.asks as []).length - 1][0];
+  const bestBid: number | undefined = (data?.bids as [number[]])[0]?.[0];
+  const bestAsk = (data?.asks as [])[(data.asks as []).length - 1]?.[0];
   const spread = bestAsk - bestBid;
+
+  type AsksBidsType = "asks" | "bids";
+
+  const getWidthFromVolume = (type: AsksBidsType): number[] => {
+    const is_asks = type === "asks";
+    const typeData = data[type];
+    if (typeData) {
+      const arr = [];
+      const maxValue = typeData?.[is_asks ? 0 : typeData.length - 1]?.[3];
+      for (let i = 0; i < typeData.length; i++) {
+        const [price, size, total, totalUSDC] = typeData[i];
+        const widthPercentage = (totalUSDC / maxValue) * 100;
+        arr.push(widthPercentage);
+      }
+      return arr;
+    }
+    return [];
+  };
+  const asksWidth = getWidthFromVolume("asks");
+  const bidsWidth = getWidthFromVolume("bids");
 
   return (
     <section>
@@ -70,21 +90,25 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
                 : (data?.asks || []).map((ask: number[], i: number) => (
                     <tr
                       key={i}
-                      className="text-font-80 text-xs"
+                      className="text-font-80 text-xs relative"
                       //   onClick={() => onItemClick(ask[0])}
                     >
                       <td
                         className={`pl-2.5 ${
                           i === 0 ? "py-2" : "py-1"
-                        } text-red`}
+                        } text-red z-10`}
                       >
                         {ask[0]}
                       </td>
-                      <td className={`py-[5px] text-end`}>{ask[1]}</td>
-                      <td className="pr-2.5 py-1 text-end">{ask[2]}</td>
-                      <td className="pr-2.5 py-1 text-end">
+                      <td className={`py-[5px] text-end z-10`}>{ask[1]}</td>
+                      <td className="pr-2.5 py-1 text-end z-10">{ask[2]}</td>
+                      <td className="pr-2.5 py-1 text-end z-10">
                         {getFormattedAmount(ask[3])}
                       </td>
+                      <div
+                        className="absolute left-0 h-full bg-red-opacity-10 z-0 transition-all duration-150 ease-linear"
+                        style={{ width: `${asksWidth[i]}%` }}
+                      />
                     </tr>
                   ))}
               <tr>
@@ -108,7 +132,7 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
                 : (data?.bids || []).map((bid: number[], i: number) => (
                     <tr
                       key={i}
-                      className="text-font-80 text-xs"
+                      className="text-font-80 text-xs relative"
                       //   onClick={() => onItemClick(bid[0])}
                     >
                       <td
@@ -123,6 +147,10 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
                       <td className="pr-2.5 py-1 text-end">
                         {getFormattedAmount(bid[3])}
                       </td>
+                      <div
+                        className="absolute left-0 h-full bg-green-opacity-10 z-0 transition-all duration-150 ease-linear"
+                        style={{ width: `${bidsWidth[i]}%` }}
+                      />
                     </tr>
                   ))}
             </tbody>

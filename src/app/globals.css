@@ -67,3 +67,29 @@ input[type="number"] {
   background: red;
   color: red;
 }
+
+.bar {
+  height: 20px;
+  margin: 1px 0;
+}
+
+.bid {
+  background-color: #00800080; /* Green with opacity */
+}
+
+.ask {
+  background-color: #ff000080; /* Red with opacity */
+}
+
+.price,
+.volume,
+.total-doge,
+.total-usdc {
+  width: 80px;
+  text-align: right;
+}
+
+.volume-bar {
+  flex-grow: 1;
+  margin-left: 10px;
+}
