@@ -5,10 +5,10 @@ import { FuturesAssetProps } from "@/models";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
 import { useQuery as useOrderlyQuery } from "@orderly.network/hooks";
 import { API } from "@orderly.network/types";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import { useQuery } from "react-query";
+import { PairSelector } from "./tooltip";
 
 type TokenInfoProps = {
   asset: FuturesAssetProps;
@@ -18,10 +18,8 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
   const { prevPrice, isPriceChanged, setPrevPrice, setIsPriceChanged } =
     useGeneralContext();
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
-  const {
-    data: perpAssets,
-    isLoading: isPerpAssetLoading,
-  } = useOrderlyQuery<API.Symbol[]>("/v1/public/futures");
+  const { data: perpAssets, isLoading: isPerpAssetLoading } =
+    useOrderlyQuery<API.Symbol[]>("/v1/public/futures");
 
   const handleTokenSelectorOpening = () => {
     setIsTokenSelectorOpen((prev) => !prev);
@@ -114,15 +112,9 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
 
         <Tooltip
           isOpen={isTokenSelectorOpen}
-          className="left-0 translate-x-0 max-h-[350px] overflow-scroll w-[300px]"
+          className="left-0 translate-x-0 max-h-[350px] overflow-scroll w-[500px]"
         >
-          {perpAssets?.map((pair, index) => (
-            <div className="flex items-center" key={index}>
-              <Link href={`/perp/${pair.symbol}`}>
-                <p>{formatSymbol(pair.symbol)}</p>
-              </Link>
-            </div>
-          ))}
+          <PairSelector asset={asset} />
         </Tooltip>
       </div>
     </div>

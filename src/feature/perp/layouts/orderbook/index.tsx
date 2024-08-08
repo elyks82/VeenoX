@@ -1,6 +1,9 @@
 import { FuturesAssetProps } from "@/models";
 import { getFormattedAmount } from "@/utils/misc";
-import { useOrderbookStream } from "@orderly.network/hooks";
+import {
+  useMarketTradeStream,
+  useOrderbookStream,
+} from "@orderly.network/hooks";
 import { useState } from "react";
 import { TradeSection } from "./trade-section";
 
@@ -48,6 +51,10 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
   const asksWidth = getWidthFromVolume("asks");
   const bidsWidth = getWidthFromVolume("bids");
 
+  const { data: trades, isLoading: isTradesLoading } = useMarketTradeStream(
+    asset?.symbol
+  );
+
   return (
     <section>
       <div className="flex items-center w-full h-[44px] relative">
@@ -93,16 +100,14 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
                       className="text-font-80 text-xs relative"
                       //   onClick={() => onItemClick(ask[0])}
                     >
-                      <td
-                        className={`pl-2.5 ${
-                          i === 0 ? "py-2" : "py-1"
-                        } text-red z-10`}
-                      >
+                      <td className={`pl-2.5 py-[4.6px] text-red z-10`}>
                         {ask[0]}
                       </td>
-                      <td className={`py-[5px] text-end z-10`}>{ask[1]}</td>
-                      <td className="pr-2.5 py-1 text-end z-10">{ask[2]}</td>
-                      <td className="pr-2.5 py-1 text-end z-10">
+                      <td className={`py-[4.6px] text-end z-10`}>{ask[1]}</td>
+                      <td className="pr-2.5 py-[4.6px] text-end z-10">
+                        {ask[2]}
+                      </td>
+                      <td className="pr-2.5 py-[4.6px] text-end z-10">
                         {getFormattedAmount(ask[3])}
                       </td>
                       <div
@@ -135,16 +140,12 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
                       className="text-font-80 text-xs relative"
                       //   onClick={() => onItemClick(bid[0])}
                     >
-                      <td
-                        className={`pl-2.5 ${
-                          i === 0 ? "py-2" : "py-1.5"
-                        } text-green`}
-                      >
+                      <td className={`pl-2.5 py-[4.6px] text-green`}>
                         {bid[0]}
                       </td>
-                      <td className={`py-1 text-end`}>{bid[1]}</td>
-                      <td className="pr-2.5 py-[5px] text-end">{bid[2]}</td>
-                      <td className="pr-2.5 py-1 text-end">
+                      <td className={`py-[4.6px] text-end`}>{bid[1]}</td>
+                      <td className="pr-2.5 py-[4.6px] text-end">{bid[2]}</td>
+                      <td className="pr-2.5 py-[4.6px] text-end">
                         {getFormattedAmount(bid[3])}
                       </td>
                       <div
@@ -157,7 +158,11 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
           </table>
         </div>
       ) : (
-        <TradeSection asset={asset} />
+        <TradeSection
+          asset={asset}
+          trades={trades}
+          isLoading={isTradesLoading}
+        />
       )}
     </section>
   );
