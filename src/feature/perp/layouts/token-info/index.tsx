@@ -43,11 +43,8 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
 
   return (
     <div className="flex items-center w-full h-[70px] px-3 py-1 border-b border-borderColor ">
-      <div
-        className="flex items-center gap-3 relative cursor-pointer text-white"
-        onClick={handleTokenSelectorOpening}
-      >
-        <div className="flex items-center">
+      <div className="flex items-center gap-3 relative cursor-pointer text-white">
+        <div className="flex items-center" onClick={handleTokenSelectorOpening}>
           <img
             className="w-[30px] h-[30px] bg-gray-500 rounded-full"
             src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
@@ -109,10 +106,9 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
             </p>
           </div>
         </div>
-
         <Tooltip
           isOpen={isTokenSelectorOpen}
-          className="left-0 translate-x-0 max-h-[350px] overflow-scroll w-[500px]"
+          className="left-0 translate-x-0 max-h-[350px] overflow-scroll w-[650px] bg-secondary border-borderColor p-2.5"
         >
           <PairSelector asset={asset} />
         </Tooltip>

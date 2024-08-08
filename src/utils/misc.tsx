@@ -5,9 +5,9 @@ export const addressSlicer = (address: `0x${string}` | undefined) => {
 export const formatSymbol = (symbol: string, isOnlySymbol?: boolean) => {
   const isPerp = symbol.includes("PERP");
   try {
-    const formatted = symbol.replace("PERP", "").slice(1).replace("_", "/");
+    const formatted = symbol.replace("PERP", "").slice(1).replace("_", "-");
     if (isOnlySymbol) {
-      return formatted.split("/")[0].toUpperCase();
+      return formatted.split("-")[0].toUpperCase();
     }
     if (isPerp) {
       return formatted;
