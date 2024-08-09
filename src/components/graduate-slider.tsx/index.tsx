@@ -72,7 +72,7 @@ export const GraduateSlider = () => {
                   }  rounded-[1px]`}
                 /> */}
               </div>
-              <div className="text-font-80 text-xs -ml-1">{leverage}</div>
+              <div className="text-font-80 text-[11px] -ml-1">{leverage}</div>
             </div>
           );
         }}

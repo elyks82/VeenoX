@@ -3,14 +3,26 @@ import { Header } from "@/layouts/header";
 import ReactQueryProvider from "@/lib/react-query/provider";
 import { WalletProvider } from "@/lib/wallet-connector";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import { OrderlyProvider } from "./common/OrderlyProvider";
 import "./globals.css";
 // const OrderlyContainer = dynamic(() => import("./common/OrderlyProvider"), {
 //   ssr: false,
 // });
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  weight: "400",
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  variable: "--font-poppins",
+  display: "swap",
+  weight: "400",
+});
 
 export const metadata: Metadata = {
   title: "VEENO PERP DEX",
@@ -24,9 +36,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${poppins.variable}`}>
         <WalletProvider>
-          {" "}
           <OrderlyProvider>
             <ReactQueryProvider>
               <GeneralProvider>

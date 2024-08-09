@@ -41,7 +41,6 @@ export const Header = () => {
       const result = await wallet.connect();
       console.log("Wallet connection result:", result);
 
-      // Vérifiez ici si le compte est bien défini
       console.log("Account information:", account);
       console.log("account", account);
       if (!account || !account?.id) {
@@ -49,7 +48,6 @@ export const Header = () => {
         return;
       }
 
-      // Votre logique pour createAccount et createOrderlyKey
       if (state.status === AccountStatusEnum.NotConnected) {
         await createAccount();
       }
@@ -85,11 +83,11 @@ export const Header = () => {
       <div className="flex items-center gap-5">
         <div className="flex items-center gap-3">
           <img
-            src="/v.png"
+            src="/logo/v.png"
             alt="Veeno Logo"
             className="h-[40px] w-[40px] max-w-[40px] max-h-[40px]"
           />
-          <h3 className="text-white text-bold font-poppins text-lg">VEENO</h3>
+          <h3 className="text-white text-bold font-poppins text-lg ">VEENO</h3>
         </div>
         {/* <nav>
           <ul className="flex items-center gap-5">

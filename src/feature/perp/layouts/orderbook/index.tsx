@@ -103,11 +103,13 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
                       //   onClick={() => onItemClick(ask[0])}
                     >
                       <td className={`pl-2.5 py-[4.6px] text-red z-10`}>
-                        {ask[0]}
+                        {getFormattedAmount(ask[0])}
                       </td>
-                      <td className={`py-[4.6px] text-end z-10`}>{ask[1]}</td>
+                      <td className={`py-[4.6px] text-end z-10`}>
+                        {getFormattedAmount(ask[1])}
+                      </td>
                       <td className="pr-2.5 py-[4.6px] text-end z-10">
-                        {ask[2]}
+                        {getFormattedAmount(ask[2])}
                       </td>
                       <td className="pr-2.5 py-[4.6px] text-end z-10">
                         {getFormattedAmount(ask[3])}
@@ -143,10 +145,14 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
                       //   onClick={() => onItemClick(bid[0])}
                     >
                       <td className={`pl-2.5 py-[4.6px] text-green`}>
-                        {bid[0]}
+                        {getFormattedAmount(bid[0])}
                       </td>
-                      <td className={`py-[4.6px] text-end`}>{bid[1]}</td>
-                      <td className="pr-2.5 py-[4.6px] text-end">{bid[2]}</td>
+                      <td className={`py-[4.6px] text-end`}>
+                        {getFormattedAmount(bid[1])}
+                      </td>
+                      <td className="pr-2.5 py-[4.6px] text-end">
+                        {getFormattedAmount(bid[2])}
+                      </td>
                       <td className="pr-2.5 py-[4.6px] text-end">
                         {getFormattedAmount(bid[3])}
                       </td>

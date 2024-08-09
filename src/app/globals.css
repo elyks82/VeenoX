@@ -106,3 +106,25 @@ input[type="number"] {
   flex-grow: 1;
   margin-left: 10px;
 }
+
+.relative {
+  position: relative;
+}
+
+.resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+  cursor: col-resize;
+  background-color: transparent;
+  z-index: 10;
+}
+
+.resizer:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.resizer:nth-child(2) {
+  left: calc(80% + 2px); /* Positionner après la deuxième colonne */
+}

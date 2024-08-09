@@ -1,6 +1,7 @@
 "use client";
 import { FuturesAssetProps } from "@/models";
 import { useWalletConnector } from "@orderly.network/hooks";
+import { useRef, useState } from "react";
 import TradingViewChart from "./layouts/chart";
 import { Favorites } from "./layouts/favorites";
 import { OpenTrade } from "./layouts/open-trade";
@@ -31,20 +32,78 @@ export const Perp = ({ asset }: PerpProps) => {
   // }, [asset]);
   // console.log("data", data);
 
+  const [colWidths, setColWidths] = useState([6, 2, 2]);
+  const containerRef = useRef(null);
+
+  const handleMouseDown = (index, e) => {
+    const startX = e.clientX;
+    const startWidths = [...colWidths];
+    const containerWidth = containerRef.current.getBoundingClientRect().width;
+    const onMouseMove = (e) => {
+      const dx = e.clientX - startX;
+      const deltaFraction = (dx / containerWidth) * 10; // Convertit le déplacement en fraction
+
+      const newWidths = [...startWidths];
+
+      // Assure que les largeurs ne deviennent pas négatives ou trop petites
+      if (index === 0) {
+        newWidths[0] = Math.max(startWidths[0] + deltaFraction, 1);
+        newWidths[1] = Math.max(startWidths[1] - deltaFraction, 1);
+      } else if (index === 1) {
+        newWidths[1] = Math.max(startWidths[1] + deltaFraction, 1);
+        newWidths[2] = Math.max(startWidths[2] - deltaFraction, 1);
+      }
+
+      setColWidths(newWidths);
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    };
+
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+  };
+
   return (
     <>
-      <div className="grid grid-cols-10 w-full border-b border-borderColor">
-        <div className="col-span-6 border-r border-borderColor">
-          <Favorites />
-          <TokenInfo asset={asset} />
-          <TradingViewChart asset={asset} className={""} />
+      <div
+        ref={containerRef}
+        className="relative w-full border-b border-borderColor"
+      >
+        <div
+          className="grid w-full"
+          style={{
+            gridTemplateColumns: colWidths.map((w) => `${w}fr`).join(" "),
+          }}
+        >
+          <div className="border-r border-borderColor">
+            <Favorites />
+            <TokenInfo asset={asset} />
+            <TradingViewChart asset={asset} className={""} />
+          </div>
+          <div className="border-r border-borderColor">
+            <Orderbook asset={asset} />
+          </div>
+          <div>
+            <OpenTrade />
+          </div>
         </div>
-        <div className="col-span-2 border-r border-borderColor">
-          <Orderbook asset={asset} />
-        </div>
-        <div className="col-span-2">
-          <OpenTrade />
-        </div>
+        {colWidths.slice(0, -1).map((_, index) => (
+          <div
+            key={index}
+            className="resizer"
+            style={{
+              left: `${
+                (colWidths.slice(0, index + 1).reduce((a, b) => a + b, 0) /
+                  colWidths.reduce((a, b) => a + b, 0)) *
+                100
+              }%`,
+            }}
+            onMouseDown={(e) => handleMouseDown(index, e)}
+          />
+        ))}
       </div>
       <div className="grid grid-cols-10 w-full border-b border-borderColor h-[500px]">
         <div className="col-span-8 border-r border-b border-borderColor">
