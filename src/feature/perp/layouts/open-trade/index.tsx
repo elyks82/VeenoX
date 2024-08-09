@@ -1,3 +1,4 @@
+import { Tooltip } from "@/components/tooltip";
 import { Slider } from "@/lib/shadcn/slider";
 import { useState } from "react";
 import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
@@ -5,10 +6,7 @@ import { Slider as SliderRsuite } from "rsuite";
 import "rsuite/Slider/styles/index.css";
 import { getLeverageFromMarkValue } from "./utils";
 
-enum TypeSection {
-  MARKET,
-  LIMIT,
-}
+type KeyBooleanType = "reduce_only" | "tp_sl";
 
 const INITIAL_TRADE_INFO = {
   type: "Market",
@@ -22,13 +20,17 @@ const INITIAL_TRADE_INFO = {
   leverage: 1,
 };
 
+const marketType = ["Market", "Limit"];
+const proMarketType = ["Stop Limit", "Stop Market"];
+
 export const OpenTrade = () => {
   const [tradeInfo, setTradeInfo] = useState(INITIAL_TRADE_INFO);
+  const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
 
-  const handleTypeChange = (type: TypeSection) => {
+  const handleTypeChange = (type: string) => {
     setTradeInfo((prevState) => ({
       ...prevState,
-      type: type ? "Limit" : "Market",
+      type,
     }));
   };
 
@@ -46,8 +48,6 @@ export const OpenTrade = () => {
     }));
   };
 
-  type KeyBooleanType = "reduce_only" | "tp_sl";
-
   const handleBooleanChange = (key: KeyBooleanType) => {
     setTradeInfo((prev) => ({
       ...prev,
@@ -61,6 +61,13 @@ export const OpenTrade = () => {
       : "left-calc-slide-long bg-red";
   };
   const style = getStyleFromType();
+
+  const getSectionBarPosition = () => {
+    if (tradeInfo.type === "Market") return "left-0";
+    else if (tradeInfo.type === "Limit") return "left-1/3";
+    else return "left-2/3";
+  };
+  const barPosition = getSectionBarPosition();
 
   return (
     <section className="h-full">
@@ -86,27 +93,57 @@ export const OpenTrade = () => {
               </span>
             );
           }}
-        />{" "}
+        />
       </div>
       <div className="flex items-center w-full h-[44px] relative">
+        {marketType.map((type, i) => (
+          <button
+            className="w-1/3 h-full text-white text-sm"
+            onClick={() => handleTypeChange(type)}
+          >
+            {type}
+          </button>
+        ))}
         <button
-          className="w-1/2 h-full text-white text-sm"
-          onClick={() => handleTypeChange(0)}
+          className="w-1/3 h-full text-white text-sm flex items-center justify-center"
+          onClick={() => setIsTooltipMarketTypeOpen((prev) => !prev)}
         >
-          Market
+          {tradeInfo.type !== "Market" && tradeInfo.type !== "Limit"
+            ? tradeInfo.type
+            : "Pro"}
+          <IoChevronDown
+            className={`ml-1 mr-0 pr-0 ${
+              isTooltipMarketTypeOpen ? "rotate-180" : ""
+            } transition-transform duration-150 ease-in-out`}
+          />
         </button>
-        <button
-          className="w-1/2 h-full text-white text-sm"
-          onClick={() => handleTypeChange(1)}
+        <Tooltip
+          className="right-1 w-1/3 left-auto shadow-2xl border-borderColor translate-x-0 z-20 top-[90%] p-2.5"
+          isOpen={isTooltipMarketTypeOpen}
         >
-          Limit
-        </button>
+          <button
+            className="w-full text-white text-sm pb-1 text-start"
+            onClick={() => {
+              handleTypeChange("Stop Limit");
+              setIsTooltipMarketTypeOpen(false);
+            }}
+          >
+            Stop Limit
+          </button>
+          <button
+            className="w-full text-white text-sm pt-1 text-start"
+            onClick={() => {
+              handleTypeChange("Stop Market");
+              setIsTooltipMarketTypeOpen(false);
+            }}
+          >
+            Stop Market
+          </button>
+        </Tooltip>
       </div>
       <div className="bg-terciary h-[1px] w-full relative">
         <div
-          className={`h-[1px] w-1/2 bottom-0 transition-all duration-200 ease-in-out bg-slate-400 absolute ${
-            tradeInfo.type === "Market" ? "left-0" : "left-1/2"
-          }`}
+          className={`h-[1px] w-1/3 bottom-0 transition-all duration-200 ease-in-out bg-font-80 absolute ${barPosition}`}
         />
       </div>
       <div className="flex flex-col justify-between w-full p-4 h-calc-leverage-height">
@@ -114,13 +151,13 @@ export const OpenTrade = () => {
           <div className="flex items-center w-full">
             <div className="flex items-center p-1 relative w-full bg-terciary border border-borderColor-DARK rounded">
               <button
-                className="w-1/2  h-[36px] text-white rounded-l text-sm z-10"
+                className="w-1/2  h-[34px] text-white rounded-l text-sm z-10"
                 onClick={() => handleSideChange("Buy")}
               >
                 Buy
               </button>
               <button
-                className="w-1/2 z-10 h-[36px] text-white rounded-r text-sm"
+                className="w-1/2 z-10 h-[34px] text-white rounded-r text-sm"
                 onClick={() => handleSideChange("Sell")}
               >
                 Sell
@@ -134,14 +171,38 @@ export const OpenTrade = () => {
             <p className="text-xs text-font-60">Available to Trade</p>
             <p className="text-xs text-white font-medium">0 USDC</p>
           </div>
-          <div className="flex items-center h-[35px] bg-terciary justify-between w-full border border-borderColor-DARK rounded mt-3">
+
+          {tradeInfo.type === "Stop Limit" ||
+          tradeInfo.type === "Stop Market" ? (
+            <div className="flex items-center h-[35px] bg-terciary justify-between w-full border border-borderColor-DARK rounded mt-3">
+              <input
+                name="size"
+                className="w-full pl-2 text-white text-sm h-full"
+                placeholder="Stop Price"
+                type="number"
+              />
+              <p className="px-2 text-white text-sm">USD</p>
+            </div>
+          ) : null}
+          {tradeInfo.type !== "Market" ? (
+            <div className="flex items-center h-[35px] bg-terciary justify-between w-full border border-borderColor-DARK rounded mt-2">
+              <input
+                name="size"
+                className="w-full pl-2 text-white text-sm h-full"
+                placeholder="Price"
+                type="number"
+              />
+              <p className="px-2 text-white text-sm">USD</p>
+            </div>
+          ) : null}
+          <div className="flex items-center h-[35px] bg-terciary justify-between w-full border border-borderColor-DARK rounded mt-2">
             <input
               name="size"
-              className="w-full pl-2 text-white text-sm"
+              className="w-full pl-2 text-white text-sm h-full"
               placeholder="Size"
               type="number"
             />
-            <p className="pr-2 text-white text-sm">USD</p>
+            <p className="px-2 text-white text-sm">USD</p>
           </div>
           <div className="mt-2 flex items-center">
             <Slider
@@ -151,13 +212,13 @@ export const OpenTrade = () => {
               onValueChange={(value) => handleSizeChange(value[0])}
               isBuy={tradeInfo.side === "Buy"}
             />
-            <div className="w-[57px] pl-2 pr-0 ml-4 h-fit bg-terciary border border-borderColor-DARK rounded">
+            <div className="w-[57px] ml-4 h-fit bg-terciary border border-borderColor-DARK rounded">
               <input
                 name="size"
-                className="w-[57px]  text-white text-sm h-[30px]"
+                className="w-[57px] pl-2 text-white text-sm h-[30px]"
                 placeholder={`${tradeInfo.size.toString()}%`}
                 type="number"
-              />{" "}
+              />
             </div>
           </div>
           <div className="flex items-center justify-between mt-3">

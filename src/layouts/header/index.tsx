@@ -1,37 +1,79 @@
 "use client";
 import { Tooltip } from "@/components/tooltip";
-import { addressSlicer } from "@/utils/misc";
-import { useState } from "react";
+import {
+  useAccount as useOrderlyAccount,
+  useWalletConnector,
+} from "@orderly.network/hooks";
+import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
-import { IoChevronDown } from "react-icons/io5";
 import { MdContentCopy } from "react-icons/md";
-import { useAccount, useConnect } from "wagmi";
-import { disconnect } from "wagmi/actions";
+// import { useAccount } from "wagmi";
+
+export enum AccountStatusEnum {
+  NotConnected = 0,
+  Connected = 1,
+  NotSignedIn = 2,
+  SignedIn = 3,
+  DisabledTrading = 4,
+  EnableTrading = 5,
+}
 
 export const Header = () => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const { address, isDisconnected, isConnecting } = useAccount();
-  const { connect, connectors, pendingConnector } = useConnect({
-    onError: () => {
-      //   setStatus("error");
-    },
-    onSuccess() {
-      //   console.log("connected");
-    },
-  });
+  // const { address, isDisconnected, isConnected, isConnecting } = useAccount();
+  // const { connect, connectors, pendingConnector } = useConnect({
+  //   onError: () => {
+  //     //   setStatus("error");
+  //   },
+  //   onSuccess() {
+  //     //   console.log("connected");
+  //   },
+  // });
 
-  const handleConnection = () => {
-    if (isDisconnected) connect({ connector: connectors[0] });
-    else setIsTooltipOpen((prev) => !prev);
+  const { createAccount, createOrderlyKey, account, state } =
+    useOrderlyAccount();
+  const wallet = useWalletConnector();
+  console.log("GET ORDERLY KEY", account.keyStore.getOrderlyKey(), account);
+
+  const handleConnect = async () => {
+    try {
+      const result = await wallet.connect();
+      console.log("Wallet connection result:", result);
+
+      // Vérifiez ici si le compte est bien défini
+      console.log("Account information:", account);
+      console.log("account", account);
+      if (!account || !account?.id) {
+        console.error("Account ID is undefined after wallet connection.");
+        return;
+      }
+
+      // Votre logique pour createAccount et createOrderlyKey
+      if (state.status === AccountStatusEnum.NotConnected) {
+        await createAccount();
+      }
+
+      await createOrderlyKey(true);
+    } catch (error) {
+      console.error("Error during connection process:", error);
+    }
   };
+
+  useEffect(() => {
+    if (state.status === AccountStatusEnum.NotConnected) {
+      handleConnect();
+    }
+  }, [state.status]);
 
   const handleDisconnect = () => {
-    disconnect();
+    // disconnect();
   };
 
+  // console.log("state", wallet, account);
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(address || "");
+    // navigator.clipboard.writeText(address || "");
     setIsCopied(true);
     setTimeout(() => {
       setIsCopied(false);
@@ -63,37 +105,46 @@ export const Header = () => {
             className="text-white bg-terciary border border-borderColor-DARK text-bold font-poppins text-sm
         h-[40px] px-3 rounded-md 
         "
-            onClick={handleConnection}
+            onClick={handleConnect}
+            // onClick={async () => {
+            //   wallet.connect();
+
+            // handleConnection();
+            // if (isConnected) {
+            //   createAccount();
+            //   createOrderlyKey(30);
+            // }
+            // }}
           >
-            {isDisconnected || isConnecting ? (
-              "Connect Wallet"
-            ) : (
+            {/* {isDisconnected || isConnecting ? ( */}
+            "Connect Wallet"
+            {/* ) : (
               <span className="inline-flex items-center">
                 <p>{addressSlicer(address)}</p>
                 <IoChevronDown className="ml-1" />
               </span>
-            )}
+            )} */}
           </button>
-          {!isDisconnected ? (
-            <Tooltip isOpen={isTooltipOpen}>
-              <div className="flex items-center  text-sm" onClick={handleCopy}>
-                <p>{addressSlicer(address)}</p>
-                <button className="ml-2 ">
-                  {isCopied ? (
-                    <FaCheck className="text-green-600" />
-                  ) : (
-                    <MdContentCopy className="text-white" />
-                  )}
-                </button>
-              </div>
-              <button
-                className="text-white text-bold font-poppins text-sm mt-2"
-                onClick={handleDisconnect}
-              >
-                Disconnect
+          {/* {!isDisconnected ? ( */}
+          <Tooltip isOpen={isTooltipOpen}>
+            <div className="flex items-center  text-sm" onClick={handleCopy}>
+              {/* <p>{addressSlicer(address)}</p> */}
+              <button className="ml-2 ">
+                {isCopied ? (
+                  <FaCheck className="text-green-600" />
+                ) : (
+                  <MdContentCopy className="text-white" />
+                )}
               </button>
-            </Tooltip>
-          ) : null}
+            </div>
+            <button
+              className="text-white text-bold font-poppins text-sm mt-2"
+              onClick={handleDisconnect}
+            >
+              Disconnect
+            </button>
+          </Tooltip>
+          {/* ) : null} */}
         </div>
       </div>
     </header>

@@ -55,3 +55,23 @@ export interface CustomBarProps {
   close: number;
   volume: number;
 }
+
+export interface BarsSymbolInfoProps {
+  base_name: string[];
+  data_status: string;
+  description: string;
+  exchange: string | undefined;
+  full_name: string;
+  has_intraday: boolean;
+  intraday_multipliyers: string[];
+  legs: string[];
+  minmov: number;
+  name: string;
+  pricescale: number;
+  pro_name: string;
+  session: string;
+  supported_resolution: string[];
+  ticker: string;
+  type: string;
+  volume_precision: number;
+}

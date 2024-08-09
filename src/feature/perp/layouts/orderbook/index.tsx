@@ -40,7 +40,7 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
       const arr = [];
       const maxValue = typeData?.[is_asks ? 0 : typeData.length - 1]?.[3];
       for (let i = 0; i < typeData.length; i++) {
-        const [price, size, total, totalUSDC] = typeData[i];
+        const [, , , totalUSDC] = typeData[i];
         const widthPercentage = (totalUSDC / maxValue) * 100;
         arr.push(widthPercentage);
       }
@@ -73,7 +73,7 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
       </div>
       <div className="bg-terciary h-[1px] w-full relative">
         <div
-          className={`h-[1px] w-1/2 bottom-0 transition-all duration-200 ease-in-out bg-slate-400 absolute ${
+          className={`h-[1px] w-1/2 bottom-0 transition-all duration-200 ease-in-out bg-font-80 absolute ${
             !activeSection ? "left-0" : "left-1/2"
           }`}
         />

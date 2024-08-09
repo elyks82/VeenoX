@@ -262,3 +262,28 @@ export const getNextBarTime = (resolution: string, time: number) => {
 
   return Math.floor(utcDate.getTime());
 };
+
+export const get24hChange = (open: number, close: number) => {
+  const difference = close - open;
+  const changePercentage = (difference / open) * 100;
+  const formatPercentage = changePercentage?.toFixed(2);
+  return { difference, formatPercentage };
+};
+
+export const getRemainingTime = (targetDate: number): string => {
+  if (!targetDate) return "00:00:00";
+  const now = new Date().getTime();
+  const distance = targetDate - now;
+
+  if (distance <= 0) return "00:00:00";
+
+  const hour = Math.floor(
+    (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+  );
+  const min = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const sec = Math.floor((distance % (1000 * 60)) / 1000);
+
+  return `${hour < 10 ? `0${hour}` : hour}:${min < 10 ? `0${min}` : min}:${
+    sec < 10 ? `0${sec}` : sec
+  } `;
+};

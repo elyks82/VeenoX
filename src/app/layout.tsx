@@ -1,7 +1,7 @@
 import { GeneralProvider } from "@/context";
 import { Header } from "@/layouts/header";
 import ReactQueryProvider from "@/lib/react-query/provider";
-import WagmiProvider from "@/lib/wagmi/provider";
+import { WalletProvider } from "@/lib/wallet-connector";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { OrderlyProvider } from "./common/OrderlyProvider";
@@ -25,7 +25,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <WagmiProvider>
+        <WalletProvider>
+          {" "}
           <OrderlyProvider>
             <ReactQueryProvider>
               <GeneralProvider>
@@ -33,8 +34,8 @@ export default function RootLayout({
                 {children}
               </GeneralProvider>
             </ReactQueryProvider>
-          </OrderlyProvider>
-        </WagmiProvider>
+          </OrderlyProvider>{" "}
+        </WalletProvider>
       </body>
     </html>
   );

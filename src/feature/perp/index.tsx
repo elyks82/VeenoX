@@ -1,7 +1,6 @@
 "use client";
 import { FuturesAssetProps } from "@/models";
 import { useWalletConnector } from "@orderly.network/hooks";
-import { useAccount } from "wagmi";
 import TradingViewChart from "./layouts/chart";
 import { Favorites } from "./layouts/favorites";
 import { OpenTrade } from "./layouts/open-trade";
@@ -14,7 +13,6 @@ type PerpProps = {
 };
 
 export const Perp = ({ asset }: PerpProps) => {
-  const { address, isDisconnected } = useAccount();
   const wallet = useWalletConnector();
 
   const options = {

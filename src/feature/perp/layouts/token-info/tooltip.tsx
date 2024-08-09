@@ -1,12 +1,7 @@
-import { FuturesAssetProps } from "@/models";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
 import { useMarkets } from "@orderly.network/hooks";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-type PairSelectorProps = {
-  asset: FuturesAssetProps;
-};
 
 enum MarketsType {
   FAVORITES = 0,
@@ -14,7 +9,7 @@ enum MarketsType {
   ALL = 2,
 }
 
-export const PairSelector = ({ asset }: PairSelectorProps) => {
+export const PairSelector = () => {
   const router = useRouter();
   const sections: string[] = ["All Coins", "x10", "x20", "x50"];
   const [activeSection, setActiveSection] = useState(sections[0]);

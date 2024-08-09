@@ -1,5 +1,9 @@
 import { fetchMarketHistory } from "@/api/fetchMarketHistory";
-import { CustomBarProps, FuturesAssetProps } from "@/models";
+import {
+  BarsSymbolInfoProps,
+  CustomBarProps,
+  FuturesAssetProps,
+} from "@/models";
 import { resolutionToTimeframe } from "@/utils/misc";
 import { WS } from "@orderly.network/net";
 
@@ -27,14 +31,14 @@ export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
       description: "",
       type: "crypto",
       session: "24x7",
-      ticker: symbolName,
+      ticker: asset?.symbol,
       minmov: 1,
       pricescale: Math.min(
         10 ** String(Math.round(10000 / price)).length,
         10000000000000000
       ),
       has_intraday: true,
-      intraday_multipliers: ["1", "3", "5", "15", "30", "60"],
+      intraday_multipliers: ["1", "5", "15", "30", "60"],
       supported_resolution: supportedResolutions,
       volume_precision: 8,
       data_status: "streaming",
@@ -42,14 +46,16 @@ export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
     onResolve(params);
   },
   getBars: async (
-    symbolInfo: string,
+    symbolInfo: BarsSymbolInfoProps,
     resolution: string,
     periodParams: { from: number; to: number; firstDataRequest: boolean },
     onResult: Function
   ) => {
     const { from, to, firstDataRequest } = periodParams;
+
+    console.log("symbolInfosymbolInfo", symbolInfo);
     const params = {
-      symbol: "PERP_SOL_USDC",
+      symbol: symbolInfo.ticker,
       timeframe: resolution,
       from: from,
       to: to,
@@ -65,6 +71,7 @@ export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
         close: data.c[index],
         volume: data.v[index],
       }));
+
       if (bars.length) {
         onResult(bars, { noData: false });
       } else {
@@ -81,6 +88,7 @@ export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
     onRealtimeCallback: (arg0: CustomBarProps) => void
   ) => {
     const timeframe = resolutionToTimeframe(resolution);
+    console.log("timeframe: ", timeframe);
     const unsubscribe = ws.subscribe(
       {
         id: `${asset?.symbol}@kline_${timeframe}`,

@@ -1,13 +1,16 @@
-import { fetchAssetInfo } from "@/api/fetchAssetInfo";
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
-import { formatSymbol, getFormattedAmount } from "@/utils/misc";
-import { useQuery as useOrderlyQuery } from "@orderly.network/hooks";
-import { API } from "@orderly.network/types";
+import {
+  formatSymbol,
+  get24hChange,
+  getFormattedAmount,
+  getRemainingTime,
+} from "@/utils/misc";
+import { useTickerStream } from "@orderly.network/hooks";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
-import { useQuery } from "react-query";
 import { PairSelector } from "./tooltip";
 
 type TokenInfoProps = {
@@ -17,36 +20,104 @@ type TokenInfoProps = {
 export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
   const { prevPrice, isPriceChanged, setPrevPrice, setIsPriceChanged } =
     useGeneralContext();
+  const [triggerOrderlyTooltip, setTriggerOrderlyTooltip] = useState(false);
+
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
-  const { data: perpAssets, isLoading: isPerpAssetLoading } =
-    useOrderlyQuery<API.Symbol[]>("/v1/public/futures");
 
   const handleTokenSelectorOpening = () => {
     setIsTokenSelectorOpen((prev) => !prev);
   };
 
-  const { data: asset, refetch } = useQuery("assetInfo", () =>
-    fetchAssetInfo(
-      assetBuffer.symbol,
-      prevPrice,
-      setPrevPrice,
-      setIsPriceChanged
-    )
-  );
+  // const { data: asset, refetch } = useQuery("assetInfo", () =>
+  //   fetchAssetInfo(
+  //     assetBuffer.symbol,
+  //     prevPrice,
+  //     setPrevPrice,
+  //     setIsPriceChanged
+  //   )
+  // );
+
+  // useEffect(() => {
+  //   const interval = setInterval(refetch, 3000);
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  const params = useParams();
+  const marketInfo = useTickerStream(assetBuffer?.symbol);
+
+  const [lastPriceInfo, setLastPriceInfo] = useState({
+    last_price: assetBuffer?.mark_price,
+    price_color: "text-white",
+  });
+
+  const handleLastPriceUpdate = () => {
+    if (marketInfo.mark_price > lastPriceInfo.last_price) {
+      setLastPriceInfo((prev) => ({
+        ...prev,
+        price_color: "text-green",
+      }));
+      setTimeout(
+        () =>
+          setLastPriceInfo((prev) => ({
+            ...prev,
+            price_color: "text-white",
+          })),
+        1000
+      );
+    } else if (marketInfo.mark_price < lastPriceInfo.last_price) {
+      setLastPriceInfo((prev) => ({
+        ...prev,
+        price_color: "text-red",
+      }));
+      setTimeout(
+        () =>
+          setLastPriceInfo((prev) => ({
+            ...prev,
+            price_color: "text-white",
+          })),
+        1000
+      );
+    }
+  };
 
   useEffect(() => {
-    const interval = setInterval(refetch, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    if (!marketInfo?.mark_price) return;
+    handleLastPriceUpdate();
+    if (marketInfo?.mark_price !== lastPriceInfo.last_price) {
+      setLastPriceInfo((prev) => ({
+        ...prev,
+        last_price: marketInfo?.mark_price,
+      }));
+    }
+  }, [marketInfo]);
 
-  const formattedAsset = asset?.response?.data;
+  const priceChange = get24hChange(
+    marketInfo?.["24h_open"],
+    marketInfo?.["24h_close"]
+  );
+  const fundingChange = get24hChange(
+    marketInfo?.est_funding_rate,
+    marketInfo?.last_funding_rate
+  );
+
+  const getColorFromChangePercentage = (percentage: string) => {
+    if (percentage > "0") return "text-green";
+    else if (percentage < "0") return "text-white";
+    else "text-red";
+  };
+  const colorPriceChange = getColorFromChangePercentage(
+    priceChange.formatPercentage
+  );
+  const colorFundingChange = getColorFromChangePercentage(
+    fundingChange.formatPercentage
+  );
 
   return (
-    <div className="flex items-center w-full h-[70px] px-3 py-1 border-b border-borderColor ">
+    <div className="flex items-center w-full h-[65px] px-3 py-1 border-b border-borderColor ">
       <div className="flex items-center gap-3 relative cursor-pointer text-white">
         <div className="flex items-center" onClick={handleTokenSelectorOpening}>
           <img
-            className="w-[30px] h-[30px] bg-gray-500 rounded-full"
+            className="w-[28px] h-[28px] bg-gray-500 rounded-full"
             src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
               assetBuffer?.symbol,
               true
@@ -58,59 +129,96 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
           <IoChevronDown className="text-white text-lg" />
         </div>
         <div className="h-[30px] w-[1px] bg-borderColor mx-2" />
-        <div className="flex items-center overflow-x-scroll">
+        <div
+          className="flex items-center"
+          // style={{
+          //   overflowX: "scroll",
+          //   overflowY: "visible",
+          // }}
+        >
           <p
-            className={`${
-              isPriceChanged ? asset?.color : "text-white"
-            } transition-color duration-200 ease-in-out text-lg mr-5`}
+            className={`${lastPriceInfo.price_color} transition-color duration-200 ease-in-out text-lg mr-5`}
           >
-            {asset?.response?.data?.index_price ||
-              assetBuffer?.index_price ||
-              "Loading..."}
+            {getFormattedAmount(marketInfo?.mark_price) || "Loading..."}
           </p>
-          <div className="mr-3.5">
-            <p className="text-xs text-font-60">24h Change </p>
-            <p className="text-[13px] mt-1 text-white font-medium">
-              {asset?.response?.data?.price_change_24h || "Loading..."}
-            </p>
-          </div>
-          <div className="mr-3.5">
-            <p className="text-xs text-font-60">Mark </p>
-            <p className="text-[13px] mt-1 text-white font-medium">
-              {formattedAsset?.mark_price || "14%"}
-            </p>
-          </div>
-          <div className="mr-3.5">
-            <p className="text-xs text-font-60">Index</p>
-            <p className="text-[13px] mt-1 text-white font-medium">
-              {formattedAsset?.index_price || "Loading..."}
-            </p>
-          </div>
-          <div className="mr-3.5">
-            <p className="text-xs text-font-60">24h Volume</p>
-            <p className="text-[13px] mt-1 text-white font-medium">
-              {formattedAsset?.["24h_volume"] || "Loading..."}
-            </p>
-          </div>
-          <div className="mr-3.5">
-            <p className="text-xs text-font-60">Pred. funding rate</p>
-            <p className="text-[13px] mt-1 text-white font-medium">
-              {formattedAsset?.last_funding_rate || "Loading..."}
-            </p>
-          </div>
-          <div className="mr-3.5">
-            <p className="text-xs text-font-60">Open interest </p>
-            <p className="text-[13px] mt-1 text-white font-medium">
-              {getFormattedAmount(formattedAsset?.open_interest) ||
-                "Loading..."}
-            </p>
+          <div className="flex gap-6">
+            <div>
+              <p className="text-xs text-font-60">24h Change </p>
+              <span className="text-xs flex items-center mt-1 text-font-60 font-medium">
+                <p className={`${colorPriceChange} `}>
+                  {getFormattedAmount(priceChange.difference) || "0.00"}
+                </p>
+                <p className="mx-0.5">/</p>
+
+                <p className={`${colorPriceChange}`}>
+                  {priceChange.formatPercentage || "0.00"}%
+                </p>
+              </span>
+            </div>
+            <div>
+              <p className="text-xs text-font-60">Mark </p>
+              <p className="text-xs mt-1 text-white font-medium">
+                {marketInfo?.mark_price}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-font-60">Index</p>
+              <p className="text-xs mt-1 text-white font-medium">
+                {marketInfo?.index_price}
+              </p>
+            </div>
+            {/* */}
+            <div className="relative">
+              <p className="text-xs text-font-60">24h Volume</p>
+              <span
+                className="flex items-center mt-1"
+                onMouseEnter={() => setTriggerOrderlyTooltip(true)}
+                onMouseLeave={() => setTriggerOrderlyTooltip(false)}
+              >
+                <img
+                  className="h-[15px] w-[15px] mr-1.5"
+                  src="/logo/orderly.svg"
+                  alt="Orderly Network logo"
+                />
+                <p className="text-xs text-white font-medium">
+                  {getFormattedAmount(marketInfo?.["24h_amount"])}
+                </p>
+              </span>
+              <Tooltip
+                isOpen={triggerOrderlyTooltip}
+                className=" overflow-scroll w-[200px] bg-secondary border-borderColor p-2.5"
+              >
+                <p className="text-font-80 text-xs">
+                  24 hour total trading volume on the Orderly Network.
+                </p>
+              </Tooltip>
+            </div>
+            <div>
+              <p className="text-xs text-font-60">Pred. funding rate</p>
+              <span className="text-xs box-border h-fit flex items-center mt-1 font-medium">
+                <p className={colorFundingChange}>
+                  {marketInfo?.last_funding_rate || "0.00"}%
+                </p>
+                <p className="mx-0.5 text-font-60">/</p>
+                <p className="text-white">
+                  {getRemainingTime(marketInfo?.next_funding_time) ||
+                    "00:00:00"}
+                </p>
+              </span>
+            </div>
+            <div>
+              <p className="text-xs text-font-60">Open interest </p>
+              <p className="text-xs mt-1 text-white">
+                {getFormattedAmount(marketInfo?.open_interest)}
+              </p>
+            </div>
           </div>
         </div>
         <Tooltip
           isOpen={isTokenSelectorOpen}
-          className="left-0 translate-x-0 max-h-[350px] overflow-scroll w-[650px] bg-secondary border-borderColor p-2.5"
+          className="left-0 translate-x-0 top-[140%] max-h-[350px] overflow-scroll w-[650px] bg-secondary border-borderColor p-2.5"
         >
-          <PairSelector asset={asset} />
+          <PairSelector />
         </Tooltip>
       </div>
     </div>
