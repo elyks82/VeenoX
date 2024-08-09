@@ -287,3 +287,32 @@ export const getRemainingTime = (targetDate: number): string => {
     sec < 10 ? `0${sec}` : sec
   } `;
 };
+
+export const getLeverageValue = (i: number) => {
+  switch (i) {
+    case 0:
+      return "x1";
+    case 1:
+      return "x2";
+    case 2:
+      return "x3";
+    case 3:
+      return "x4";
+    case 4:
+      return "x5";
+    case 5:
+      return "x10";
+    case 6:
+      return "x15";
+    case 7:
+      return "x20";
+    case 8:
+      return "x30";
+    case 9:
+      return "x40";
+    case 10:
+      return "x50";
+    default:
+      return "x2";
+  }
+};

@@ -1,10 +1,10 @@
+import { GraduateSlider } from "@/components/graduate-slider.tsx";
 import { Tooltip } from "@/components/tooltip";
 import { Slider } from "@/lib/shadcn/slider";
 import { useState } from "react";
 import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
-import { Slider as SliderRsuite } from "rsuite";
+
 import "rsuite/Slider/styles/index.css";
-import { getLeverageFromMarkValue } from "./utils";
 
 type KeyBooleanType = "reduce_only" | "tp_sl";
 
@@ -72,28 +72,8 @@ export const OpenTrade = () => {
   return (
     <section className="h-full">
       <div className="flex flex-col p-4 border-b border-borderColor">
-        <p className="text-xs text-font-60 mb-4">Max account leverage</p>
-        <SliderRsuite
-          defaultValue={50}
-          min={0}
-          step={10}
-          max={90}
-          graduated
-          progress
-          className="custom-slider"
-          renderMark={(mark) => {
-            const leverage = getLeverageFromMarkValue(mark);
-            return (
-              <span
-                className={`text-xs text-white text-center ${
-                  mark === 90 ? "ml-0" : mark === 0 ? "mr-0" : ""
-                }`}
-              >
-                x{leverage}
-              </span>
-            );
-          }}
-        />
+        <p className="text-xs text-font-60 mb-1">Max account leverage</p>
+        <GraduateSlider />
       </div>
       <div className="flex items-center w-full h-[44px] relative">
         {marketType.map((type, i) => (
@@ -306,7 +286,7 @@ export const OpenTrade = () => {
           ) : null}
         </div>
         <button
-          className={`w-full mt-auto h-[40px] ${
+          className={`w-full mt-auto h-[35px] ${
             tradeInfo.side === "Buy" ? "bg-green" : "bg-red"
           } mt-4 text-white rounded transition-all duration-200 ease-in-out`}
         >

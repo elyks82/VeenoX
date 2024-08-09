@@ -1,5 +1,5 @@
 import { FuturesAssetProps } from "@/models";
-import { getFormattedAmount } from "@/utils/misc";
+import { formatSymbol, getFormattedAmount } from "@/utils/misc";
 import {
   useMarketTradeStream,
   useOrderbookStream,
@@ -87,8 +87,10 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
                   Price
                 </th>
                 <th className="text-end font-normal">Size</th>
-                <th className="pr-2.5 text-end font-normal">Total (usd)</th>
-                <th className="pr-2.5 text-end font-normal">Total (doge)</th>
+                <th className="pr-2.5 text-end font-normal">
+                  Total ({formatSymbol(asset?.symbol).split("-")[0]})
+                </th>
+                <th className="pr-2.5 text-end font-normal">Total (USDC)</th>
               </tr>
             </thead>
             <tbody>
@@ -119,7 +121,7 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
               <tr>
                 <td
                   colSpan={4}
-                  className="py-[7px] px-2.5 border-y border-borderColor-DARK bg-terciary shadow-xl"
+                  className="py-[7px] px-2.5 border-y border-borderColor-DARK bg-terciary"
                 >
                   <div className="whitespace-nowrap flex justify-between items-center">
                     <p className="text-sm text-white font-bold ">
