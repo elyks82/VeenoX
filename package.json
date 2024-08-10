@@ -30,7 +30,8 @@
     "react-query": "^3.39.3",
     "react-range": "^1.10.0",
     "react-step-progress-bar": "^1.0.3",
-    "rsuite": "^5.68.1"
+    "rsuite": "^5.68.1",
+    "tailwind-merge": "^2.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",
