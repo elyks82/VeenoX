@@ -48,7 +48,7 @@ export const Position = ({ asset }: PositionProps) => {
             <button
               key={index}
               ref={(el) => (buttonRefs.current[index] = el) as any}
-              className={`text-sm text-white font-bold p-2.5 ${
+              className={`text-xs sm:text-sm text-white font-bold p-2.5 ${
                 activeSection === index ? "font-bikd" : ""
               }`}
               onClick={() => setActiveSection(index)}

@@ -109,27 +109,27 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
   );
 
   return (
-    <div className="flex items-center w-full h-[65px] px-3 py-1 border-b border-borderColor whitespace-nowrap overflow-x-scroll">
+    <div className="flex items-center w-full h-[55px] sm:h-[65px] px-3 py-1 border-b border-borderColor whitespace-nowrap overflow-x-scroll">
       <div className="flex items-center gap-3 relative cursor-pointer text-white">
         <div
           className="flex items-center mr-2"
           onClick={handleTokenSelectorOpening}
         >
           <img
-            className="w-[28px] h-[28px] bg-gray-500 rounded-full"
+            className="sm:w-[28px] sm:h-[28px] w-[22px] h-[22px] bg-gray-500 rounded-full"
             src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
               assetBuffer?.symbol,
               true
             )}.png`}
           />
-          <p className="text-white text-lg ml-3 mr-1">
+          <p className="text-white text-base sm:text-lg ml-2 sm:ml-3">
             {formatSymbol(assetBuffer.symbol)}
           </p>
-          <IoChevronDown className="text-white text-lg min-w-[15px]" />
+          <IoChevronDown className="text-white text-base sm:text-lg min-w-[15px] ml-1" />
         </div>
         {/* <div className="h-[30px] w-[1px] bg-borderColor mr-2" /> */}
         <div
-          className="flex items-center overflow-x-scroll min-w-[800px]"
+          className="flex items-center overflow-x-scroll min-w-[800px] pl-2"
           // TODO: OVERFLOW
           // style={{
           //   overflowX: "scroll",
@@ -137,7 +137,7 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
           // }}
         >
           <p
-            className={`${lastPriceInfo.price_color} transition-color duration-200 ease-in-out text-lg mr-5`}
+            className={`${lastPriceInfo.price_color} transition-color duration-200 ease-in-out text-base sm:text-lg mr-5`}
           >
             {getFormattedAmount(marketInfo?.mark_price) || "Loading..."}
           </p>

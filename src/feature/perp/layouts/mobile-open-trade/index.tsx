@@ -2,6 +2,7 @@ import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { OpenTrade } from "../open-trade";
 import { Orderbook } from "../orderbook";
+import { TriggerMobileTradeCreator } from "./trigger";
 
 type MobileOpenTradeProps = {
   asset: FuturesAssetProps;
@@ -28,6 +29,7 @@ export const MobileOpenTrade = ({ asset }: MobileOpenTradeProps) => {
         <OpenTrade isMobile />
         <Orderbook asset={asset} isMobile />
       </div>
+      <TriggerMobileTradeCreator />
     </>
   );
 };
