@@ -36,7 +36,7 @@ export const Favorites = () => {
     setShowMobileTradeCreator(true);
   };
   return (
-    <div className="flex items-center w-full relative h-[44px]  py-1 border-b border-borderColor">
+    <div className="flex items-center justify-between w-full relative h-[44px]  py-1 border-b border-borderColor">
       <div className="overflow-x-scroll flex items-center px-3">
         <FaStar className="text-yellow-500 text-base mr-1" />
         {favori.map((item, index) => (
@@ -57,7 +57,7 @@ export const Favorites = () => {
           </button>
         ))}
       </div>
-      <div className="sticky right-0 px-2 bg-secondary border-l border-borderColor flex items-center">
+      <div className="sticky right-0 px-2 sm:hidden bg-secondary border-l border-borderColor flex items-center">
         <button
           className="border border-borderColor-DARK rounded h-[30px] w-fit px-2 text-white bg-green text-xs"
           onClick={() => handleClick(true)}
