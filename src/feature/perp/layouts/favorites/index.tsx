@@ -30,8 +30,7 @@ export const Favorites = () => {
   } = useGeneralContext();
 
   const handleClick = (isBuy: boolean) => {
-    if (isBuy && tradeInfo.side !== "Buy")
-      setTradeInfo((prev) => ({ ...prev, side: "Buy" }));
+    if (isBuy) setTradeInfo((prev) => ({ ...prev, side: "Buy" }));
     else setTradeInfo((prev) => ({ ...prev, side: "Sell" }));
     setShowMobileTradeCreator(true);
   };
