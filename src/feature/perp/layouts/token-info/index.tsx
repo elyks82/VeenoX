@@ -1,5 +1,4 @@
 import { Tooltip } from "@/components/tooltip";
-import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import {
   formatSymbol,
@@ -18,10 +17,7 @@ type TokenInfoProps = {
 };
 
 export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
-  const { prevPrice, isPriceChanged, setPrevPrice, setIsPriceChanged } =
-    useGeneralContext();
   const [triggerOrderlyTooltip, setTriggerOrderlyTooltip] = useState(false);
-
   const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
 
   const handleTokenSelectorOpening = () => {

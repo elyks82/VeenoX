@@ -77,7 +77,10 @@ const TradingViewChart = ({
 
   return (
     <div className="relative w-full">
-      <div className={cn(`w-full h-[600px]`, className)} ref={ref} />
+      <div
+        className={cn(`w-full h-[450px] sm:h-[600px]`, className)}
+        ref={ref}
+      />
     </div>
   );
 };

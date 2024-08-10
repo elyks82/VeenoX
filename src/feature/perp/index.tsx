@@ -4,6 +4,7 @@ import { useWalletConnector } from "@orderly.network/hooks";
 import { useRef, useState } from "react";
 import TradingViewChart from "./layouts/chart";
 import { Favorites } from "./layouts/favorites";
+import { MobileOpenTrade } from "./layouts/mobile-open-trade";
 import { OpenTrade } from "./layouts/open-trade";
 import { Orderbook } from "./layouts/orderbook";
 import { Position } from "./layouts/position";
@@ -83,7 +84,7 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
 
           {/* Column 3 */}
-          <div>
+          <div className="hidden sm:block">
             <OpenTrade />
           </div>
         </div>
@@ -160,6 +161,7 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
         </div>
       </div>
+      <MobileOpenTrade />
     </>
   );
 };

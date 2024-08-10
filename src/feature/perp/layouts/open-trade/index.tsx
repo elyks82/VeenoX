@@ -1,5 +1,6 @@
 import { GraduateSlider } from "@/components/graduate-slider.tsx";
 import { Tooltip } from "@/components/tooltip";
+import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
 import { useState } from "react";
 import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
@@ -24,7 +25,7 @@ const marketType = ["Market", "Limit"];
 const proMarketType = ["Stop Limit", "Stop Market"];
 
 export const OpenTrade = () => {
-  const [tradeInfo, setTradeInfo] = useState(INITIAL_TRADE_INFO);
+  const { tradeInfo, setTradeInfo } = useGeneralContext();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
 
   const handleTypeChange = (type: string) => {
