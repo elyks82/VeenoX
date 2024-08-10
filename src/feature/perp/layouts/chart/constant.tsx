@@ -1,6 +1,11 @@
 export const ENABLED_FEATURES = [
   "save_chart_properties_to_local_storage",
   "use_localstorage_for_settings",
+  "chart_template_storage",
+  "study_templates",
+  "save_load_adapter",
+  "header_saveload",
+  "save_shortcut",
   // "hide_last_na_study_output",
   // "dont_show_boolean_study_arguments",
 ];

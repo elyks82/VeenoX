@@ -46,9 +46,12 @@ const TradingViewChart = ({
             .timeZone as Timezone,
           autosize: true,
           theme: "Dark",
+          overrides: {
+            volumePaneSize: "small",
+          },
           studies_overrides: {
-            "volume.volume.color.0": "#ea3943",
-            "volume.volume.color.1": "#0ECB81",
+            "bollinger bands.median.color": "#FF0000",
+            "bollinger bands.upper.linewidth": 7,
           },
           ...widgetOptionsDefault,
         });
