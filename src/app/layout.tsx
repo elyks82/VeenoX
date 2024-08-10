@@ -3,6 +3,7 @@ import { Footer } from "@/layouts/footer";
 import { Header } from "@/layouts/header";
 import ReactQueryProvider from "@/lib/react-query/provider";
 import { WalletProvider } from "@/lib/wallet-connector";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { OrderlyProvider } from "./common/OrderlyProvider";
@@ -38,6 +39,7 @@ export default function RootLayout({
               <GeneralProvider>
                 <Header />
                 {children}
+                <SpeedInsights />
                 <Footer />
               </GeneralProvider>
             </ReactQueryProvider>
