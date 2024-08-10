@@ -143,6 +143,7 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
                         if (isMobile && (j === 0 || j === 2))
                           return (
                             <td
+                              key={j + className}
                               className={cn(
                                 className,
                                 j === 0 ? "text-red" : ""
@@ -154,6 +155,7 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
                       if (!isMobile)
                         return (
                           <td
+                            key={j + className}
                             className={cn(className, j === 0 ? "text-red" : "")}
                           >
                             {value}
@@ -197,6 +199,7 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
                       if (isMobile && (j === 0 || j === 2))
                         return (
                           <td
+                            key={j + className}
                             className={cn(
                               className,
                               j === 0 ? "text-green" : ""
@@ -208,6 +211,7 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
                       if (!isMobile)
                         return (
                           <td
+                            key={j + className}
                             className={cn(
                               className,
                               j === 0 ? "text-green" : ""
