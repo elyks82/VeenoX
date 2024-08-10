@@ -24,7 +24,11 @@ const INITIAL_TRADE_INFO = {
 const marketType = ["Market", "Limit"];
 const proMarketType = ["Stop Limit", "Stop Market"];
 
-export const OpenTrade = () => {
+type OpenTradeProps = {
+  isMobile?: boolean;
+};
+
+export const OpenTrade = ({ isMobile = false }: OpenTradeProps) => {
   const { tradeInfo, setTradeInfo } = useGeneralContext();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
 
@@ -71,23 +75,25 @@ export const OpenTrade = () => {
   const barPosition = getSectionBarPosition();
 
   return (
-    <section className="h-full">
-      <div className="flex flex-col p-4 border-b border-borderColor">
-        <p className="text-xs text-font-60 mb-1">Max account leverage</p>
-        <GraduateSlider />
-      </div>
-      <div className="flex items-center w-full h-[44px] relative">
+    <section className="h-full w-full">
+      {isMobile ? null : (
+        <div className="flex flex-col p-4 border-b border-borderColor">
+          <p className="text-xs text-font-60 mb-1">Max account leverage</p>
+          <GraduateSlider />
+        </div>
+      )}
+      <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
           <button
             key={i}
-            className="w-1/3 h-full text-white text-sm"
+            className="w-1/3 h-full text-white text-xs sm:text-sm"
             onClick={() => handleTypeChange(type)}
           >
             {type}
           </button>
         ))}
         <button
-          className="w-1/3 h-full text-white text-sm flex items-center justify-center"
+          className="w-1/3 h-full text-white text-xs sm:text-sm flex items-center justify-center"
           onClick={() => setIsTooltipMarketTypeOpen((prev) => !prev)}
         >
           {tradeInfo.type !== "Market" && tradeInfo.type !== "Limit"
@@ -100,7 +106,7 @@ export const OpenTrade = () => {
           />
         </button>
         <Tooltip
-          className="right-1 w-1/3 left-auto shadow-2xl border-borderColor translate-x-0 z-20 top-[90%] p-2.5"
+          className="right-1 w-1/2 sm:w-1/3 left-auto shadow-2xl border-borderColor translate-x-0 z-20 top-[90%] p-2.5"
           isOpen={isTooltipMarketTypeOpen}
         >
           <button
@@ -128,24 +134,24 @@ export const OpenTrade = () => {
           className={`h-[1px] w-1/3 bottom-0 transition-all duration-200 ease-in-out bg-font-80 absolute ${barPosition}`}
         />
       </div>
-      <div className="flex flex-col justify-between w-full p-4 h-calc-leverage-height">
+      <div className="flex flex-col justify-between w-full p-2 sm:p-4 h-calc-leverage-height">
         <div className="pb-0">
           <div className="flex items-center w-full">
-            <div className="flex items-center p-1 relative w-full bg-terciary border border-borderColor-DARK rounded">
+            <div className="flex items-center p-0.5 sm:p-1 relative w-full bg-terciary border border-borderColor-DARK rounded">
               <button
-                className="w-1/2  h-[34px] text-white rounded-l text-sm z-10"
+                className="w-1/2 h-[28px] sm:h-[34px] text-white rounded-l text-xs sm:text-sm z-10"
                 onClick={() => handleSideChange("Buy")}
               >
                 Buy
               </button>
               <button
-                className="w-1/2 z-10 h-[34px] text-white rounded-r text-sm"
+                className="w-1/2 z-10 h-[28px] sm:h-[34px] text-white rounded-r text-xs sm:text-sm"
                 onClick={() => handleSideChange("Sell")}
               >
                 Sell
               </button>
               <div
-                className={`${style} w-1/2 h-[36px] absolute z-0 rounded transition-all duration-300 ease-in-out`}
+                className={`${style} w-1/2 h-[28px] sm:h-[34px] absolute z-0 rounded transition-all duration-300 ease-in-out`}
               />
             </div>
           </div>
@@ -288,7 +294,7 @@ export const OpenTrade = () => {
           ) : null}
         </div>
         <button
-          className={`w-full mt-auto h-[35px] ${
+          className={`w-full mt-2.5 sm:mt-auto h-[32px] sm:h-[35px] ${
             tradeInfo.side === "Buy" ? "bg-green" : "bg-red"
           } mt-4 text-white rounded transition-all duration-200 ease-in-out`}
         >

@@ -79,7 +79,7 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
 
           {/* Column 2 */}
-          <div className="border-r border-borderColor">
+          <div className="border-r border-borderColor hidden sm:block">
             <Orderbook asset={asset} />
           </div>
 
@@ -161,7 +161,7 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
         </div>
       </div>
-      <MobileOpenTrade />
+      <MobileOpenTrade asset={asset} />
     </>
   );
 };

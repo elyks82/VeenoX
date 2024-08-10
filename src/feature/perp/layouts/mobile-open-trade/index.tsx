@@ -1,7 +1,13 @@
 import { useGeneralContext } from "@/context";
+import { FuturesAssetProps } from "@/models";
 import { OpenTrade } from "../open-trade";
+import { Orderbook } from "../orderbook";
 
-export const MobileOpenTrade = () => {
+type MobileOpenTradeProps = {
+  asset: FuturesAssetProps;
+};
+
+export const MobileOpenTrade = ({ asset }: MobileOpenTradeProps) => {
   const { showMobileTradeCreator, setShowMobileTradeCreator } =
     useGeneralContext();
   return (
@@ -15,11 +21,12 @@ export const MobileOpenTrade = () => {
         } transition-all duration-200 ease-in-out bg-secondary z-30`}
       />
       <div
-        className={`fixed bottom-0 h-fit w-full sm:w-[350px] z-[100] left-0 ${
+        className={`fixed top-calc-mobile-position h-fit w-full sm:w-[350px] z-[100] left-0 ${
           showMobileTradeCreator ? "translate-y-0" : "translate-y-full"
-        } transition-all duration-200 ease-in-out bg-secondary border-t border-borderColor shadow-2xl`}
+        } transition-all duration-200 ease-in-out bg-secondary border-t border-borderColor shadow-2xl flex`}
       >
-        <OpenTrade />
+        <OpenTrade isMobile />
+        <Orderbook asset={asset} isMobile />
       </div>
     </>
   );

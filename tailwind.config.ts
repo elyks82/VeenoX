@@ -46,6 +46,7 @@ const config: Config = {
       },
       inset: {
         "calc-slide-long": "calc(50% - 4px)",
+        "calc-mobile-position": "calc(100% - 468px);",
       },
       keyframes: {
         fadeIn: {
