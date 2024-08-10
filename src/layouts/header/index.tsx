@@ -6,6 +6,7 @@ import {
 } from "@orderly.network/hooks";
 import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
+import { IoChevronDown } from "react-icons/io5";
 import { MdContentCopy } from "react-icons/md";
 // import { useAccount } from "wagmi";
 
@@ -79,15 +80,22 @@ export const Header = () => {
   };
 
   return (
-    <header className="flex items-center justify-between h-[80px] px-5 border-b border-borderColor">
+    <header className="flex items-center justify-between h-[60px] px-2.5 border-b border-borderColor">
       <div className="flex items-center gap-5">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <img
             src="/logo/v.png"
             alt="Veeno Logo"
-            className="h-[40px] w-[40px] max-w-[40px] max-h-[40px]"
+            className="h-[30px] w-[30px] max-w-[30px] max-h-[30px]"
           />
-          <h3 className="text-white text-bold font-poppins text-lg ">VEENO</h3>
+          <h3 className="text-white text-bold font-poppins text-xl">VEENO</h3>
+          <nav className="ml-5 h-full">
+            <ul className="text-white text-medium text-sm flex items-center gap-5 h-full">
+              <li>Trade</li>
+              <li>Dashboard</li>
+              <li>Portfolio</li>
+            </ul>
+          </nav>
         </div>
         {/* <nav>
           <ul className="flex items-center gap-5">
@@ -100,8 +108,20 @@ export const Header = () => {
       <div className="flex items-center gap-5">
         <div className="flex relative w-fit h-fit">
           <button
-            className="text-white bg-terciary border border-borderColor-DARK text-bold font-poppins text-sm
-        h-[40px] px-3 rounded-md 
+            className="text-white bg-terciary border border-emerald-700 text-bold font-poppins text-xs
+        h-[35px] px-2 rounded-md mr-2.5 flex items-center
+        "
+          >
+            <img
+              src="https://cdn.prod.website-files.com/64c26cc84790d118b80c38c9/6529c7409cc925522834f61b_monad-logo-mark-white-rgb.svg"
+              alt="monad logo"
+              className="h-[20px] w-[20px]"
+            />
+            <IoChevronDown className="ml-1.5" />
+          </button>
+          <button
+            className="text-white bg-emerald-700 border border-borderColor-DARK text-bold font-poppins text-xs
+        h-[35px] px-2 rounded-md 
         "
             onClick={handleConnect}
             // onClick={async () => {
@@ -115,7 +135,7 @@ export const Header = () => {
             // }}
           >
             {/* {isDisconnected || isConnecting ? ( */}
-            "Connect Wallet"
+            Connect wallet
             {/* ) : (
               <span className="inline-flex items-center">
                 <p>{addressSlicer(address)}</p>
@@ -123,6 +143,7 @@ export const Header = () => {
               </span>
             )} */}
           </button>
+
           {/* {!isDisconnected ? ( */}
           <Tooltip isOpen={isTooltipOpen}>
             <div className="flex items-center  text-sm" onClick={handleCopy}>

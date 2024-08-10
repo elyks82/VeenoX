@@ -1,11 +1,13 @@
 import { GeneralProvider } from "@/context";
+import { Footer } from "@/layouts/footer";
 import { Header } from "@/layouts/header";
 import ReactQueryProvider from "@/lib/react-query/provider";
 import { WalletProvider } from "@/lib/wallet-connector";
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import { OrderlyProvider } from "./common/OrderlyProvider";
 import "./globals.css";
+
 // const OrderlyContainer = dynamic(() => import("./common/OrderlyProvider"), {
 //   ssr: false,
 // });
@@ -15,13 +17,6 @@ const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
-});
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  variable: "--font-poppins",
-  display: "swap",
-  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -36,13 +31,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${poppins.variable}`}>
+      <body className={inter.className}>
         <WalletProvider>
           <OrderlyProvider>
             <ReactQueryProvider>
               <GeneralProvider>
                 <Header />
                 {children}
+                <Footer />
               </GeneralProvider>
             </ReactQueryProvider>
           </OrderlyProvider>{" "}

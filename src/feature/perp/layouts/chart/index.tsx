@@ -76,7 +76,7 @@ const TradingViewChart = ({
   }, [asset?.symbol, custom_css_url, mobile]);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <div className={cn(`w-full h-[600px]`, className)} ref={ref} />
     </div>
   );

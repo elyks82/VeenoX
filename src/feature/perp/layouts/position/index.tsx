@@ -41,8 +41,8 @@ export const Position = ({ asset }: PositionProps) => {
   }, [activeSection]);
 
   return (
-    <div>
-      <div className="w-full flex justify-between items-center border-b border-borderColor">
+    <div className="w-full">
+      <div className="w-full flex justify-between items-center border-b border-borderColor ">
         <div className="flex items-center relative">
           {sections.map((section, index) => (
             <button
@@ -72,7 +72,7 @@ export const Position = ({ asset }: PositionProps) => {
           <p className="text-base text-white font-medium">0.00</p>
         </div>
       </div>
-      <div className="overflow-x-scroll w-full">
+      <div className="overflow-x-scroll min-h-[300px] w-full">
         <table className="w-full">
           <thead>
             <tr>
@@ -87,7 +87,7 @@ export const Position = ({ asset }: PositionProps) => {
                       isFirst ? "text-start pl-5" : "text-end "
                     } ${
                       isLast ? "pr-5" : ""
-                    } px-2.5 py-2.5 text-font-80 font-normal border-y border-borderColor`}
+                    } px-2.5 py-2.5 text-font-80 whitespace-nowrap font-normal border-y border-borderColor`}
                   >
                     {title}
                   </th>

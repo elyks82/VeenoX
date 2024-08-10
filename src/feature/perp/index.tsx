@@ -16,31 +16,16 @@ type PerpProps = {
 export const Perp = ({ asset }: PerpProps) => {
   const wallet = useWalletConnector();
 
-  const options = {
-    symbol: "PERP_BTC_USDC",
-    timeframe: "1D",
-    from: 1709459200,
-    to: 1729459200,
-  };
-
-  // const { data, refetch } = useQuery("marketHistory", () =>
-  //   fetchMarketHistory(options)
-  // );
-  // useEffect(() => {
-  //   const resp = fetchMarketHistory(options);
-  //   console.log(resp);
-  // }, [asset]);
-  // console.log("data", data);
-
   const [colWidths, setColWidths] = useState([6, 2, 2]);
   const containerRef = useRef(null);
 
   const handleMouseDown = (index: number, e: MouseEvent) => {
+    if (window.innerWidth < 1024) return;
+
     const startX = e.clientX;
     const startWidths = [...colWidths];
     if (!containerRef?.current) return;
-    const containerWidth =
-      (containerRef?.current).getBoundingClientRect().width;
+    const containerWidth = containerRef?.current.getBoundingClientRect().width;
     const onMouseMove = (e: MouseEvent) => {
       const dx = e.clientX - startX;
       const deltaFraction = (dx / containerWidth) * 10;
@@ -69,56 +54,74 @@ export const Perp = ({ asset }: PerpProps) => {
 
   return (
     <>
+      {/* Top Section */}
       <div
         ref={containerRef}
         className="relative w-full border-b border-borderColor"
       >
         <div
-          className="grid w-full"
+          className="grid w-full "
           style={{
-            gridTemplateColumns: colWidths.map((w) => `${w}fr`).join(" "),
+            gridTemplateColumns:
+              window.innerWidth >= 1024
+                ? colWidths.map((w) => `${w}fr`).join(" ")
+                : "1fr",
           }}
         >
-          <div className="border-r border-borderColor">
+          {/* Column 1 */}
+          <div className="border-r border-borderColor overflow-x-hidden">
             <Favorites />
             <TokenInfo asset={asset} />
             <TradingViewChart asset={asset} className={""} />
           </div>
+
+          {/* Column 2 */}
           <div className="border-r border-borderColor">
             <Orderbook asset={asset} />
           </div>
+
+          {/* Column 3 */}
           <div>
             <OpenTrade />
           </div>
         </div>
-        {colWidths.slice(0, -1).map((_, index) => (
-          <div
-            key={index}
-            className="resizer"
-            style={{
-              left: `${
-                (colWidths.slice(0, index + 1).reduce((a, b) => a + b, 0) /
-                  colWidths.reduce((a, b) => a + b, 0)) *
-                100
-              }%`,
-            }}
-            onMouseDown={(e) => handleMouseDown(index, e)}
-          />
-        ))}
+
+        {/* Resizers - Only show on desktop */}
+        {window.innerWidth >= 1024 &&
+          colWidths.slice(0, -1).map((_, index) => (
+            <div
+              key={index}
+              className="absolute top-0 bottom-0 w-1 bg-gray-300 cursor-col-resize z-10"
+              style={{
+                left: `${
+                  (colWidths.slice(0, index + 1).reduce((a, b) => a + b, 0) /
+                    colWidths.reduce((a, b) => a + b, 0)) *
+                  100
+                }%`,
+              }}
+              onMouseDown={(e) => handleMouseDown(index, e)}
+            />
+          ))}
       </div>
+
+      {/* Bottom Section */}
       <div
-        className="grid w-full h-[500px] border-b border-borderColor"
+        className="grid w-full h-auto border-b border-borderColor"
         style={{
-          gridTemplateColumns: `${colWidths[0] + colWidths[1]}fr ${
-            colWidths[2]
-          }fr`,
+          gridTemplateColumns:
+            window.innerWidth >= 1024
+              ? `${colWidths[0] + colWidths[1]}fr ${colWidths[2]}fr`
+              : "1fr",
         }}
       >
-        <div className="border-r border-b border-borderColor">
+        {/* Position Component */}
+        <div className="border-r border-b border-borderColor overflow-x-hidden">
           <Position asset={asset} />
         </div>
-        <div className=" border-b border-borderColor">
-          <div className="p-4 border-b border-borderColor">
+
+        {/* Account Details and Actions */}
+        <div className="p-4 border-b border-borderColor">
+          <div className="border-b border-borderColor pb-4 mb-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-font-60 mb-[3px]">
@@ -145,11 +148,11 @@ export const Perp = ({ asset }: PerpProps) => {
               </button>
             </div>
           </div>
-          <div className="p-4">
+          <div className="space-y-2">
             <button className="w-full text-sm text-white h-[40px] flex items-center justify-center border border-borderColor-DARK bg-terciary rounded">
               Deposit
             </button>
-            <button className="w-full text-sm text-white mt-2.5 h-[40px] flex items-center justify-center border border-borderColor-DARK bg-terciary rounded">
+            <button className="w-full text-sm text-white h-[40px] flex items-center justify-center border border-borderColor-DARK bg-terciary rounded">
               Withdraw
             </button>
           </div>

@@ -113,9 +113,12 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
   );
 
   return (
-    <div className="flex items-center w-full h-[65px] px-3 py-1 border-b border-borderColor ">
+    <div className="flex items-center w-full h-[65px] px-3 py-1 border-b border-borderColor whitespace-nowrap overflow-x-scroll">
       <div className="flex items-center gap-3 relative cursor-pointer text-white">
-        <div className="flex items-center" onClick={handleTokenSelectorOpening}>
+        <div
+          className="flex items-center mr-2"
+          onClick={handleTokenSelectorOpening}
+        >
           <img
             className="w-[28px] h-[28px] bg-gray-500 rounded-full"
             src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
@@ -126,11 +129,12 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
           <p className="text-white text-lg ml-3 mr-1">
             {formatSymbol(assetBuffer.symbol)}
           </p>
-          <IoChevronDown className="text-white text-lg" />
+          <IoChevronDown className="text-white text-lg min-w-[15px]" />
         </div>
-        <div className="h-[30px] w-[1px] bg-borderColor mx-2" />
+        {/* <div className="h-[30px] w-[1px] bg-borderColor mr-2" /> */}
         <div
-          className="flex items-center"
+          className="flex items-center overflow-x-scroll min-w-[800px]"
+          // TODO: OVERFLOW
           // style={{
           //   overflowX: "scroll",
           //   overflowY: "visible",

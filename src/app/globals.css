@@ -126,5 +126,26 @@ input[type="number"] {
 }
 
 .resizer:nth-child(2) {
-  left: calc(80% + 2.5px); /* Positionner après la deuxième colonne */
+  left: calc(80% + 2.5px);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr); /* Par défaut, 3 colonnes */
+}
+
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    ); /* 2 colonnes si l'écran est inférieur à 1200px */
+  }
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr; /* 1 colonne si l'écran est inférieur à 768px */
+  }
 }
