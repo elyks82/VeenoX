@@ -53,7 +53,6 @@ export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
   ) => {
     const { from, to, firstDataRequest } = periodParams;
 
-    console.log("symbolInfosymbolInfo", symbolInfo);
     const params = {
       symbol: symbolInfo.ticker,
       timeframe: resolution,
@@ -88,7 +87,6 @@ export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
     onRealtimeCallback: (arg0: CustomBarProps) => void
   ) => {
     const timeframe = resolutionToTimeframe(resolution);
-    console.log("timeframe: ", timeframe);
     const unsubscribe = ws.subscribe(
       {
         id: `${asset?.symbol}@kline_${timeframe}`,

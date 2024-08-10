@@ -25,7 +25,6 @@ export const PairSelector = () => {
     },
   ]: any = useMarkets(MarketsType.ALL);
 
-  console.log("datadata", data);
   const getFilteredMarketData = () => {
     if (!data?.length) return [];
     if (activeSection === "All Coins")

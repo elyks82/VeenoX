@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";
 import { MdContentCopy } from "react-icons/md";
+import { RxHamburgerMenu } from "react-icons/rx";
+import { MobileModal } from "./mobile";
 // import { useAccount } from "wagmi";
 
 export enum AccountStatusEnum {
@@ -79,6 +81,8 @@ export const Header = () => {
     }, 2000);
   };
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <header className="flex items-center justify-between h-[60px] px-2.5 border-b border-borderColor">
       <div className="flex items-center gap-5">
@@ -86,10 +90,12 @@ export const Header = () => {
           <img
             src="/logo/v.png"
             alt="Veeno Logo"
-            className="h-[30px] w-[30px] max-w-[30px] max-h-[30px]"
+            className="h-[30px] w-[30px] max-w-[25px] max-h-[25px] sm:max-w-[30px] sm:max-h-[30px]"
           />
-          <h3 className="text-white text-bold font-poppins text-xl">VEENO</h3>
-          <nav className="ml-5 h-full">
+          <h3 className="text-white text-bold font-poppins text-base sm:text-xl ">
+            VEENO
+          </h3>
+          <nav className="ml-5 h-full hidden sm:flex">
             <ul className="text-white text-medium text-sm flex items-center gap-5 h-full">
               <li>Trade</li>
               <li>Dashboard</li>
@@ -97,31 +103,24 @@ export const Header = () => {
             </ul>
           </nav>
         </div>
-        {/* <nav>
-          <ul className="flex items-center gap-5">
-            <li className="text-white text-bold font-poppins text-sm">
-              <a href="/">Home</a>
-            </li>
-          </ul>
-        </nav> */}
       </div>
       <div className="flex items-center gap-5">
         <div className="flex relative w-fit h-fit">
           <button
             className="text-white bg-terciary border border-emerald-700 text-bold font-poppins text-xs
-        h-[35px] px-2 rounded-md mr-2.5 flex items-center
+            h-[30px] sm:h-[35px] px-2 rounded sm:rounded-md mr-2.5 flex items-center
         "
           >
             <img
               src="https://cdn.prod.website-files.com/64c26cc84790d118b80c38c9/6529c7409cc925522834f61b_monad-logo-mark-white-rgb.svg"
               alt="monad logo"
-              className="h-[20px] w-[20px]"
+              className="h-[15px] w-[15px] sm:h-[20px] sm:w-[20px]"
             />
             <IoChevronDown className="ml-1.5" />
           </button>
           <button
             className="text-white bg-emerald-700 border border-borderColor-DARK text-bold font-poppins text-xs
-        h-[35px] px-2 rounded-md 
+        h-[30px] sm:h-[35px] px-2 sm:px-2.5 rounded sm:rounded-md 
         "
             onClick={handleConnect}
             // onClick={async () => {
@@ -135,7 +134,7 @@ export const Header = () => {
             // }}
           >
             {/* {isDisconnected || isConnecting ? ( */}
-            Connect wallet
+            Connect
             {/* ) : (
               <span className="inline-flex items-center">
                 <p>{addressSlicer(address)}</p>
@@ -163,9 +162,20 @@ export const Header = () => {
               Disconnect
             </button>
           </Tooltip>
+          <button
+            className="sm:hidden flex items-center justify-center"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+          >
+            <RxHamburgerMenu className="text-white ml-3 text-xl" />
+          </button>
           {/* ) : null} */}
         </div>
       </div>
+
+      <MobileModal
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen((prev) => !prev)}
+      />
     </header>
   );
 };
