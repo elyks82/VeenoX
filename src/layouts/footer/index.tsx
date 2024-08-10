@@ -22,7 +22,7 @@ export const Footer = () => {
     );
 
     return () => {
-      unsubscribe();
+      if (unsubscribe) unsubscribe();
     };
   }, [ws]);
   return (

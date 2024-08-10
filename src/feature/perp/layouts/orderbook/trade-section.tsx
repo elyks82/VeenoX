@@ -1,8 +1,10 @@
-import { FuturesAssetProps } from "@/models";
+import { FuturesAssetProps, TradeExtension } from "@/models";
 import { getFormattedAmount, getFormattedDate } from "@/utils/misc";
 
 type TradeSectionProps = {
   asset: FuturesAssetProps;
+  trades: TradeExtension[];
+  isLoading?: boolean;
 };
 
 export const TradeSection = ({

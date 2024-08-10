@@ -44,7 +44,7 @@ export const Header = () => {
 
       console.log("Account information:", account);
       console.log("account", account);
-      if (!account || !account?.id) {
+      if (!account) {
         console.error("Account ID is undefined after wallet connection.");
         return;
       }

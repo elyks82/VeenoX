@@ -1,14 +1,9 @@
 // import {createConfig} from "wagmi/actions";
 "use client";
 import { ReactNode } from "react";
-import { WagmiConfig, createConfig } from "wagmi";
-import { connectors, publicClient } from "./config";
+import { WagmiConfig } from "wagmi";
 
-const client = createConfig({
-  autoConnect: true,
-  publicClient,
-  connectors,
-});
+// const client = createConfig();
 
 const WagmiProvider = ({ children }: { children: ReactNode }) => (
   // To Lazy Load Wagmi random push again
@@ -37,6 +32,6 @@ const WagmiProvider = ({ children }: { children: ReactNode }) => (
   //   }
   // }, []);
 
-  <WagmiConfig config={client}>{children}</WagmiConfig>
+  <WagmiConfig config={{} as any}>{children}</WagmiConfig>
 );
 export default WagmiProvider;

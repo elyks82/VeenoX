@@ -1,3 +1,4 @@
+import { MarketTickerProps } from "@/models";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
 import { useMarkets } from "@orderly.network/hooks";
 import { useRouter } from "next/navigation";
@@ -22,14 +23,18 @@ export const PairSelector = () => {
       updateFavoriteTabs,
       updateSymbolFavoriteState,
     },
-  ] = useMarkets(MarketsType.ALL);
+  ]: any = useMarkets(MarketsType.ALL);
 
+  console.log("datadata", data);
   const getFilteredMarketData = () => {
     if (!data?.length) return [];
     if (activeSection === "All Coins")
       return data
-        ?.sort((a, b) => b.leverage - a.leverage)
-        ?.filter((item) => {
+        ?.sort(
+          (a: MarketTickerProps, b: MarketTickerProps) =>
+            b.leverage - a.leverage
+        )
+        ?.filter((item: MarketTickerProps) => {
           const formattedSymbol = item.symbol.split("_")[1];
           return (
             formattedSymbol.toLowerCase().includes(searchInput) ||
@@ -38,12 +43,16 @@ export const PairSelector = () => {
         });
     else if (activeSection !== "All Coins" && !searchInput)
       return data?.filter(
-        (item) => item.leverage === parseInt(activeSection.replace("x", ""))
+        (item: MarketTickerProps) =>
+          item.leverage === parseInt(activeSection.replace("x", ""))
       );
     else
       return data
-        ?.sort((a, b) => b.leverage - a.leverage)
-        ?.filter((item) => {
+        ?.sort(
+          (a: MarketTickerProps, b: MarketTickerProps) =>
+            b.leverage - a.leverage
+        )
+        ?.filter((item: MarketTickerProps) => {
           const formattedSymbol = item.symbol.split("_")[1];
           return (
             formattedSymbol.toLowerCase().includes(searchInput) ||
@@ -87,7 +96,7 @@ export const PairSelector = () => {
             </tr>
           </thead>
           {filteredMarketData?.length > 0 ? (
-            filteredMarketData?.map((token, i) => {
+            filteredMarketData?.map((token: MarketTickerProps, i: number) => {
               const isUp = token.change > 0;
               return (
                 <tbody

@@ -1,3 +1,5 @@
+import { API } from "@orderly.network/types";
+
 export interface FuturesAssetFetchProps {
   success: boolean;
   timestamp: number;
@@ -40,6 +42,14 @@ export interface FuturesAssetProps {
   "24h_volume": number;
 }
 
+export interface MarketTickerProps extends FuturesAssetProps {
+  "24h_volumn": number;
+  change: number;
+  isFavorite: boolean;
+  leverage: number;
+  tabs: string[];
+}
+
 export interface TradesProps {
   side: string;
   price: number;
@@ -74,4 +84,9 @@ export interface BarsSymbolInfoProps {
   ticker: string;
   type: string;
   volume_precision: number;
+}
+
+export interface TradeExtension extends API.Trade {
+  price: number;
+  size: number;
 }

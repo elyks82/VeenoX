@@ -1,4 +1,4 @@
-import { FuturesAssetProps } from "@/models";
+import { FuturesAssetProps, TradeExtension } from "@/models";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
 import {
   useMarketTradeStream,
@@ -168,7 +168,7 @@ export const Orderbook = ({ asset }: OrderbookProps) => {
       ) : (
         <TradeSection
           asset={asset}
-          trades={trades}
+          trades={trades as TradeExtension[]}
           isLoading={isTradesLoading}
         />
       )}

@@ -19,13 +19,15 @@ export const Perp = ({ asset }: PerpProps) => {
   const [colWidths, setColWidths] = useState([6, 2, 2]);
   const containerRef = useRef(null);
 
-  const handleMouseDown = (index: number, e: MouseEvent) => {
+  const handleMouseDown = (index: number, e: any) => {
     if (window.innerWidth < 1024) return;
 
     const startX = e.clientX;
     const startWidths = [...colWidths];
     if (!containerRef?.current) return;
-    const containerWidth = containerRef?.current.getBoundingClientRect().width;
+    const containerWidth = (
+      containerRef?.current as any
+    ).getBoundingClientRect().width;
     const onMouseMove = (e: MouseEvent) => {
       const dx = e.clientX - startX;
       const deltaFraction = (dx / containerWidth) * 10;

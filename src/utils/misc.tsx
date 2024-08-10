@@ -65,7 +65,7 @@ export function getFormattedAmount(
       }
       if (Math.abs(parseFloat(price)) < 0.0001) {
         const priceString = price.toString();
-        const newPrice = [];
+        const newPrice: string[] = [];
         const arr = priceString.split(".");
         const decimals = arr[1]?.split("");
         decimals.forEach((digit, index) => {
@@ -167,7 +167,7 @@ const formatSmallNumber = (number: number) => {
   );
 };
 
-function toFullString(num) {
+function toFullString(num: number) {
   let str = num.toString();
   if (str.includes("e")) {
     const parts = str.split("e");
