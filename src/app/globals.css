@@ -126,5 +126,5 @@ input[type="number"] {
 }
 
 .resizer:nth-child(2) {
-  left: calc(80% + 2px); /* Positionner après la deuxième colonne */
+  left: calc(80% + 2.5px); /* Positionner après la deuxième colonne */
 }

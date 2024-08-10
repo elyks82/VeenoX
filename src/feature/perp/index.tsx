@@ -35,17 +35,18 @@ export const Perp = ({ asset }: PerpProps) => {
   const [colWidths, setColWidths] = useState([6, 2, 2]);
   const containerRef = useRef(null);
 
-  const handleMouseDown = (index, e) => {
+  const handleMouseDown = (index: number, e: MouseEvent) => {
     const startX = e.clientX;
     const startWidths = [...colWidths];
-    const containerWidth = containerRef.current.getBoundingClientRect().width;
-    const onMouseMove = (e) => {
+    if (!containerRef?.current) return;
+    const containerWidth =
+      (containerRef?.current).getBoundingClientRect().width;
+    const onMouseMove = (e: MouseEvent) => {
       const dx = e.clientX - startX;
-      const deltaFraction = (dx / containerWidth) * 10; // Convertit le déplacement en fraction
+      const deltaFraction = (dx / containerWidth) * 10;
 
       const newWidths = [...startWidths];
 
-      // Assure que les largeurs ne deviennent pas négatives ou trop petites
       if (index === 0) {
         newWidths[0] = Math.max(startWidths[0] + deltaFraction, 1);
         newWidths[1] = Math.max(startWidths[1] - deltaFraction, 1);
@@ -105,12 +106,18 @@ export const Perp = ({ asset }: PerpProps) => {
           />
         ))}
       </div>
-      <div className="grid grid-cols-10 w-full border-b border-borderColor h-[500px]">
-        <div className="col-span-8 border-r border-b border-borderColor">
+      <div
+        className="grid w-full h-[500px] border-b border-borderColor"
+        style={{
+          gridTemplateColumns: `${colWidths[0] + colWidths[1]}fr ${
+            colWidths[2]
+          }fr`,
+        }}
+      >
+        <div className="border-r border-b border-borderColor">
           <Position asset={asset} />
         </div>
-
-        <div className="col-span-2 border-b border-borderColor">
+        <div className=" border-b border-borderColor">
           <div className="p-4 border-b border-borderColor">
             <div className="flex items-center justify-between">
               <div>
@@ -148,16 +155,6 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
         </div>
       </div>
-      {/* <pre className="text-sm">
-        <button onClick={() => connect({ connector: connectors[3] })}>
-          {isDisconnected ? "Connect wallet" : address?.slice(0, 6)}
-        </button>
-        <button onClick={() => disconnect()}>Disconnect wallet</button>
-        {isLoading && <div>Loading...</div>}
-        {/* {data && (
-        <div className="text-slate-500">{JSON.stringify(data, null, 2)}</div>
-      )}
-      </pre> */}
     </>
   );
 };
