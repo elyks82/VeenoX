@@ -63,8 +63,9 @@ export const PairSelector = () => {
         />
       </div>
       <div className="flex items-center py-2 gap-2.5 mt-1 text-xs text-white">
-        {sections.map((section: string) => (
+        {sections.map((section: string, i: number) => (
           <button
+            key={i}
             className={`${
               activeSection === section ? "text-blue-500" : "text-white"
             } font-medium transition-all duration-100 ease-in-out`}

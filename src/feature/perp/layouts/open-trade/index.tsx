@@ -78,6 +78,7 @@ export const OpenTrade = () => {
       <div className="flex items-center w-full h-[44px] relative">
         {marketType.map((type, i) => (
           <button
+            key={i}
             className="w-1/3 h-full text-white text-sm"
             onClick={() => handleTypeChange(type)}
           >
