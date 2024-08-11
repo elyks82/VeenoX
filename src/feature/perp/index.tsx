@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import TradingViewChart from "./layouts/chart";
 import { Favorites } from "./layouts/favorites";
 import { MobileOpenTrade } from "./layouts/mobile-open-trade";
+import { MobilePnL } from "./layouts/mobile-pnl";
 import { MobileSectionSelector } from "./layouts/mobile-section-selector";
 import { OpenTrade } from "./layouts/open-trade";
 import { Orderbook } from "./layouts/orderbook";
@@ -77,6 +78,7 @@ export const Perp = ({ asset }: PerpProps) => {
           <div className="border-r border-borderColor overflow-x-hidden">
             <Favorites />
             <TokenInfo asset={asset} />
+            <MobilePnL />
             <MobileSectionSelector />
             <TradingViewChart asset={asset} className={""} />
           </div>
