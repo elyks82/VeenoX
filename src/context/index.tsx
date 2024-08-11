@@ -17,6 +17,8 @@ interface GeneralContextProps {
   setTradeInfo: Dispatch<SetStateAction<ContextTradeInfo>>;
   mobileActiveSection: MobileActiveSectionType;
   setMobileActiveSection: Dispatch<SetStateAction<MobileActiveSectionType>>;
+  isChartLoading: boolean;
+  setIsChartLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 const INITIAL_TRADE_INFO = {
