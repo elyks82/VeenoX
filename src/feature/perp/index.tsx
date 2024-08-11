@@ -128,7 +128,7 @@ export const Perp = ({ asset }: PerpProps) => {
         </div>
 
         {/* Account Details and Actions */}
-        <div className="p-4 border-b border-borderColor">
+        <div className="p-4 border-b border-borderColor hidden sm:block">
           <div className="border-b border-borderColor pb-4 mb-4">
             <div className="flex items-center justify-between">
               <div>

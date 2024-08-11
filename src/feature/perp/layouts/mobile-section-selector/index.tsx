@@ -21,8 +21,9 @@ export const MobileSectionSelector = () => {
   return (
     <div className="border-b border-borderColor h-[45px] w-full block sm:hidden relative">
       <div className="flex items-center justify-between h-[44px] w-[100%]">
-        {sections.map((section) => (
+        {sections.map((section, i) => (
           <button
+            key={i}
             className="w-1/3 h-full text-white text-sm"
             onClick={() => setActiveSection(section)}
           >
@@ -30,7 +31,7 @@ export const MobileSectionSelector = () => {
           </button>
         ))}
       </div>
-      <div className="bg-terciary h-[1px] w-full relative">
+      <div className="bg-borderColor h-[1px] w-full relative">
         <div
           className={`h-[1px] w-1/3 bottom-0 transition-all duration-200 ease-in-out bg-font-80 absolute ${barPosition}`}
         />
