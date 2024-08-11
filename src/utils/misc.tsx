@@ -229,28 +229,26 @@ export const resolutionToTimeframe = (resolution: string) => {
 
 export const getNextBarTime = (resolution: string, time: number) => {
   const date = new Date(time);
-  const utcDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    date.getHours(),
-    date.getMinutes()
-  );
+
+  // Créer une copie de la date pour éviter de modifier l'objet original
+  const utcDate = new Date(date.getTime());
 
   switch (resolution) {
     case "1":
     case "3":
     case "5":
     case "15":
-      utcDate.setMinutes(utcDate.getMinutes() + 1);
+      utcDate.setMinutes(utcDate.getMinutes() + parseInt(resolution));
       break;
     case "60":
     case "120":
     case "240":
     case "360":
     case "720":
+      utcDate.setHours(utcDate.getHours() + parseInt(resolution) / 60);
+      break;
     case "D":
-      utcDate.setHours(utcDate.getHours() + 1);
+      utcDate.setDate(utcDate.getDate() + 1);
       break;
     case "W":
       utcDate.setDate(utcDate.getDate() + 7);
@@ -258,6 +256,8 @@ export const getNextBarTime = (resolution: string, time: number) => {
     case "M":
       utcDate.setMonth(utcDate.getMonth() + 1);
       break;
+    default:
+      throw new Error("Unsupported resolution: " + resolution);
   }
 
   return Math.floor(utcDate.getTime());
@@ -315,4 +315,19 @@ export const getLeverageValue = (i: number) => {
     default:
       return "x2";
   }
+};
+
+export const resolutionToMilliseconds = (resolution: string): number => {
+  const map: { [key: string]: number } = {
+    "1m": 60 * 1000, // 1 minute
+    "5m": 5 * 60 * 1000, // 5 minutes
+    "15m": 15 * 60 * 1000, // 15 minutes
+    "1h": 60 * 60 * 1000, // 1 hour
+    "2h": 2 * 60 * 60 * 1000, // 2 hours
+    "4h": 4 * 60 * 60 * 1000, // 4 hours
+    "1d": 24 * 60 * 60 * 1000, // 1 day
+    "1w": 7 * 24 * 60 * 60 * 1000, // 1 week
+    "1M": 30 * 24 * 60 * 60 * 1000, // 1 month (approx)
+  };
+  return map[resolution] || resolutionToMilliseconds("1m"); // Default to 1 minute if unknown resolution
 };

@@ -62,6 +62,7 @@ export const Perp = ({ asset }: PerpProps) => {
   return (
     <>
       {/* Top Section */}
+
       <div
         ref={containerRef}
         className="relative w-full border-b border-borderColor"
@@ -121,7 +122,6 @@ export const Perp = ({ asset }: PerpProps) => {
             <OpenTrade />
           </div>
         </div>
-
         {/* Resizers - Only show on desktop */}
         {window.innerWidth >= 1024 &&
           colWidths.slice(0, -1).map((_, index) => (

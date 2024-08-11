@@ -4,29 +4,11 @@ import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
 import { useState } from "react";
 import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
-
 import "rsuite/Slider/styles/index.css";
 
 type KeyBooleanType = "reduce_only" | "tp_sl";
-
-const INITIAL_TRADE_INFO = {
-  type: "Market",
-  side: "Buy",
-  size: 100, // Percentage
-  price: null,
-  reduce_only: false,
-  tp_sl: false,
-  tp: null,
-  sl: null,
-  leverage: 1,
-};
-
+type OpenTradeProps = { isMobile?: boolean };
 const marketType = ["Market", "Limit"];
-const proMarketType = ["Stop Limit", "Stop Market"];
-
-type OpenTradeProps = {
-  isMobile?: boolean;
-};
 
 export const OpenTrade = ({ isMobile = false }: OpenTradeProps) => {
   const { tradeInfo, setTradeInfo } = useGeneralContext();

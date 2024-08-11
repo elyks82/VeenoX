@@ -24,7 +24,7 @@ export const TradeSection = ({
           </tr>
         </thead>
         <tbody>
-          {isLoading ? (
+          {!trades?.length ? (
             <div className="w-full h-[460px] flex items-center justify-center">
               <FaSpinner className="text-white text-4xl" />
             </div>

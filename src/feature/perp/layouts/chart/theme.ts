@@ -1,6 +1,6 @@
 export const overrides = () => ({
-  "paneProperties.vertGridProperties.color": "rgba(255, 255, 255, 0.03)",
-  "paneProperties.horzGridProperties.color": "rgba(255, 255, 255, 0.03)",
+  "paneProperties.vertGridProperties.color": "rgba(255, 255, 255, 0.06)",
+  "paneProperties.horzGridProperties.color": "rgba(255, 255, 255, 0.06)",
   "symbolWatermarkProperties.transparency": 90,
   "scalesProperties.textColor": "rgba(255,255,255,0.8)",
   "mainSeriesProperties.candleStyle.wickUpColor": "#3ab484",

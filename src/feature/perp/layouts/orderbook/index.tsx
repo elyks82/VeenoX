@@ -7,7 +7,6 @@ import {
   useOrderbookStream,
 } from "@orderly.network/hooks";
 import { useState } from "react";
-import { FaSpinner } from "react-icons/fa6";
 import { TradeSection } from "./trade-section";
 
 enum OrderbookSection {
@@ -113,9 +112,9 @@ export const Orderbook = ({
             isMobileOpenTrade ? "w-[140px]" : "w-auto"
           }  sm:w-auto`}
         >
-          {isLoading ? (
-            <div className="w-full h-[460px] flex items-center justify-center">
-              <FaSpinner className="text-white text-4xl" />
+          {!data?.asks?.length ? (
+            <div className="w-full h-[460px] sm:h-[550px] flex items-center justify-center">
+              <img src="/loader/loader.gif" className="w-[150px]" />
             </div>
           ) : (
             <table className="w-full">

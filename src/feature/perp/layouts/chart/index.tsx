@@ -1,3 +1,4 @@
+import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
@@ -22,6 +23,7 @@ const TradingViewChart = ({
   custom_css_url = "../themed.css",
   className = "",
 }: TradingViewChartProps) => {
+  const { isChartLoading, setIsChartLoading } = useGeneralContext();
   const ref = useRef<HTMLDivElement>(null);
   const ws = useWS();
   const chartInit = () => {
@@ -31,7 +33,7 @@ const TradingViewChart = ({
         if (!ref.current) return;
 
         const tvWidget = new Widget({
-          datafeed: Datafeed(asset, ws) as any,
+          datafeed: Datafeed(asset, ws, setIsChartLoading) as any,
           symbol: formatSymbol(asset?.symbol),
           container: ref.current,
           container_id: ref.current.id,
@@ -79,6 +81,15 @@ const TradingViewChart = ({
 
   return (
     <div className="relative w-full">
+      <div
+        className={`absolute z-10 h-[450px] sm:h-[600px] bg-secondary w-full ${
+          isChartLoading ? "opacity-100" : "opacity-0 pointer-events-none"
+        } transition-all duration-200 ease-in-out`}
+      >
+        <div className="w-full h-full flex items-center justify-center">
+          <img src="/loader/loader.gif" className="w-[150px]" />
+        </div>
+      </div>
       <div
         className={cn(`w-full h-[450px] sm:h-[600px]`, className)}
         ref={ref}

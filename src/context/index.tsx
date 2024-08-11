@@ -39,6 +39,7 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
   const [showMobileTradeCreator, setShowMobileTradeCreator] = useState(false);
   const [tradeInfo, setTradeInfo] = useState(INITIAL_TRADE_INFO);
   const [mobileActiveSection, setMobileActiveSection] = useState(null);
+  const [isChartLoading, setIsChartLoading] = useState(true);
   const value = useMemo(
     () => ({
       showMobileTradeCreator,
@@ -47,8 +48,10 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
       setTradeInfo,
       mobileActiveSection,
       setMobileActiveSection,
+      isChartLoading,
+      setIsChartLoading,
     }),
-    [showMobileTradeCreator, tradeInfo, mobileActiveSection]
+    [showMobileTradeCreator, tradeInfo, mobileActiveSection, isChartLoading]
   );
 
   return (
