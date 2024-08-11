@@ -14,7 +14,7 @@ export const TradeSection = ({
   isLoading,
 }: TradeSectionProps) => {
   return (
-    <div className="max-h-[400px] sm:max-h-[668.5px] overflow-y-scroll relative">
+    <div className="max-h-[467px] sm:max-h-[668.5px] overflow-y-scroll relative">
       <table className="w-full">
         <thead>
           <tr className="text-font-60 text-xs font-normal sticky top-0 bg-secondary border-b border-borderColor-DARK ">
