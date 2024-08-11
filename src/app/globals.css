@@ -115,7 +115,7 @@ input[type="number"] {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 5px;
+  width: 15px;
   cursor: col-resize;
   background-color: transparent;
   z-index: 10;
@@ -126,12 +126,11 @@ input[type="number"] {
 }
 
 .resizer:nth-child(2) {
-  left: calc(80% + 2.5px);
+  left: calc(80% + 0px);
 }
 
 .grid {
   display: grid;
-  gap: 1rem;
   grid-template-columns: repeat(3, 1fr); /* Par défaut, 3 colonnes */
 }
 

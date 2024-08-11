@@ -45,7 +45,7 @@ export const Perp = ({ asset }: PerpProps) => {
         newWidths[1] = Math.max(startWidths[1] + deltaFraction, 1);
         newWidths[2] = Math.max(startWidths[2] - deltaFraction, 1);
       }
-
+      console.log("newWidths", newWidths);
       setColWidths(newWidths);
     };
 
@@ -68,17 +68,14 @@ export const Perp = ({ asset }: PerpProps) => {
         className="relative w-full border-b border-borderColor"
       >
         <div
-          className="grid w-full "
+          className="grid w-full"
           style={{
-            gridTemplateColumns:
-              window.innerWidth >= 1024
-                ? colWidths.map((w) => `${w}fr`).join(" ")
-                : "1fr",
+            gridTemplateColumns: colWidths.map((w) => `${w}fr`).join(" "),
           }}
         >
           {/* Column 1 */}
 
-          <div className="border-r border-borderColor overflow-x-hidden">
+          <div className="border-r border-borderColor overflow-x-hidden bg-blue-200">
             {!mobileActiveSection ? (
               <>
                 <Favorites />
@@ -97,7 +94,7 @@ export const Perp = ({ asset }: PerpProps) => {
                     mobileActiveSection === "Chart" || !mobileActiveSection
                       ? "block"
                       : "hidden"
-                  }`}
+                  } bg-green`}
                 >
                   <TradingViewChart asset={asset} className={""} />
                 </div>
@@ -113,12 +110,12 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
 
           {/* Column 2 */}
-          <div className="border-r border-borderColor hidden sm:block">
+          <div className="border-r border-borderColor hidden sm:block bg-yellow-300">
             <Orderbook asset={asset} />
           </div>
 
           {/* Column 3 */}
-          <div className="hidden sm:block">
+          <div className="hidden sm:block bg-orange-900">
             <OpenTrade />
           </div>
         </div>
@@ -127,13 +124,13 @@ export const Perp = ({ asset }: PerpProps) => {
           colWidths.slice(0, -1).map((_, index) => (
             <div
               key={index}
-              className="absolute top-0 bottom-0 w-1 bg-gray-300 cursor-col-resize z-10"
+              className="absolute top-0 bottom-0 w-[10px] bg-red cursor-col-resize z-10"
               style={{
-                left: `${
+                left: `calc(${
                   (colWidths.slice(0, index + 1).reduce((a, b) => a + b, 0) /
                     colWidths.reduce((a, b) => a + b, 0)) *
                   100
-                }%`,
+                }% - 5px)`,
               }}
               onMouseDown={(e) => handleMouseDown(index, e)}
             />

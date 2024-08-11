@@ -79,7 +79,7 @@ export const Orderbook = ({
   };
 
   return (
-    <section className="">
+    <section className="w-full bg-orange-300">
       {isMobileOpenTrade || isMobile ? null : (
         <>
           <div className="flex items-center w-full h-[44px] relative">
