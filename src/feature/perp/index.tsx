@@ -19,7 +19,7 @@ type PerpProps = {
 
 export const Perp = ({ asset }: PerpProps) => {
   const wallet = useWalletConnector();
-
+  const chartRef = useRef<HTMLDivElement>(null);
   const [colWidths, setColWidths] = useState([6, 2, 2]);
   const containerRef = useRef(null);
 
@@ -32,9 +32,13 @@ export const Perp = ({ asset }: PerpProps) => {
     const containerWidth = (
       containerRef?.current as any
     ).getBoundingClientRect().width;
+
     const onMouseMove = (e: MouseEvent) => {
       const dx = e.clientX - startX;
       const deltaFraction = (dx / containerWidth) * 10;
+      if (chartRef.current) {
+        chartRef.current.style.pointerEvents = "none";
+      }
 
       const newWidths = [...startWidths];
 
@@ -45,11 +49,14 @@ export const Perp = ({ asset }: PerpProps) => {
         newWidths[1] = Math.max(startWidths[1] + deltaFraction, 1);
         newWidths[2] = Math.max(startWidths[2] - deltaFraction, 1);
       }
-      console.log("newWidths", newWidths);
       setColWidths(newWidths);
     };
 
     const onMouseUp = () => {
+      if (chartRef.current) {
+        chartRef.current.style.pointerEvents = "auto";
+      }
+
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
@@ -75,7 +82,10 @@ export const Perp = ({ asset }: PerpProps) => {
         >
           {/* Column 1 */}
 
-          <div className="border-r border-borderColor overflow-x-hidden bg-blue-200">
+          <div
+            className="border-r border-borderColor overflow-x-hidden bg-blue-200"
+            ref={chartRef}
+          >
             {!mobileActiveSection ? (
               <>
                 <Favorites />
