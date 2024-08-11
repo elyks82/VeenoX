@@ -1,5 +1,6 @@
 import { FuturesAssetProps, TradeExtension } from "@/models";
 import { getFormattedAmount, getFormattedDate } from "@/utils/misc";
+import { FaSpinner } from "react-icons/fa6";
 
 type TradeSectionProps = {
   asset: FuturesAssetProps;
@@ -23,29 +24,33 @@ export const TradeSection = ({
           </tr>
         </thead>
         <tbody>
-          {isLoading
-            ? "Loading..."
-            : trades?.map((trade, i: number) => (
-                <tr key={i} className="text-font-80 text-xs">
-                  <td
-                    className={`pl-2.5 ${i === 0 ? "py-2" : "py-[5.2px]"} ${
-                      trade.side === "BUY" ? "text-green" : "text-red"
-                    }`}
-                  >
-                    {getFormattedAmount(trade.price)}
-                  </td>
-                  <td
-                    className={`py-1 text-end ${
-                      trade.side === "BUY" ? "text-green" : "text-red"
-                    }`}
-                  >
-                    {trade.size}
-                  </td>
-                  <td className="text-end pr-2.5 py-1">
-                    {getFormattedDate(trade.ts)}
-                  </td>
-                </tr>
-              ))}
+          {isLoading ? (
+            <div className="w-full h-[460px] flex items-center justify-center">
+              <FaSpinner className="text-white text-4xl" />
+            </div>
+          ) : (
+            trades?.map((trade, i: number) => (
+              <tr key={i} className="text-font-80 text-xs">
+                <td
+                  className={`pl-2.5 ${i === 0 ? "py-2" : "py-[5.2px]"} ${
+                    trade.side === "BUY" ? "text-green" : "text-red"
+                  }`}
+                >
+                  {getFormattedAmount(trade.price)}
+                </td>
+                <td
+                  className={`py-1 text-end ${
+                    trade.side === "BUY" ? "text-green" : "text-red"
+                  }`}
+                >
+                  {trade.size}
+                </td>
+                <td className="text-end pr-2.5 py-1">
+                  {getFormattedDate(trade.ts)}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

@@ -7,6 +7,7 @@ import {
   useOrderbookStream,
 } from "@orderly.network/hooks";
 import { useState } from "react";
+import { FaSpinner } from "react-icons/fa6";
 import { TradeSection } from "./trade-section";
 
 enum OrderbookSection {
@@ -106,39 +107,58 @@ export const Orderbook = ({
         </>
       )}
       {activeSection === OrderbookSection.ORDERBOOK &&
-      mobileActiveSection === "Orderbook" ? (
+      (mobileActiveSection === "Orderbook" || !mobileActiveSection) ? (
         <div
           className={`max-h-[670px] overflow-y-scroll relative ${
             isMobileOpenTrade ? "w-[140px]" : "w-auto"
           }  sm:w-auto`}
         >
-          <table className="w-full">
-            <thead>
-              <tr className="text-font-60 text-xs">
-                <th className="pl-2.5 text-start pt-2 pb-1 font-normal">
-                  Price
-                </th>
-                {isMobileOpenTrade ? null : (
-                  <th className="text-end font-normal">Size</th>
-                )}
-                <th className="pr-2.5 text-end font-normal">
-                  Total ({formatSymbol(asset?.symbol).split("-")[0]})
-                </th>
-                {isMobileOpenTrade ? null : (
-                  <th className="pr-2.5 text-end font-normal">Total (USDC)</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {(data?.asks || []).map((ask: number[], i: number) => {
-                return (
-                  <tr key={i} className="text-font-80 text-xs relative">
-                    {Array.from({ length: 4 }).map((_, j) => {
-                      const className = getStyleFromDevice(j, "");
-                      const value =
-                        j === 0 ? ask[j] : getFormattedAmount(ask[j]);
-                      if (isMobileOpenTrade && (j === 0 || j === 2))
+          {isLoading ? (
+            <div className="w-full h-[460px] flex items-center justify-center">
+              <FaSpinner className="text-white text-4xl" />
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr className="text-font-60 text-xs">
+                  <th className="pl-2.5 text-start pt-2 pb-1 font-normal">
+                    Price
+                  </th>
+                  {isMobileOpenTrade ? null : (
+                    <th className="text-end font-normal">Size</th>
+                  )}
+                  <th className="pr-2.5 text-end font-normal">
+                    Total ({formatSymbol(asset?.symbol).split("-")[0]})
+                  </th>
+                  {isMobileOpenTrade ? null : (
+                    <th className="pr-2.5 text-end font-normal">
+                      Total (USDC)
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {(data?.asks || []).map((ask: number[], i: number) => {
+                  return (
+                    <tr key={i} className="text-font-80 text-xs relative">
+                      {Array.from({ length: 4 }).map((_, j) => {
+                        const className = getStyleFromDevice(j, "");
+                        const value =
+                          j === 0 ? ask[j] : getFormattedAmount(ask[j]);
                         if (isMobileOpenTrade && (j === 0 || j === 2))
+                          if (isMobileOpenTrade && (j === 0 || j === 2))
+                            return (
+                              <td
+                                key={j + className}
+                                className={cn(
+                                  className,
+                                  j === 0 ? "text-red" : ""
+                                )}
+                              >
+                                {value}
+                              </td>
+                            );
+                        if (!isMobileOpenTrade)
                           return (
                             <td
                               key={j + className}
@@ -150,85 +170,77 @@ export const Orderbook = ({
                               {value}
                             </td>
                           );
-                      if (!isMobileOpenTrade)
-                        return (
-                          <td
-                            key={j + className}
-                            className={cn(className, j === 0 ? "text-red" : "")}
-                          >
-                            {value}
-                          </td>
-                        );
-                    })}
+                      })}
 
-                    <div
-                      className="absolute left-0 h-full bg-red-opacity-10 z-0 transition-all duration-150 ease-linear"
-                      style={{ width: `${asksWidth[i]}%` }}
-                    />
-                  </tr>
-                );
-              })}
+                      <div
+                        className="absolute left-0 h-full bg-red-opacity-10 z-0 transition-all duration-150 ease-linear"
+                        style={{ width: `${asksWidth[i]}%` }}
+                      />
+                    </tr>
+                  );
+                })}
 
-              <tr>
-                <td
-                  colSpan={4}
-                  className="py-[7px] px-2.5 border-y border-borderColor-DARK bg-terciary"
-                >
-                  <div className="whitespace-nowrap flex justify-between items-center">
-                    <p className="text-sm text-white font-bold ">
-                      {getFormattedAmount((data?.middlePrice as any) || 0)}
-                    </p>
-                    <span className="text-[13px] text-white hidden sm:flex">
-                      Spread
-                    </span>
-                    <span className="text-xs sm:text-[13px] text-white">
-                      {spread.toFixed(3)}
-                    </span>
-                  </div>
-                </td>
-              </tr>
-              {(data?.bids || []).map((bid: number[], i: number) => {
-                return (
-                  <tr key={i} className="text-font-80 text-xs relative">
-                    {Array.from({ length: 4 }).map((_, j) => {
-                      const className = getStyleFromDevice(j, "");
-                      const value =
-                        j === 0 ? bid[j] : getFormattedAmount(bid[j]);
-                      if (isMobileOpenTrade && (j === 0 || j === 2))
-                        return (
-                          <td
-                            key={j + className}
-                            className={cn(
-                              className,
-                              j === 0 ? "text-green" : ""
-                            )}
-                          >
-                            {value}
-                          </td>
-                        );
-                      if (!isMobileOpenTrade)
-                        return (
-                          <td
-                            key={j + className}
-                            className={cn(
-                              className,
-                              j === 0 ? "text-green" : ""
-                            )}
-                          >
-                            {value}
-                          </td>
-                        );
-                    })}
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="py-[7px] px-2.5 border-y border-borderColor-DARK bg-terciary"
+                  >
+                    <div className="whitespace-nowrap flex justify-between items-center">
+                      <p className="text-sm text-white font-bold ">
+                        {getFormattedAmount((data?.middlePrice as any) || 0)}
+                      </p>
+                      <span className="text-[13px] text-white hidden sm:flex">
+                        Spread
+                      </span>
+                      <span className="text-xs sm:text-[13px] text-white">
+                        {spread.toFixed(3)}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+                {(data?.bids || []).map((bid: number[], i: number) => {
+                  return (
+                    <tr key={i} className="text-font-80 text-xs relative">
+                      {Array.from({ length: 4 }).map((_, j) => {
+                        const className = getStyleFromDevice(j, "");
+                        const value =
+                          j === 0 ? bid[j] : getFormattedAmount(bid[j]);
+                        if (isMobileOpenTrade && (j === 0 || j === 2))
+                          return (
+                            <td
+                              key={j + className}
+                              className={cn(
+                                className,
+                                j === 0 ? "text-green" : ""
+                              )}
+                            >
+                              {value}
+                            </td>
+                          );
+                        if (!isMobileOpenTrade)
+                          return (
+                            <td
+                              key={j + className}
+                              className={cn(
+                                className,
+                                j === 0 ? "text-green" : ""
+                              )}
+                            >
+                              {value}
+                            </td>
+                          );
+                      })}
 
-                    <div
-                      className="absolute left-0 h-full bg-green-opacity-10 z-0 transition-all duration-150 ease-linear"
-                      style={{ width: `${bidsWidth[i]}%` }}
-                    />
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      <div
+                        className="absolute left-0 h-full bg-green-opacity-10 z-0 transition-all duration-150 ease-linear"
+                        style={{ width: `${bidsWidth[i]}%` }}
+                      />
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
       ) : (
         <TradeSection

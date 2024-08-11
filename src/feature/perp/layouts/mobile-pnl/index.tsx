@@ -26,7 +26,7 @@ export const MobilePnL = () => {
       </div>
       <div className="flex pl-2.5 bg-secondary">
         <button className="flex bg-terciary border border-borderColor-DARK rounded py-1 px-2.5 items-center text-xs text-white">
-          <span>Close</span>
+          <span className="whitespace-nowrap">Close All Trades</span>
         </button>{" "}
       </div>
     </div>

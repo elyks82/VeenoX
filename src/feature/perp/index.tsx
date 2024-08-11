@@ -78,7 +78,7 @@ export const Perp = ({ asset }: PerpProps) => {
           {/* Column 1 */}
 
           <div className="border-r border-borderColor overflow-x-hidden">
-            {!mobileActiveSection || mobileActiveSection === "Chart" ? (
+            {!mobileActiveSection ? (
               <>
                 <Favorites />
                 <TokenInfo asset={asset} />
@@ -91,7 +91,22 @@ export const Perp = ({ asset }: PerpProps) => {
                 <TokenInfo asset={asset} />
                 <MobilePnL />
                 <MobileSectionSelector />
-                <Orderbook asset={asset} isMobile />
+                <div
+                  className={`${
+                    mobileActiveSection === "Chart" || !mobileActiveSection
+                      ? "block"
+                      : "hidden"
+                  }`}
+                >
+                  <TradingViewChart asset={asset} className={""} />
+                </div>
+                <div
+                  className={`${
+                    mobileActiveSection !== "Chart" ? "block" : "hidden"
+                  }`}
+                >
+                  <Orderbook asset={asset} isMobile />
+                </div>
               </>
             )}
           </div>
