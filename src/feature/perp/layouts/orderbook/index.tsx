@@ -28,7 +28,6 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
       level: isMobile ? 8 : 12,
       padding: false,
     });
-  console.log("dd", data);
   const bestBid: number | undefined = (data?.bids as [number[]])[0]?.[0];
   const bestAsk = (data?.asks as [])[(data.asks as []).length - 1]?.[0];
   const spread = bestAsk - bestBid;

@@ -46,12 +46,11 @@ const TradingViewChart = ({
             .timeZone as Timezone,
           autosize: true,
           theme: "Dark",
-          overrides: {
-            volumePaneSize: "small",
-          },
+          // toolbar_bg: "rgba(21, 25, 41, 1)",
+          loading_screen: { backgroundColor: "rgba(21, 25, 41, 1)" },
           studies_overrides: {
-            "bollinger bands.median.color": "#FF0000",
-            "bollinger bands.upper.linewidth": 7,
+            "volume.volume.color.0": "rgba(14, 203, 129,0.3)",
+            "volume.volume.color.1": "rgba(234, 57, 67, 0.3)",
           },
           ...widgetOptionsDefault,
         });
