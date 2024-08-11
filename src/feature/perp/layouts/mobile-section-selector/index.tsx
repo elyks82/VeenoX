@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useGeneralContext } from "@/context";
+import { MobileActiveSectionType } from "@/models";
 
 export const MobileSectionSelector = () => {
-  const sections = ["Chart", "Orderbook", "Market"];
-  const [activeSection, setActiveSection] = useState("Chart");
+  const sections: MobileActiveSectionType[] = ["Chart", "Orderbook", "Trades"];
+  const { setMobileActiveSection, mobileActiveSection } = useGeneralContext();
 
   const getBarPosition = () => {
-    switch (activeSection) {
+    switch (mobileActiveSection) {
       case "Chart":
         return "left-0";
       case "Orderbook":
         return "left-1/3";
-      case "Market":
+      case "Trades":
         return "left-2/3";
       default:
         return "left-0";
@@ -25,7 +26,7 @@ export const MobileSectionSelector = () => {
           <button
             key={i}
             className="w-1/3 h-full text-white text-sm"
-            onClick={() => setActiveSection(section)}
+            onClick={() => setMobileActiveSection(section)}
           >
             {section}
           </button>

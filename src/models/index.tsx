@@ -90,3 +90,17 @@ export interface TradeExtension extends API.Trade {
   price: number;
   size: number;
 }
+
+export type ContextTradeInfo = {
+  type: string;
+  side: string;
+  size: number;
+  price: number | null;
+  reduce_only: boolean;
+  tp_sl: boolean;
+  tp: number | null;
+  sl: number | null;
+  leverage: number;
+};
+
+export type MobileActiveSectionType = "Chart" | "Orderbook" | "Trades" | null;

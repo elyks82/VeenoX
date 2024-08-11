@@ -1,4 +1,5 @@
 "use client";
+import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { useWalletConnector } from "@orderly.network/hooks";
 import { useRef, useState } from "react";
@@ -56,7 +57,8 @@ export const Perp = ({ asset }: PerpProps) => {
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
   };
-
+  const { setMobileActiveSection, mobileActiveSection } = useGeneralContext();
+  console.log("general", mobileActiveSection);
   return (
     <>
       {/* Top Section */}
@@ -76,11 +78,22 @@ export const Perp = ({ asset }: PerpProps) => {
           {/* Column 1 */}
 
           <div className="border-r border-borderColor overflow-x-hidden">
-            <Favorites />
-            <TokenInfo asset={asset} />
-            <MobilePnL />
-            <MobileSectionSelector />
-            <TradingViewChart asset={asset} className={""} />
+            {!mobileActiveSection || mobileActiveSection === "Chart" ? (
+              <>
+                <Favorites />
+                <TokenInfo asset={asset} />
+                <MobilePnL />
+                <MobileSectionSelector />
+                <TradingViewChart asset={asset} className={""} />
+              </>
+            ) : (
+              <>
+                <TokenInfo asset={asset} />
+                <MobilePnL />
+                <MobileSectionSelector />
+                <Orderbook asset={asset} isMobile />
+              </>
+            )}
           </div>
 
           {/* Column 2 */}

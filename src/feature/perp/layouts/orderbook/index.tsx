@@ -1,3 +1,4 @@
+import { useGeneralContext } from "@/context";
 import { FuturesAssetProps, TradeExtension } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
@@ -16,16 +17,22 @@ enum OrderbookSection {
 type OrderbookProps = {
   asset: FuturesAssetProps;
   isMobile?: boolean;
+  isMobileOpenTrade?: boolean;
 };
 
-export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
+export const Orderbook = ({
+  asset,
+  isMobile = false,
+  isMobileOpenTrade = false,
+}: OrderbookProps) => {
+  const { mobileActiveSection, setMobileActiveSection } = useGeneralContext();
   const [activeSection, setActiveSection] = useState(
     OrderbookSection.ORDERBOOK
   );
 
   const [data, { isLoading, onItemClick, depth, allDepths }] =
     useOrderbookStream(asset?.symbol, undefined, {
-      level: isMobile ? 8 : 12,
+      level: isMobileOpenTrade || isMobile ? 8 : 12,
       padding: false,
     });
   const bestBid: number | undefined = (data?.bids as [number[]])[0]?.[0];
@@ -56,19 +63,6 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
     asset?.symbol
   );
 
-  const renderContentFromDevice = (value: any, i: number, color: string) => {
-    console.log("test", value, i, color);
-    const className = getStyleFromDevice(i, color);
-    for (let j = 0; j < value?.length; j++) {
-      if (isMobile && i === 0)
-        return <td className={className}>{getFormattedAmount(value[j])}</td>;
-      else if (isMobile && i === 2)
-        return <td className={className}>{getFormattedAmount(value[j])}</td>;
-      else if (!isMobile)
-        return <td className={className}>{getFormattedAmount(value)}</td>;
-    }
-  };
-
   const getStyleFromDevice = (i: number, color: string) => {
     switch (i) {
       case 0:
@@ -86,7 +80,7 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
 
   return (
     <section className="">
-      {isMobile ? null : (
+      {isMobileOpenTrade || isMobile ? null : (
         <>
           <div className="flex items-center w-full h-[44px] relative">
             <button
@@ -111,21 +105,26 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
           </div>
         </>
       )}
-      {activeSection === OrderbookSection.ORDERBOOK ? (
-        <div className="max-h-[670px] overflow-y-scroll relative w-[140px] sm:w-auto">
+      {activeSection === OrderbookSection.ORDERBOOK &&
+      mobileActiveSection === "Orderbook" ? (
+        <div
+          className={`max-h-[670px] overflow-y-scroll relative ${
+            isMobileOpenTrade ? "w-[140px]" : "w-auto"
+          }  sm:w-auto`}
+        >
           <table className="w-full">
             <thead>
               <tr className="text-font-60 text-xs">
                 <th className="pl-2.5 text-start pt-2 pb-1 font-normal">
                   Price
                 </th>
-                {isMobile ? null : (
+                {isMobileOpenTrade ? null : (
                   <th className="text-end font-normal">Size</th>
                 )}
                 <th className="pr-2.5 text-end font-normal">
                   Total ({formatSymbol(asset?.symbol).split("-")[0]})
                 </th>
-                {isMobile ? null : (
+                {isMobileOpenTrade ? null : (
                   <th className="pr-2.5 text-end font-normal">Total (USDC)</th>
                 )}
               </tr>
@@ -138,8 +137,8 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
                       const className = getStyleFromDevice(j, "");
                       const value =
                         j === 0 ? ask[j] : getFormattedAmount(ask[j]);
-                      if (isMobile && (j === 0 || j === 2))
-                        if (isMobile && (j === 0 || j === 2))
+                      if (isMobileOpenTrade && (j === 0 || j === 2))
+                        if (isMobileOpenTrade && (j === 0 || j === 2))
                           return (
                             <td
                               key={j + className}
@@ -151,7 +150,7 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
                               {value}
                             </td>
                           );
-                      if (!isMobile)
+                      if (!isMobileOpenTrade)
                         return (
                           <td
                             key={j + className}
@@ -195,7 +194,7 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
                       const className = getStyleFromDevice(j, "");
                       const value =
                         j === 0 ? bid[j] : getFormattedAmount(bid[j]);
-                      if (isMobile && (j === 0 || j === 2))
+                      if (isMobileOpenTrade && (j === 0 || j === 2))
                         return (
                           <td
                             key={j + className}
@@ -207,7 +206,7 @@ export const Orderbook = ({ asset, isMobile = false }: OrderbookProps) => {
                             {value}
                           </td>
                         );
-                      if (!isMobile)
+                      if (!isMobileOpenTrade)
                         return (
                           <td
                             key={j + className}

@@ -1,4 +1,5 @@
 "use client";
+import { ContextTradeInfo, MobileActiveSectionType } from "@/models";
 import React, {
   Dispatch,
   FC,
@@ -9,23 +10,13 @@ import React, {
   useState,
 } from "react";
 
-type TradeInfo = {
-  type: string;
-  side: string;
-  size: number;
-  price: number | null;
-  reduce_only: boolean;
-  tp_sl: boolean;
-  tp: number | null;
-  sl: number | null;
-  leverage: number;
-};
-
 interface GeneralContextProps {
   showMobileTradeCreator: boolean;
   setShowMobileTradeCreator: Dispatch<SetStateAction<boolean>>;
-  tradeInfo: TradeInfo;
-  setTradeInfo: Dispatch<SetStateAction<TradeInfo>>;
+  tradeInfo: ContextTradeInfo;
+  setTradeInfo: Dispatch<SetStateAction<ContextTradeInfo>>;
+  mobileActiveSection: MobileActiveSectionType;
+  setMobileActiveSection: Dispatch<SetStateAction<MobileActiveSectionType>>;
 }
 
 const INITIAL_TRADE_INFO = {
@@ -47,15 +38,17 @@ export const useGeneralContext = () => useContext(GeneralContext);
 export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
   const [showMobileTradeCreator, setShowMobileTradeCreator] = useState(false);
   const [tradeInfo, setTradeInfo] = useState(INITIAL_TRADE_INFO);
-
+  const [mobileActiveSection, setMobileActiveSection] = useState(null);
   const value = useMemo(
     () => ({
       showMobileTradeCreator,
       setShowMobileTradeCreator,
       tradeInfo,
       setTradeInfo,
+      mobileActiveSection,
+      setMobileActiveSection,
     }),
-    [showMobileTradeCreator, tradeInfo]
+    [showMobileTradeCreator, tradeInfo, mobileActiveSection]
   );
 
   return (

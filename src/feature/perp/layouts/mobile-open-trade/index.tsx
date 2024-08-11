@@ -27,7 +27,7 @@ export const MobileOpenTrade = ({ asset }: MobileOpenTradeProps) => {
         } transition-all duration-200 ease-in-out bg-secondary border-t border-borderColor shadow-2xl flex`}
       >
         <OpenTrade isMobile />
-        <Orderbook asset={asset} isMobile />
+        <Orderbook asset={asset} isMobileOpenTrade />
       </div>
       <TriggerMobileTradeCreator />
     </>
