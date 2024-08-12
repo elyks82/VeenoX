@@ -75,7 +75,7 @@ export const Perp = ({ asset }: PerpProps) => {
       const newTopHeightPercent = (newTopHeight / containerHeight) * 100;
       let rowUpHeight = rowUpRef.current?.clientHeight || 0;
 
-      if (rowUpHeight > 600) {
+      if (rowUpHeight > 720) {
         setTopHeight(Math.max(Math.min(newTopHeightPercent, 90), 10));
       } else {
         const isMovingDown = deltaY > 0;
