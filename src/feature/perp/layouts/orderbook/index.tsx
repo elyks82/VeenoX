@@ -79,7 +79,7 @@ export const Orderbook = ({
   };
 
   return (
-    <section className="w-full h-full max-h-full overflow-y-hidden">
+    <section className="w-full md:max-h-full h-[450px] max-h-[450px] md:h-full  overflow-y-hidden">
       {isMobileOpenTrade || isMobile ? null : (
         <>
           <div className="flex items-center w-full h-[44px] relative">
@@ -109,12 +109,12 @@ export const Orderbook = ({
       (mobileActiveSection === "Orderbook" || !mobileActiveSection) ? (
         <div
           // max-h-[670px]  overflow-y-scroll
-          className={`relative h-calc-full-button ${
+          className={`relative h-full md:h-calc-full-button ${
             isMobileOpenTrade ? "w-[140px]" : "w-auto"
           }  sm:w-auto`}
         >
           {!data?.asks?.length ? (
-            <div className="w-full h-[460px] md:h-full flex items-center justify-center">
+            <div className="w-full h-full flex items-center justify-center">
               <img src="/loader/loader.gif" className="w-[150px]" />
             </div>
           ) : (
