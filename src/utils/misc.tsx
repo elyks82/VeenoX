@@ -319,15 +319,25 @@ export const getLeverageValue = (i: number) => {
 
 export const resolutionToMilliseconds = (resolution: string): number => {
   const map: { [key: string]: number } = {
-    "1m": 60 * 1000, // 1 minute
-    "5m": 5 * 60 * 1000, // 5 minutes
-    "15m": 15 * 60 * 1000, // 15 minutes
-    "1h": 60 * 60 * 1000, // 1 hour
-    "2h": 2 * 60 * 60 * 1000, // 2 hours
-    "4h": 4 * 60 * 60 * 1000, // 4 hours
-    "1d": 24 * 60 * 60 * 1000, // 1 day
-    "1w": 7 * 24 * 60 * 60 * 1000, // 1 week
-    "1M": 30 * 24 * 60 * 60 * 1000, // 1 month (approx)
+    "1m": 60 * 1000,
+    "5m": 5 * 60 * 1000,
+    "15m": 15 * 60 * 1000,
+    "1h": 60 * 60 * 1000,
+    "2h": 2 * 60 * 60 * 1000,
+    "4h": 4 * 60 * 60 * 1000,
+    "1d": 24 * 60 * 60 * 1000,
+    "1w": 7 * 24 * 60 * 60 * 1000,
+    "1M": 30 * 24 * 60 * 60 * 1000,
   };
-  return map[resolution] || resolutionToMilliseconds("1m"); // Default to 1 minute if unknown resolution
+  return map[resolution] || resolutionToMilliseconds("1m");
 };
+
+export function getTokenPercentage(status?: number) {
+  if (typeof status !== "number") {
+    status = parseFloat(status as unknown as string);
+  }
+  if (status === undefined || status === Infinity || Number.isNaN(status)) {
+    return "-- ";
+  }
+  return status.toFixed(4);
+}

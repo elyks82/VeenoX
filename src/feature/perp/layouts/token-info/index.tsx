@@ -11,9 +11,9 @@ import {
   get24hChange,
   getFormattedAmount,
   getRemainingTime,
+  getTokenPercentage,
 } from "@/utils/misc";
 import { useTickerStream } from "@orderly.network/hooks";
-import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import { PairSelector } from "./tooltip";
@@ -23,28 +23,6 @@ type TokenInfoProps = {
 };
 
 export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
-  const [triggerOrderlyTooltip, setTriggerOrderlyTooltip] = useState(false);
-  const [isTokenSelectorOpen, setIsTokenSelectorOpen] = useState(false);
-
-  const handleTokenSelectorOpening = () => {
-    setIsTokenSelectorOpen((prev) => !prev);
-  };
-
-  // const { data: asset, refetch } = useQuery("assetInfo", () =>
-  //   fetchAssetInfo(
-  //     assetBuffer.symbol,
-  //     prevPrice,
-  //     setPrevPrice,
-  //     setIsPriceChanged
-  //   )
-  // );
-
-  // useEffect(() => {
-  //   const interval = setInterval(refetch, 3000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  const params = useParams();
   const marketInfo = useTickerStream(assetBuffer?.symbol);
 
   const [lastPriceInfo, setLastPriceInfo] = useState({
@@ -102,27 +80,35 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
     marketInfo?.last_funding_rate
   );
 
-  const getColorFromChangePercentage = (percentage: string) => {
+  const pred_funding_rate =
+    ((marketInfo?.last_funding_rate + marketInfo?.est_funding_rate) / 2) *
+      100 || 0;
+
+  const getColorFromChangePercentage = (
+    percentage: string,
+    isTest: boolean
+  ) => {
     if (percentage > "0") return "text-green";
-    else if (percentage < "0") return "text-white";
-    else "text-red";
+    else if (percentage < "0") {
+      if (isTest) console.log("perd", percentage, fundingChange);
+      return "text-red";
+    } else "text-white";
   };
   const colorPriceChange = getColorFromChangePercentage(
-    priceChange.formatPercentage
+    priceChange.formatPercentage,
+    false
   );
   const colorFundingChange = getColorFromChangePercentage(
-    fundingChange.formatPercentage
+    JSON.stringify(pred_funding_rate),
+    true
   );
 
   return (
-    <div className="flex items-center w-full h-[55px] sm:h-[65px] px-3 py-1 border-b border-borderColor whitespace-nowrap overflow-x-scroll">
-      <div className="flex items-center gap-3 relative cursor-pointer text-white">
+    <div className="flex items-center w-full h-[55px] sm:h-[65px] px-3 border-b border-borderColor whitespace-nowrap overflow-x-scroll">
+      <div className="flex items-center gap-3 relative text-white h-full">
         <Popover>
-          <PopoverTrigger>
-            <div
-              className="flex items-center mr-2"
-              onClick={handleTokenSelectorOpening}
-            >
+          <PopoverTrigger className="h-full ">
+            <div className="flex items-center mr-1 whitespace-nowrap w-fit min-w-[168px] border-r border-borderColor h-full cursor-pointer">
               <img
                 className="sm:w-[28px] sm:h-[28px] w-[22px] h-[22px] bg-gray-500 rounded-full"
                 src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
@@ -133,16 +119,19 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
               <p className="text-white text-base sm:text-lg ml-2 sm:ml-3">
                 {formatSymbol(assetBuffer.symbol)}
               </p>
-              <IoChevronDown className="text-white text-base sm:text-lg min-w-[15px] ml-1" />
+              <IoChevronDown className="text-white text-base sm:text-lg min-w-[18px] ml-1" />
             </div>
           </PopoverTrigger>
-          <PopoverContent className="transform-x-[10px] w-[550px] bg-terciary border border-borderColor-DARK shadow-xl">
+          <PopoverContent
+            sideOffset={0}
+            className="transform-x-[10px] w-[550px] bg-terciary border border-borderColor-DARK shadow-xl"
+          >
             <PairSelector />
           </PopoverContent>
         </Popover>
-        <div className="flex items-center overflow-x-scroll min-w-[800px] pl-2">
+        <div className="flex items-center overflow-x-scroll min-w-[800px]">
           <p
-            className={`${lastPriceInfo.price_color} transition-color duration-200 ease-in-out text-base sm:text-lg mr-5`}
+            className={`${lastPriceInfo.price_color} transition-color duration-200 ease-in-out text-base sm:text-lg mr-4`}
           >
             {getFormattedAmount(marketInfo?.mark_price) || "Loading..."}
           </p>
@@ -172,19 +161,14 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
                 {marketInfo?.index_price}
               </p>
             </div>
-            {/* */}
             <div className="relative">
               <p className="text-xs text-font-60">24h Volume</p>
               <TooltipProvider>
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
-                    <span
-                      className="flex items-center mt-1"
-                      onMouseEnter={() => setTriggerOrderlyTooltip(true)}
-                      onMouseLeave={() => setTriggerOrderlyTooltip(false)}
-                    >
+                    <span className="flex items-center mt-1">
                       <img
-                        className="h-[15px] w-[15px] mr-1.5"
+                        className="h-[13px] w-[13px] mr-1.5"
                         src="/logo/orderly.svg"
                         alt="Orderly Network logo"
                       />
@@ -206,7 +190,7 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
               <p className="text-xs text-font-60">Pred. funding rate</p>
               <span className="text-xs box-border h-fit flex items-center mt-1 font-medium">
                 <p className={colorFundingChange}>
-                  {marketInfo?.last_funding_rate || "0.00"}%
+                  {getTokenPercentage(pred_funding_rate) || "0.00"}%
                 </p>
                 <p className="mx-0.5 text-font-60">/</p>
                 <p className="text-white">

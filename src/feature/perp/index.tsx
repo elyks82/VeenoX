@@ -2,7 +2,7 @@
 import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { useWalletConnector } from "@orderly.network/hooks";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import TradingViewChart from "./layouts/chart";
 import { Favorites } from "./layouts/favorites";
 import { MobileOpenTrade } from "./layouts/mobile-open-trade";
@@ -23,23 +23,16 @@ export const Perp = ({ asset }: PerpProps) => {
   const [colWidths, setColWidths] = useState([6, 2, 2]);
   const containerRef = useRef(null);
 
-  const handleMouseDown = (index: number, e: any) => {
+  const handleMouseDown = (index, e) => {
     if (window.innerWidth < 1024) return;
 
     const startX = e.clientX;
     const startWidths = [...colWidths];
-    if (!containerRef?.current) return;
-    const containerWidth = (
-      containerRef?.current as any
-    ).getBoundingClientRect().width;
+    const containerWidth = containerRef.current.getBoundingClientRect().width;
 
-    const onMouseMove = (e: MouseEvent) => {
+    const onMouseMove = (e) => {
       const dx = e.clientX - startX;
       const deltaFraction = (dx / containerWidth) * 10;
-      if (chartRef.current) {
-        chartRef.current.style.pointerEvents = "none";
-      }
-
       const newWidths = [...startWidths];
 
       if (index === 0) {
@@ -53,17 +46,32 @@ export const Perp = ({ asset }: PerpProps) => {
     };
 
     const onMouseUp = () => {
-      if (chartRef.current) {
-        chartRef.current.style.pointerEvents = "auto";
-      }
-
+      chartRef.current.style.pointerEvents = "auto";
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
 
+    chartRef.current.style.pointerEvents = "none";
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
   };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 600) {
+        setColWidths([1, 1, 1]); // Toutes les colonnes prennent 100% de la largeur (1 colonne à la fois)
+      } else if (window.innerWidth < 1200) {
+        setColWidths([2, 1, 1]); // Deux colonnes
+      } else {
+        setColWidths([6, 2, 2]); // Configuration par défaut
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Initial call to set sizes based on the current window size
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const { setMobileActiveSection, mobileActiveSection } = useGeneralContext();
   return (
     <>
@@ -72,7 +80,7 @@ export const Perp = ({ asset }: PerpProps) => {
         className="relative w-full border-b border-borderColor"
       >
         <div
-          className="grid w-full"
+          className="grid"
           style={{
             gridTemplateColumns: colWidths.map((w) => `${w}fr`).join(" "),
           }}
@@ -115,12 +123,12 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
 
           {/* Column 2 */}
-          <div className="border-r border-borderColor hidden sm:block ">
+          <div className="border-r border-borderColor hidden md:block ">
             <Orderbook asset={asset} />
           </div>
 
           {/* Column 3 */}
-          <div className="hidden sm:block">
+          <div className="hidden md:block">
             <OpenTrade />
           </div>
         </div>
@@ -153,7 +161,7 @@ export const Perp = ({ asset }: PerpProps) => {
           <Position asset={asset} />
         </div>
 
-        <div className="p-4 border-b border-borderColor hidden sm:block">
+        <div className="p-4 border-b border-borderColor hidden md:block">
           <div className="border-b border-borderColor pb-4 mb-4">
             <div className="flex items-center justify-between">
               <div>

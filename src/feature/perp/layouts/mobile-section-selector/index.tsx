@@ -20,7 +20,7 @@ export const MobileSectionSelector = () => {
   const barPosition = getBarPosition();
 
   return (
-    <div className="border-b border-borderColor h-[45px] w-full block sm:hidden relative">
+    <div className="border-b border-borderColor h-[45px] w-full block md:hidden relative">
       <div className="flex items-center justify-between h-[44px] w-[100%]">
         {sections.map((section, i) => (
           <button

@@ -131,7 +131,7 @@ input[type="number"] {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Par défaut, 3 colonnes */
+  grid-template-columns: repeat(3, 1fr); /* 3 colonnes par défaut */
 }
 
 @media (max-width: 1200px) {
@@ -139,12 +139,19 @@ input[type="number"] {
     grid-template-columns: repeat(
       2,
       1fr
-    ); /* 2 colonnes si l'écran est inférieur à 1200px */
+    ); /* 2 colonnes pour les écrans de moins de 1200px */
   }
 }
 
 @media (max-width: 768px) {
   .grid {
-    grid-template-columns: 1fr; /* 1 colonne si l'écran est inférieur à 768px */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .grid > div {
+    width: 100%;
+    border-right: none; /* Enlever la bordure droite pour chaque div */
+    border-bottom: 1px solid #333; /* Ajouter une bordure en bas pour séparer les divs */
   }
 }
