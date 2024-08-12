@@ -23,14 +23,16 @@ export const Perp = ({ asset }: PerpProps) => {
   const [colWidths, setColWidths] = useState([6, 2, 2]);
   const containerRef = useRef(null);
 
-  const handleMouseDown = (index, e) => {
+  const handleMouseDown = (index: number, e: any) => {
     if (window.innerWidth < 1024) return;
 
     const startX = e.clientX;
     const startWidths = [...colWidths];
-    const containerWidth = containerRef.current.getBoundingClientRect().width;
+    const containerWidth = (
+      containerRef?.current as any
+    ).getBoundingClientRect().width;
 
-    const onMouseMove = (e) => {
+    const onMouseMove = (e: any) => {
       const dx = e.clientX - startX;
       const deltaFraction = (dx / containerWidth) * 10;
       const newWidths = [...startWidths];
@@ -46,12 +48,12 @@ export const Perp = ({ asset }: PerpProps) => {
     };
 
     const onMouseUp = () => {
-      chartRef.current.style.pointerEvents = "auto";
+      (chartRef?.current as any).style.pointerEvents = "auto";
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
     };
 
-    chartRef.current.style.pointerEvents = "none";
+    (chartRef?.current as any).style.pointerEvents = "none";
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
   };
@@ -59,11 +61,11 @@ export const Perp = ({ asset }: PerpProps) => {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 600) {
-        setColWidths([1, 1, 1]); // Toutes les colonnes prennent 100% de la largeur (1 colonne à la fois)
+        setColWidths([1, 1, 1]);
       } else if (window.innerWidth < 1200) {
-        setColWidths([2, 1, 1]); // Deux colonnes
+        setColWidths([2, 1, 1]);
       } else {
-        setColWidths([6, 2, 2]); // Configuration par défaut
+        setColWidths([6, 2, 2]);
       }
     };
 
