@@ -62,6 +62,7 @@ export const Perp = ({ asset }: PerpProps) => {
   };
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (window.innerWidth < 1024) return;
     const startY = e.clientY;
     const containerHeight = (
       containerRef.current as HTMLDivElement
@@ -75,7 +76,6 @@ export const Perp = ({ asset }: PerpProps) => {
       let rowUpHeight = rowUpRef.current?.clientHeight || 0;
 
       if (rowUpHeight > 600) {
-        console.log("Is Larger");
         setTopHeight(Math.max(Math.min(newTopHeightPercent, 90), 10));
       } else {
         const isMovingDown = deltaY > 0;
@@ -118,9 +118,9 @@ export const Perp = ({ asset }: PerpProps) => {
     >
       <div
         ref={rowUpRef}
-        className="relative w-full border-b border-borderColor topPane flex-grow"
+        className="relative w-full border-b border-borderColor topPane md:flex-grow "
         style={{
-          height: `${topHeight}%`,
+          height: `${window.innerWidth < 768 ? "auto" : topHeight}%`,
           zIndex: 1,
         }}
       >
@@ -189,7 +189,7 @@ export const Perp = ({ asset }: PerpProps) => {
             />
           ))}
       </div>
-      <div className="resizerY" onMouseDown={handleMouse} />
+      <div className="resizerY hidden md:flex" onMouseDown={handleMouse} />
       <div
         className="grid w-full h-auto border-b border-borderColor bottomPane"
         style={{
@@ -197,7 +197,7 @@ export const Perp = ({ asset }: PerpProps) => {
             window.innerWidth >= 1024
               ? `${colWidths[0] + colWidths[1]}fr ${colWidths[2]}fr`
               : "1fr",
-          height: `${100 - topHeight}%`,
+          height: `${window.innerWidth < 768 ? "auto" : `${100 - topHeight}%`}`,
           zIndex: 0,
         }}
       >
