@@ -1,6 +1,5 @@
 import { FuturesAssetProps, TradeExtension } from "@/models";
 import { getFormattedAmount, getFormattedDate } from "@/utils/misc";
-import { FaSpinner } from "react-icons/fa6";
 
 type TradeSectionProps = {
   asset: FuturesAssetProps;
@@ -25,8 +24,8 @@ export const TradeSection = ({
         </thead>
         <tbody>
           {!trades?.length ? (
-            <div className="w-full h-[460px] flex items-center justify-center">
-              <FaSpinner className="text-white text-4xl" />
+            <div className="w-full h-[460px] sm:h-[550px] flex items-center justify-center">
+              <img src="/loader/loader.gif" className="w-[150px]" />
             </div>
           ) : (
             trades?.map((trade, i: number) => (
