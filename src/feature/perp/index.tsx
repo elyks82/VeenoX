@@ -24,6 +24,7 @@ export const Perp = ({ asset }: PerpProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [topHeight, setTopHeight] = useState(70); // Initial height as a percentage (80% pour la div du haut)
   const { setMobileActiveSection, mobileActiveSection } = useGeneralContext();
+  const rowUpRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (index: number, e: any) => {
     if (window.innerWidth < 1024) return;
@@ -61,7 +62,6 @@ export const Perp = ({ asset }: PerpProps) => {
   };
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    const MIN_TOP_HEIGHT = 43;
     const startY = e.clientY;
     const containerHeight = (
       containerRef.current as HTMLDivElement
@@ -70,17 +70,18 @@ export const Perp = ({ asset }: PerpProps) => {
 
     const handleMouseMove = (e: MouseEvent) => {
       const deltaY = e.clientY - startY;
-      const newTopHeight = Math.max(
-        Math.min(startTopHeight + deltaY, containerHeight - 10),
-        (MIN_TOP_HEIGHT / 100) * containerHeight
-      );
+      const newTopHeight = startTopHeight + deltaY;
       const newTopHeightPercent = (newTopHeight / containerHeight) * 100;
+      let rowUpHeight = rowUpRef.current?.clientHeight || 0;
 
-      if (newTopHeightPercent < MIN_TOP_HEIGHT) {
-        return;
+      if (rowUpHeight > 600) {
+        console.log("Is Larger");
+        setTopHeight(Math.max(Math.min(newTopHeightPercent, 90), 10));
+      } else {
+        const isMovingDown = deltaY > 0;
+        if (isMovingDown)
+          setTopHeight(Math.max(Math.min(newTopHeightPercent, 90), 10));
       }
-
-      setTopHeight(Math.max(Math.min(newTopHeightPercent, 90), 10));
     };
 
     const handleMouseUp = () => {
@@ -116,6 +117,7 @@ export const Perp = ({ asset }: PerpProps) => {
       className="container overflow-scroll w-full max-w-full"
     >
       <div
+        ref={rowUpRef}
         className="relative w-full border-b border-borderColor topPane flex-grow"
         style={{
           height: `${topHeight}%`,

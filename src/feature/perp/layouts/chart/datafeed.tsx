@@ -125,7 +125,7 @@ export const Datafeed = (
       ? getNextBarTime(resolution, lastDailyBar.time)
       : null;
 
-    let initialDataLoaded = false; // État pour vérifier si les données initiales sont chargées
+    let initialDataLoaded = false;
 
     const unsubscribe = ws.subscribe(
       {
@@ -136,25 +136,14 @@ export const Datafeed = (
       {
         onMessage: (data: any) => {
           if (data) {
-            const currentTimeInMs = data.endTime * 1000; // Convertir en millisecondes
+            const currentTimeInMs = data.endTime * 1000;
             const price = data.close;
 
-            console.group();
-            console.log("Received Data:", data);
-            console.log("Last Daily Bar:", lastDailyBar);
-            console.log("Next Daily Bar Time (ms):", nextDailyBarTime);
-            console.log("Current Time (ms):", currentTimeInMs);
-            console.groupEnd();
-
-            // Vérifiez si les données initiales ont été chargées
             if (!initialDataLoaded) {
               if (lastDailyBar && currentTimeInMs < nextDailyBarTime!) {
-                console.log(
-                  "Initial data loaded, no real-time bar to process yet."
-                );
-                return; // Ne rien faire tant que les données initiales ne sont pas complètement chargées
+                return;
               } else {
-                initialDataLoaded = true; // Marquer les données initiales comme chargées
+                initialDataLoaded = true;
               }
             }
 
@@ -162,11 +151,6 @@ export const Datafeed = (
               const nextDailyBarTimeInMs = Number(nextDailyBarTime);
 
               if (currentTimeInMs >= nextDailyBarTimeInMs) {
-                console.log(
-                  "Creating a new bar because the current time exceeds the next bar time.",
-                  currentTimeInMs,
-                  nextDailyBarTimeInMs
-                );
                 const bar: CustomBarProps = {
                   time: currentTimeInMs,
                   open: price,
@@ -180,7 +164,6 @@ export const Datafeed = (
                 Cookies.set(symbolInfo.name, JSON.stringify(bar));
                 onRealtimeCallback(bar);
 
-                // Recalculer le temps pour la prochaine bougie
                 nextDailyBarTime = getNextBarTime(resolution, currentTimeInMs);
               } else {
                 console.log("Updating the existing bar.");
@@ -211,7 +194,6 @@ export const Datafeed = (
               Cookies.set(symbolInfo.name, JSON.stringify(bar));
               onRealtimeCallback(bar);
 
-              // Initialiser `nextDailyBarTime` après avoir créé la première bougie
               nextDailyBarTime = getNextBarTime(resolution, currentTimeInMs);
             }
           }
