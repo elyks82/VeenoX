@@ -79,7 +79,7 @@ export const Orderbook = ({
   };
 
   return (
-    <section className="w-full h-full max-h-full">
+    <section className="w-full h-full max-h-full overflow-y-hidden">
       {isMobileOpenTrade || isMobile ? null : (
         <>
           <div className="flex items-center w-full h-[44px] relative">
@@ -114,14 +114,14 @@ export const Orderbook = ({
           }  sm:w-auto`}
         >
           {!data?.asks?.length ? (
-            <div className="w-full h-[460px] sm:h-[550px] flex items-center justify-center">
+            <div className="w-full h-[460px] md:h-full flex items-center justify-center">
               <img src="/loader/loader.gif" className="w-[150px]" />
             </div>
           ) : (
             <table className="w-full h-full">
               <thead>
                 <tr className="text-font-60 text-xs">
-                  <th className="pl-2.5 text-start  font-normal">Price</th>
+                  <th className="pl-2.5 text-start py-1 font-normal">Price</th>
                   {isMobileOpenTrade ? null : (
                     <th className="text-end font-normal">Size</th>
                   )}
@@ -181,7 +181,7 @@ export const Orderbook = ({
                 <tr>
                   <td
                     colSpan={4}
-                    className="py-[7px] px-2.5 border-y border-borderColor-DARK bg-terciary"
+                    className="px-2.5 border-y border-borderColor-DARK bg-terciary"
                   >
                     <div className="whitespace-nowrap flex justify-between items-center">
                       <p className="text-sm text-white font-bold ">

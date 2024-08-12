@@ -22,7 +22,7 @@ export const Perp = ({ asset }: PerpProps) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const [colWidths, setColWidths] = useState([6, 2, 2]);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [topHeight, setTopHeight] = useState(80); // Initial height as a percentage (80% pour la div du haut)
+  const [topHeight, setTopHeight] = useState(70); // Initial height as a percentage (80% pour la div du haut)
   const { setMobileActiveSection, mobileActiveSection } = useGeneralContext();
 
   const handleMouseDown = (index: number, e: any) => {
@@ -61,27 +61,35 @@ export const Perp = ({ asset }: PerpProps) => {
   };
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const MIN_TOP_HEIGHT = 43;
     const startY = e.clientY;
     const containerHeight = (
       containerRef.current as HTMLDivElement
     ).getBoundingClientRect().height;
     const startTopHeight = (topHeight / 100) * containerHeight;
-    const startBottomHeight = containerHeight - startTopHeight;
 
     const handleMouseMove = (e: MouseEvent) => {
       const deltaY = e.clientY - startY;
-      const newTopHeight = startTopHeight + deltaY;
+      const newTopHeight = Math.max(
+        Math.min(startTopHeight + deltaY, containerHeight - 10),
+        (MIN_TOP_HEIGHT / 100) * containerHeight
+      );
       const newTopHeightPercent = (newTopHeight / containerHeight) * 100;
-      const newBottomHeightPercent = 100 - newTopHeightPercent;
 
-      setTopHeight(Math.max(Math.min(newTopHeightPercent, 90), 10)); // Assure que la hauteur reste entre 10% et 90%
+      if (newTopHeightPercent < MIN_TOP_HEIGHT) {
+        return;
+      }
+
+      setTopHeight(Math.max(Math.min(newTopHeightPercent, 90), 10));
     };
 
     const handleMouseUp = () => {
+      (chartRef?.current as any).style.pointerEvents = "auto";
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
 
+    (chartRef?.current as any).style.pointerEvents = "none";
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
   };
@@ -98,8 +106,7 @@ export const Perp = ({ asset }: PerpProps) => {
     };
 
     window.addEventListener("resize", handleResize);
-    handleResize(); // Initial call to set sizes based on the current window size
-
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -108,15 +115,15 @@ export const Perp = ({ asset }: PerpProps) => {
       ref={containerRef}
       className="container overflow-scroll w-full max-w-full"
     >
-      {/*  ROW 1 */}
-      {/* <ResizablePanels /> */}
       <div
-        // ref={containerRef}
         className="relative w-full border-b border-borderColor topPane flex-grow"
-        style={{ height: `${topHeight}%`, zIndex: 1 }}
+        style={{
+          height: `${topHeight}%`,
+          zIndex: 1,
+        }}
       >
         <div
-          className="grid  h-full"
+          className="grid h-full"
           style={{
             gridTemplateColumns: colWidths.map((w) => `${w}fr`).join(" "),
           }}
@@ -157,13 +164,9 @@ export const Perp = ({ asset }: PerpProps) => {
               </>
             )}
           </div>
-
-          {/* Column 2 */}
-          <div className="border-r border-borderColor hidden md:block h-full ">
+          <div className="border-r border-borderColor hidden md:block h-full overflow-hidden">
             <Orderbook asset={asset} />
           </div>
-
-          {/* Column 3 */}
           <div className="hidden md:block h-full ">
             <OpenTrade />
           </div>
@@ -184,9 +187,7 @@ export const Perp = ({ asset }: PerpProps) => {
             />
           ))}
       </div>
-      {/*  ROW 2 */}
       <div className="resizerY" onMouseDown={handleMouse} />
-
       <div
         className="grid w-full h-auto border-b border-borderColor bottomPane"
         style={{
@@ -201,7 +202,6 @@ export const Perp = ({ asset }: PerpProps) => {
         <div className="border-r border-b border-borderColor overflow-x-hidden">
           <Position asset={asset} />
         </div>
-
         <div className="p-4 border-b border-borderColor hidden md:block">
           <div className="border-b border-borderColor pb-4 mb-4">
             <div className="flex items-center justify-between">

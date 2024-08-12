@@ -167,4 +167,9 @@ input[type="number"] {
   height: 5px;
   cursor: row-resize;
   flex-shrink: 0;
+  background-color: transparent;
+}
+
+.resizerY:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }

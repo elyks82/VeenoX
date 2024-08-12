@@ -97,7 +97,7 @@ const TradingViewChart = ({
   }, [tvWidget]);
 
   return (
-    <div className="relative w-full h-calc-full-chart ">
+    <div className="relative w-full h-[450px] md:h-calc-full-chart ">
       <div
         className={`absolute z-10  bg-secondary w-full ${
           isChartLoading ? "opacity-100" : "opacity-0 pointer-events-none"
