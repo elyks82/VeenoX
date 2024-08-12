@@ -22,8 +22,8 @@ export const MobileOpenTrade = ({ asset }: MobileOpenTradeProps) => {
         } transition-all duration-200 ease-in-out bg-secondary z-30`}
       />
       <div
-        className={`fixed top-calc-mobile-position h-fit w-full md:w-[350px] z-[100] left-0 ${
-          showMobileTradeCreator ? "translate-y-0" : "translate-y-full"
+        className={`fixed bottom-0 h-fit w-full md:w-[350px] z-[100] left-0 ${
+          showMobileTradeCreator ? "-translate-y-full" : "translate-y-0"
         } transition-all duration-200 ease-in-out bg-secondary border-t border-borderColor shadow-2xl flex`}
       >
         <OpenTrade isMobile />

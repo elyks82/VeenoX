@@ -79,7 +79,11 @@ export const Orderbook = ({
   };
 
   return (
-    <section className="w-full md:max-h-full h-[450px] max-h-[450px] md:h-full  overflow-y-hidden">
+    <section
+      className={`w-full md:max-h-full ${
+        isMobileOpenTrade ? "h-auto max-h-full" : "h-[450px] max-h-[450px]"
+      } md:h-full  overflow-y-hidden`}
+    >
       {isMobileOpenTrade || isMobile ? null : (
         <>
           <div className="flex items-center w-full h-[44px] relative">

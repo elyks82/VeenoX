@@ -3,22 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: rgba(19, 22, 39, 1);
-  --background-start-rgb: rgba(19, 22, 39, 1);
-  --background-end-rgb: rgba(21, 25, 41, 1);
+  --foreground-rgb: rgba(20, 20, 20, 1);
+  --background-start-rgb: rgba(20, 20, 20, 1);
+  --background-end-rgb: rgba(20, 20, 20, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: rgba(19, 22, 39, 1);
-    --background-start-rgb: rgba(19, 22, 39, 1);
-    --background-end-rgb: rgba(21, 25, 41, 1);
+    --foreground-rgb: rgba(10, 10, 10, 1);
+    --background-start-rgb: rgba(10, 10, 10, 1);
+    --background-end-rgb: rgba(10, 10, 10, 1);
   }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: var(--background-end-rgb);
+  background: rgba(10, 10, 10, 1);
   user-select: none;
 }
 
