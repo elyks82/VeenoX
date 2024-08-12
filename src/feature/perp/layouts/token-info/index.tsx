@@ -1,4 +1,10 @@
-import { Tooltip } from "@/components/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/lib/shadcn/tooltip";
 import { FuturesAssetProps } from "@/models";
 import {
   formatSymbol,
@@ -111,31 +117,30 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
   return (
     <div className="flex items-center w-full h-[55px] sm:h-[65px] px-3 py-1 border-b border-borderColor whitespace-nowrap overflow-x-scroll">
       <div className="flex items-center gap-3 relative cursor-pointer text-white">
-        <div
-          className="flex items-center mr-2"
-          onClick={handleTokenSelectorOpening}
-        >
-          <img
-            className="sm:w-[28px] sm:h-[28px] w-[22px] h-[22px] bg-gray-500 rounded-full"
-            src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
-              assetBuffer?.symbol,
-              true
-            )}.png`}
-          />
-          <p className="text-white text-base sm:text-lg ml-2 sm:ml-3">
-            {formatSymbol(assetBuffer.symbol)}
-          </p>
-          <IoChevronDown className="text-white text-base sm:text-lg min-w-[15px] ml-1" />
-        </div>
-        {/* <div className="h-[30px] w-[1px] bg-borderColor mr-2" /> */}
-        <div
-          className="flex items-center overflow-x-scroll min-w-[800px] pl-2"
-          // TODO: OVERFLOW
-          // style={{
-          //   overflowX: "scroll",
-          //   overflowY: "visible",
-          // }}
-        >
+        <Popover>
+          <PopoverTrigger>
+            <div
+              className="flex items-center mr-2"
+              onClick={handleTokenSelectorOpening}
+            >
+              <img
+                className="sm:w-[28px] sm:h-[28px] w-[22px] h-[22px] bg-gray-500 rounded-full"
+                src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
+                  assetBuffer?.symbol,
+                  true
+                )}.png`}
+              />
+              <p className="text-white text-base sm:text-lg ml-2 sm:ml-3">
+                {formatSymbol(assetBuffer.symbol)}
+              </p>
+              <IoChevronDown className="text-white text-base sm:text-lg min-w-[15px] ml-1" />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="transform-x-[10px] w-[550px] bg-terciary border border-borderColor-DARK shadow-xl">
+            <PairSelector />
+          </PopoverContent>
+        </Popover>
+        <div className="flex items-center overflow-x-scroll min-w-[800px] pl-2">
           <p
             className={`${lastPriceInfo.price_color} transition-color duration-200 ease-in-out text-base sm:text-lg mr-5`}
           >
@@ -170,28 +175,32 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
             {/* */}
             <div className="relative">
               <p className="text-xs text-font-60">24h Volume</p>
-              <span
-                className="flex items-center mt-1"
-                onMouseEnter={() => setTriggerOrderlyTooltip(true)}
-                onMouseLeave={() => setTriggerOrderlyTooltip(false)}
-              >
-                <img
-                  className="h-[15px] w-[15px] mr-1.5"
-                  src="/logo/orderly.svg"
-                  alt="Orderly Network logo"
-                />
-                <p className="text-xs text-white font-medium">
-                  {getFormattedAmount(marketInfo?.["24h_amount"])}
-                </p>
-              </span>
-              <Tooltip
-                isOpen={triggerOrderlyTooltip}
-                className=" overflow-scroll w-[200px] bg-secondary border-borderColor p-2.5"
-              >
-                <p className="text-font-80 text-xs">
-                  24 hour total trading volume on the Orderly Network.
-                </p>
-              </Tooltip>
+              <TooltipProvider>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <span
+                      className="flex items-center mt-1"
+                      onMouseEnter={() => setTriggerOrderlyTooltip(true)}
+                      onMouseLeave={() => setTriggerOrderlyTooltip(false)}
+                    >
+                      <img
+                        className="h-[15px] w-[15px] mr-1.5"
+                        src="/logo/orderly.svg"
+                        alt="Orderly Network logo"
+                      />
+                      <p className="text-xs text-white font-medium">
+                        {getFormattedAmount(marketInfo?.["24h_amount"])}
+                      </p>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="h-fit overflow-clip w-[180px] p-2 bg-terciary border border-borderColor-DARK shadow-xl whitespace-pre-wrap"
+                  >
+                    24 hour total trading volume on the Orderly Network.
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
             <div>
               <p className="text-xs text-font-60">Pred. funding rate</p>
@@ -214,12 +223,6 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
             </div>
           </div>
         </div>
-        <Tooltip
-          isOpen={isTokenSelectorOpen}
-          className="left-0 translate-x-0 top-[140%] max-h-[350px] overflow-scroll w-[650px] bg-secondary border-borderColor p-2.5"
-        >
-          <PairSelector />
-        </Tooltip>
       </div>
     </div>
   );

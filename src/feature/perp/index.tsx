@@ -65,11 +65,8 @@ export const Perp = ({ asset }: PerpProps) => {
     window.addEventListener("mouseup", onMouseUp);
   };
   const { setMobileActiveSection, mobileActiveSection } = useGeneralContext();
-  console.log("general", mobileActiveSection);
   return (
     <>
-      {/* Top Section */}
-
       <div
         ref={containerRef}
         className="relative w-full border-b border-borderColor"
@@ -80,10 +77,8 @@ export const Perp = ({ asset }: PerpProps) => {
             gridTemplateColumns: colWidths.map((w) => `${w}fr`).join(" "),
           }}
         >
-          {/* Column 1 */}
-
           <div
-            className="border-r border-borderColor overflow-x-hidden bg-blue-200"
+            className="border-r border-borderColor overflow-x-hidden "
             ref={chartRef}
           >
             {!mobileActiveSection ? (
@@ -120,21 +115,20 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
 
           {/* Column 2 */}
-          <div className="border-r border-borderColor hidden sm:block bg-yellow-300">
+          <div className="border-r border-borderColor hidden sm:block ">
             <Orderbook asset={asset} />
           </div>
 
           {/* Column 3 */}
-          <div className="hidden sm:block bg-orange-900">
+          <div className="hidden sm:block">
             <OpenTrade />
           </div>
         </div>
-        {/* Resizers - Only show on desktop */}
         {window.innerWidth >= 1024 &&
           colWidths.slice(0, -1).map((_, index) => (
             <div
               key={index}
-              className="absolute top-0 bottom-0 w-[10px] bg-red cursor-col-resize z-10"
+              className="absolute top-0 bottom-0 w-[10px] cursor-col-resize z-10"
               style={{
                 left: `calc(${
                   (colWidths.slice(0, index + 1).reduce((a, b) => a + b, 0) /
@@ -146,8 +140,6 @@ export const Perp = ({ asset }: PerpProps) => {
             />
           ))}
       </div>
-
-      {/* Bottom Section */}
       <div
         className="grid w-full h-auto border-b border-borderColor"
         style={{
@@ -157,12 +149,10 @@ export const Perp = ({ asset }: PerpProps) => {
               : "1fr",
         }}
       >
-        {/* Position Component */}
         <div className="border-r border-b border-borderColor overflow-x-hidden">
           <Position asset={asset} />
         </div>
 
-        {/* Account Details and Actions */}
         <div className="p-4 border-b border-borderColor hidden sm:block">
           <div className="border-b border-borderColor pb-4 mb-4">
             <div className="flex items-center justify-between">
