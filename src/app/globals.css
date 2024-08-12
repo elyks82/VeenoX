@@ -155,3 +155,16 @@ input[type="number"] {
     border-bottom: 1px solid #333; /* Ajouter une bordure en bas pour séparer les divs */
   }
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.resizerY {
+  background: #ccc;
+  height: 5px;
+  cursor: row-resize;
+  flex-shrink: 0;
+}

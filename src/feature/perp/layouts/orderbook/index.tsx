@@ -66,20 +66,20 @@ export const Orderbook = ({
   const getStyleFromDevice = (i: number, color: string) => {
     switch (i) {
       case 0:
-        return `pl-2.5 py-[4.6px] ${color}`;
+        return `pl-2.5  ${color}`;
       case 1:
-        return "py-[4.6px] text-end";
+        return " text-end";
       case 2:
-        return "pr-2.5 py-[4.6px] text-end";
+        return "pr-2.5  text-end";
       case 3:
-        return "pr-2.5 py-[4.6px] text-end";
+        return "pr-2.5  text-end";
       default:
-        return "pr-2.5 py-[4.6px] text-end";
+        return "pr-2.5  text-end";
     }
   };
 
   return (
-    <section className="w-full ">
+    <section className="w-full h-full max-h-full">
       {isMobileOpenTrade || isMobile ? null : (
         <>
           <div className="flex items-center w-full h-[44px] relative">
@@ -108,7 +108,8 @@ export const Orderbook = ({
       {activeSection === OrderbookSection.ORDERBOOK &&
       (mobileActiveSection === "Orderbook" || !mobileActiveSection) ? (
         <div
-          className={`max-h-[670px] overflow-y-scroll relative ${
+          // max-h-[670px]  overflow-y-scroll
+          className={`relative h-calc-full-button ${
             isMobileOpenTrade ? "w-[140px]" : "w-auto"
           }  sm:w-auto`}
         >
@@ -117,12 +118,10 @@ export const Orderbook = ({
               <img src="/loader/loader.gif" className="w-[150px]" />
             </div>
           ) : (
-            <table className="w-full">
+            <table className="w-full h-full">
               <thead>
                 <tr className="text-font-60 text-xs">
-                  <th className="pl-2.5 text-start pt-2 pb-1 font-normal">
-                    Price
-                  </th>
+                  <th className="pl-2.5 text-start  font-normal">Price</th>
                   {isMobileOpenTrade ? null : (
                     <th className="text-end font-normal">Size</th>
                   )}

@@ -21,7 +21,9 @@ export const Perp = ({ asset }: PerpProps) => {
   const wallet = useWalletConnector();
   const chartRef = useRef<HTMLDivElement>(null);
   const [colWidths, setColWidths] = useState([6, 2, 2]);
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [topHeight, setTopHeight] = useState(80); // Initial height as a percentage (80% pour la div du haut)
+  const { setMobileActiveSection, mobileActiveSection } = useGeneralContext();
 
   const handleMouseDown = (index: number, e: any) => {
     if (window.innerWidth < 1024) return;
@@ -58,6 +60,32 @@ export const Perp = ({ asset }: PerpProps) => {
     window.addEventListener("mouseup", onMouseUp);
   };
 
+  const handleMouse = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const startY = e.clientY;
+    const containerHeight = (
+      containerRef.current as HTMLDivElement
+    ).getBoundingClientRect().height;
+    const startTopHeight = (topHeight / 100) * containerHeight;
+    const startBottomHeight = containerHeight - startTopHeight;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const deltaY = e.clientY - startY;
+      const newTopHeight = startTopHeight + deltaY;
+      const newTopHeightPercent = (newTopHeight / containerHeight) * 100;
+      const newBottomHeightPercent = 100 - newTopHeightPercent;
+
+      setTopHeight(Math.max(Math.min(newTopHeightPercent, 90), 10)); // Assure que la hauteur reste entre 10% et 90%
+    };
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+  };
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth <= 600) {
@@ -74,15 +102,21 @@ export const Perp = ({ asset }: PerpProps) => {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  const { setMobileActiveSection, mobileActiveSection } = useGeneralContext();
+
   return (
-    <>
+    <div
+      ref={containerRef}
+      className="container overflow-scroll w-full max-w-full"
+    >
+      {/*  ROW 1 */}
+      {/* <ResizablePanels /> */}
       <div
-        ref={containerRef}
-        className="relative w-full border-b border-borderColor"
+        // ref={containerRef}
+        className="relative w-full border-b border-borderColor topPane flex-grow"
+        style={{ height: `${topHeight}%`, zIndex: 1 }}
       >
         <div
-          className="grid"
+          className="grid  h-full"
           style={{
             gridTemplateColumns: colWidths.map((w) => `${w}fr`).join(" "),
           }}
@@ -125,12 +159,12 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
 
           {/* Column 2 */}
-          <div className="border-r border-borderColor hidden md:block ">
+          <div className="border-r border-borderColor hidden md:block h-full ">
             <Orderbook asset={asset} />
           </div>
 
           {/* Column 3 */}
-          <div className="hidden md:block">
+          <div className="hidden md:block h-full ">
             <OpenTrade />
           </div>
         </div>
@@ -150,13 +184,18 @@ export const Perp = ({ asset }: PerpProps) => {
             />
           ))}
       </div>
+      {/*  ROW 2 */}
+      <div className="resizerY" onMouseDown={handleMouse} />
+
       <div
-        className="grid w-full h-auto border-b border-borderColor"
+        className="grid w-full h-auto border-b border-borderColor bottomPane"
         style={{
           gridTemplateColumns:
             window.innerWidth >= 1024
               ? `${colWidths[0] + colWidths[1]}fr ${colWidths[2]}fr`
               : "1fr",
+          height: `${100 - topHeight}%`,
+          zIndex: 0,
         }}
       >
         <div className="border-r border-b border-borderColor overflow-x-hidden">
@@ -202,6 +241,6 @@ export const Perp = ({ asset }: PerpProps) => {
         </div>
       </div>
       <MobileOpenTrade asset={asset} />
-    </>
+    </div>
   );
 };

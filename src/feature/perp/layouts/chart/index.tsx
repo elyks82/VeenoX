@@ -3,7 +3,7 @@ import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
 import { useWS } from "@orderly.network/hooks";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Timezone } from "../../../../../public/static/charting_library/charting_library";
 import { DISABLED_FEATURES, ENABLED_FEATURES } from "./constant";
 import { Datafeed } from "./datafeed";
@@ -25,14 +25,17 @@ const TradingViewChart = ({
 }: TradingViewChartProps) => {
   const { isChartLoading, setIsChartLoading } = useGeneralContext();
   const ref = useRef<HTMLDivElement>(null);
+  const [tvWidget, setTvWidget] = useState<any>(null);
   const ws = useWS();
+
   const chartInit = () => {
-    if (!asset) return () => {};
+    if (!asset) return;
+
     import("../../../../../public/static/charting_library").then(
       ({ widget: Widget }) => {
         if (!ref.current) return;
 
-        const tvWidget = new Widget({
+        const widgetInstance = new Widget({
           datafeed: Datafeed(asset, ws, setIsChartLoading) as any,
           symbol: formatSymbol(asset?.symbol),
           container: ref.current,
@@ -48,7 +51,6 @@ const TradingViewChart = ({
             .timeZone as Timezone,
           autosize: true,
           theme: "Dark",
-          // toolbar_bg: "rgba(21, 25, 41, 1)",
           loading_screen: { backgroundColor: "rgba(21, 25, 41, 1)" },
           studies_overrides: {
             "volume.volume.color.0": "rgba(14, 203, 129,0.3)",
@@ -57,43 +59,55 @@ const TradingViewChart = ({
           ...widgetOptionsDefault,
         });
 
-        (window as any).tvWidget = tvWidget;
+        setTvWidget(widgetInstance);
 
-        (window as any).tvWidget.onChartReady(() => {
-          (window as any).tvWidget?.applyOverrides(overrides() || {});
+        widgetInstance.onChartReady(() => {
+          widgetInstance.applyOverrides(overrides() || {});
         });
       }
     );
   };
 
   useEffect(() => {
-    (window as any).tvWidget = null;
-
     chartInit();
 
+    // Cleanup
     return () => {
-      if ((window as any).tvWidget !== null) {
-        (window as any).tvWidget?.remove();
-        (window as any).tvWidget = null;
+      if (tvWidget !== null) {
+        tvWidget.remove();
+        setTvWidget(null);
       }
     };
   }, [asset?.symbol, custom_css_url, mobile]);
 
+  useEffect(() => {
+    if (tvWidget) {
+      const resizeObserver = new ResizeObserver(() => {
+        tvWidget.resize();
+      });
+
+      if (ref.current) {
+        resizeObserver.observe(ref.current);
+      }
+
+      return () => {
+        resizeObserver.disconnect();
+      };
+    }
+  }, [tvWidget]);
+
   return (
-    <div className="relative w-full">
+    <div className="relative w-full h-calc-full-chart ">
       <div
-        className={`absolute z-10 h-[450px] sm:h-[600px] bg-secondary w-full ${
+        className={`absolute z-10  bg-secondary w-full ${
           isChartLoading ? "opacity-100" : "opacity-0 pointer-events-none"
-        } transition-all duration-200 ease-in-out`}
+        } transition-all duration-200 ease-in-out h-full`}
       >
         <div className="w-full h-full flex items-center justify-center">
           <img src="/loader/loader.gif" className="w-[150px]" />
         </div>
       </div>
-      <div
-        className={cn(`w-full h-[450px] sm:h-[600px]`, className)}
-        ref={ref}
-      />
+      <div className={cn(`w-full h-full`, className)} ref={ref} />
     </div>
   );
 };
