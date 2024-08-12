@@ -60,8 +60,8 @@ export const GraduateSlider = () => {
                   transform: "rotate(45deg)",
                   backgroundColor:
                     index * selectedStep + selectedMin < values[0]
-                      ? "#548BF4"
-                      : "#ccc",
+                      ? "#836ef9"
+                      : "rgba(70,70,70,1)",
                 }}
               >
                 {/* <div
@@ -95,7 +95,7 @@ export const GraduateSlider = () => {
                 borderRadius: "4px",
                 background: getTrackBackground({
                   values,
-                  colors: ["#548BF4", "#ccc"],
+                  colors: ["#836ef9", "rgba(70,70,70,1)"],
                   min: MIN,
                   max: MAX,
                   rtl: false,
@@ -116,7 +116,7 @@ export const GraduateSlider = () => {
               height: "12px",
               width: "12px",
               borderRadius: "100%",
-              backgroundColor: "#FFF",
+              backgroundColor: "rgba(200,200,200,1)",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -129,7 +129,7 @@ export const GraduateSlider = () => {
                 height: "100%",
                 width: "100%",
                 borderRadius: "100%",
-                backgroundColor: "#548BF4",
+                backgroundColor: "#836ef9",
               }}
             />
           </div>

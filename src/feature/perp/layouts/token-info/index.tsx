@@ -124,7 +124,7 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
           </PopoverTrigger>
           <PopoverContent
             sideOffset={0}
-            className="transform-x-[10px] w-[550px] bg-terciary border border-borderColor-DARK shadow-xl"
+            className="transform-x-[10px] w-[550px] bg-primary border border-borderColor shadow-xl"
           >
             <PairSelector />
           </PopoverContent>
@@ -172,7 +172,7 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
                         src="/logo/orderly.svg"
                         alt="Orderly Network logo"
                       />
-                      <p className="text-xs text-white font-medium">
+                      <p className="text-xs  text-white font-medium">
                         {getFormattedAmount(marketInfo?.["24h_amount"])}
                       </p>
                     </span>

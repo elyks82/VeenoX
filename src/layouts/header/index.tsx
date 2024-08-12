@@ -107,7 +107,7 @@ export const Header = () => {
       <div className="flex items-center gap-5">
         <div className="flex relative w-fit h-fit">
           <button
-            className="text-white bg-terciary border border-emerald-700 text-bold font-poppins text-xs
+            className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
             h-[30px] sm:h-[35px] px-2 rounded sm:rounded-md mr-2.5 flex items-center
         "
           >
@@ -119,7 +119,7 @@ export const Header = () => {
             <IoChevronDown className="ml-1.5" />
           </button>
           <button
-            className="text-white bg-emerald-700 border border-borderColor-DARK text-bold font-poppins text-xs
+            className="text-white bg-base_color border border-borderColor-DARK text-bold font-poppins text-xs
         h-[30px] sm:h-[35px] px-2 sm:px-2.5 rounded sm:rounded-md 
         "
             onClick={handleConnect}

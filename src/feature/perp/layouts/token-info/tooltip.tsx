@@ -63,7 +63,7 @@ export const PairSelector = () => {
 
   return (
     <div>
-      <div className="w-full h-[35px] rounded bg-terciary border border-borderColor-DARK">
+      <div className="w-full h-[35px] rounded bg-terciary border border-borderColor">
         <input
           className="w-full h-full px-2.5 text-white text-sm"
           placeholder="Search coins"
@@ -75,7 +75,7 @@ export const PairSelector = () => {
           <button
             key={i}
             className={`${
-              activeSection === section ? "text-blue-500" : "text-white"
+              activeSection === section ? "text-base_color" : "text-white"
             } font-medium transition-all duration-100 ease-in-out`}
             onClick={() => setActiveSection(section)}
           >
@@ -107,7 +107,7 @@ export const PairSelector = () => {
                     <td className="py-1">
                       <div className="flex w-full items-center">
                         {formatSymbol(token.symbol)}
-                        <span className="bg-blue-600 rounded text-[11px] px-1 py-[1px] ml-2">
+                        <span className="bg-base_color rounded text-[11px] px-1 py-[1px] ml-2">
                           x{token.leverage}
                         </span>
                       </div>
