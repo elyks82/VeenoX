@@ -110,7 +110,7 @@ export const Orderbook = ({
         <div
           // max-h-[670px]  overflow-y-scroll
           className={`relative h-full md:h-calc-full-button ${
-            isMobileOpenTrade ? "w-[140px]" : "w-auto"
+            isMobileOpenTrade ? "min-w-[140px] w-full" : "w-auto"
           }  sm:w-auto`}
         >
           {!data?.asks?.length ? (
