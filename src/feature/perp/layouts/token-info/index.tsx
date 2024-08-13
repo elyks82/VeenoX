@@ -107,7 +107,7 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
     <div className="flex items-center w-full h-[55px] sm:h-[65px] px-3 border-b border-borderColor whitespace-nowrap overflow-x-scroll">
       <div className="flex items-center gap-3 relative text-white h-full">
         <Popover>
-          <PopoverTrigger className="h-full ">
+          <PopoverTrigger className="h-full">
             <div className="flex items-center mr-1 whitespace-nowrap w-fit min-w-[168px] border-r border-borderColor h-full cursor-pointer">
               <img
                 className="sm:w-[28px] sm:h-[28px] w-[22px] h-[22px] bg-gray-500 rounded-full"
@@ -124,7 +124,7 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
           </PopoverTrigger>
           <PopoverContent
             sideOffset={0}
-            className="transform-x-[10px] w-[550px] bg-primary border border-borderColor shadow-xl"
+            className="md:transform-x-[10px] w-[330px] bg-red md:w-[550px] bg-primary border border-borderColor shadow-xl"
           >
             <PairSelector />
           </PopoverContent>

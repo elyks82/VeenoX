@@ -36,7 +36,7 @@ export const Orderbook = ({
       level:
         isMobileOpenTrade || isMobile
           ? 8
-          : sectionRef?.current?.clientHeight > 800
+          : (sectionRef?.current?.clientHeight as number) > 800
           ? 14
           : 12,
       padding: false,

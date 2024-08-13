@@ -65,7 +65,7 @@ export const PairSelector = () => {
   const filteredMarketData = getFilteredMarketData();
 
   return (
-    <div>
+    <div className="w-full">
       <div className="w-full h-[35px] rounded bg-terciary border border-borderColor">
         <input
           className="w-full h-full px-2.5 text-white text-sm"
@@ -93,12 +93,21 @@ export const PairSelector = () => {
               <th className="font-normal py-1 text-start">Symbol</th>
               <th className="font-normal text-end">Last Price</th>
               <th className="font-normal text-end">24h Change</th>
-              <th className="font-normal text-end">Volume</th>
-              <th className="font-normal text-end">Open Interest</th>
+              <th className="md:table-cell hidden font-normal text-end">
+                Volume
+              </th>
+              <th className="md:table-cell hidden font-normal text-end">
+                Open Interest
+              </th>
             </tr>
           </thead>
           {filteredMarketData?.length > 0 ? (
             filteredMarketData?.map((token: MarketTickerProps, i: number) => {
+              console.log("token", token);
+              const percentage_change =
+                ((token?.["24h_close"] - token?.["24h_open"]) /
+                  token?.["24h_open"]) *
+                100;
               const isUp = token.change > 0;
               return (
                 <tbody
@@ -128,15 +137,15 @@ export const PairSelector = () => {
                       className={`text-end ${isUp ? "text-green" : "text-red"}`}
                     >
                       <Link href={`/perp/${token.symbol}`}>
-                        {getFormattedAmount(token.change)}%
+                        {percentage_change?.toFixed(2)}%
                       </Link>
                     </td>
-                    <td className="text-end">
+                    <td className="text-end md:table-cell hidden">
                       <Link href={`/perp/${token.symbol}`}>
                         {getFormattedAmount(token["24h_volume"])}
                       </Link>
                     </td>
-                    <td className="text-end">
+                    <td className="text-end md:table-cell hidden">
                       <Link href={`/perp/${token.symbol}`}>
                         {getFormattedAmount(token.open_interest)}
                       </Link>
