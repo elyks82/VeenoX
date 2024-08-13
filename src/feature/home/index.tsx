@@ -50,7 +50,19 @@ export const Home = () => {
         //   backgroundRepeat: "no-repeat",
         // }}
       >
-        <img
+        <motion.img
+          initial="initial"
+          whileHover="hovered"
+          variants={{
+            initial: {
+              opacity: 0,
+            },
+            visible: {
+              opacity: 1,
+            },
+          }}
+          animate={mainControls}
+          transition={{ duration: 0.3, delay: 0 }}
           src="/logo/veeno-purple.png"
           className="h-[640px] z-[0] w-auto absolute translate-y-1/2 left-1/2 top-1/2 opacity-100"
           style={{
@@ -73,7 +85,7 @@ export const Home = () => {
                 }}
                 initial="hidden"
                 animate={mainControls}
-                transition={{ duration: 0.5, delay: 0.5 }}
+                transition={{ duration: 0.3, delay: 0.3 }}
                 className="overflow-hidden block relative whitespace-nowrap
   text-7xl font-bold  mb-2 w-auto text-outlined "
               >
@@ -92,7 +104,7 @@ export const Home = () => {
                 }}
                 initial="hidden"
                 animate={mainControls}
-                transition={{ duration: 0.5, delay: 0.8 }}
+                transition={{ duration: 0.3, delay: 0.6 }}
                 className="overflow-hidden block relative whitespace-nowrap
       text-7xl font-bold dark:text-white text-black mb-2 w-auto"
               >
@@ -114,7 +126,7 @@ export const Home = () => {
                   },
                 }}
                 animate={mainControls}
-                transition={{ duration: 0.5, delay: 1.1 }}
+                transition={{ duration: 0.3, delay: 0.9 }}
               >
                 <h2
                   className="text-7xl font-bold mb-2 flex items-center"
@@ -187,14 +199,32 @@ text-7xl font-bold dark:text-white text-black mb-5 pt-1 h-[78px] w-full"
                   </div>
                 </motion.div> */}
               </motion.div>
-              <p className="text-xl text-font-60 font-normal mt-8 max-w-[800px]">
-                Experience a new era of trading with Veeno, the pioneering
-                decentralized exchange on Monad. Enjoy an intuitive user
-                interface and benefit from the{" "}
-                <span className="text-white font-medium">lowest fees</span> in
-                the market, powered by Orderly Network for seamless and
-                cost-effective trading.
-              </p>
+              <motion.div
+                className="flex items-center"
+                initial="initial"
+                whileHover="hovered"
+                variants={{
+                  initial: {
+                    opacity: 0,
+                    y: 10,
+                  },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                  },
+                }}
+                animate={mainControls}
+                transition={{ duration: 0.3, delay: 1.2 }}
+              >
+                <p className="text-xl text-font-60 font-normal mt-8 max-w-[800px]">
+                  Experience a new era of trading with Veeno, the pioneering
+                  decentralized exchange on Monad. Enjoy an intuitive user
+                  interface and benefit from the{" "}
+                  <span className="text-white font-medium">lowest fees</span> in
+                  the market, powered by Orderly Network for seamless and
+                  cost-effective trading.
+                </p>
+              </motion.div>
               <motion.button
                 variants={{
                   hidden: {
@@ -209,8 +239,8 @@ text-7xl font-bold dark:text-white text-black mb-5 pt-1 h-[78px] w-full"
                 initial="hidden"
                 animate={mainControls}
                 transition={{
-                  duration: 0.5,
-                  delay: 1.3,
+                  duration: 0.3,
+                  delay: 1.5,
                 }}
                 className="mt-[50px] rounded px-5 py-3 text-white text-lg mr-auto cursor-pointer bg-base_color"
               >

@@ -4,7 +4,8 @@ import {
   useAccount as useOrderlyAccount,
   useWalletConnector,
 } from "@orderly.network/hooks";
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";
 import { MdContentCopy } from "react-icons/md";
@@ -60,11 +61,11 @@ export const Header = () => {
     }
   };
 
-  useEffect(() => {
-    if (state.status === AccountStatusEnum.NotConnected) {
-      handleConnect();
-    }
-  }, [state.status]);
+  // useEffect(() => {
+  //   if (state.status === AccountStatusEnum.NotConnected) {
+  //     handleConnect();
+  //   }
+  // }, [state.status]);
 
   const handleDisconnect = () => {
     // disconnect();
@@ -85,23 +86,25 @@ export const Header = () => {
   return (
     <header className="flex items-center justify-between h-[60px] px-2.5 border-b border-borderColor">
       <div className="flex items-center gap-5">
-        <div className="flex items-center gap-2">
-          <img
-            src="/logo/v.png"
-            alt="Veeno Logo"
-            className="h-[30px] w-[30px] max-w-[25px] max-h-[25px] sm:max-w-[30px] sm:max-h-[30px]"
-          />
-          <h3 className="text-white text-bold font-poppins text-base sm:text-xl ">
-            VEENO
-          </h3>
-          <nav className="ml-5 h-full hidden sm:flex">
-            <ul className="text-white text-medium text-sm flex items-center gap-5 h-full">
-              <li>Trade</li>
-              <li>Dashboard</li>
-              <li>Portfolio</li>
-            </ul>
-          </nav>
-        </div>
+        <Link href="/">
+          <div className="flex items-center gap-2">
+            <img
+              src="/logo/v.png"
+              alt="Veeno Logo"
+              className="h-[30px] w-[30px] max-w-[25px] max-h-[25px] sm:max-w-[30px] sm:max-h-[30px]"
+            />
+            <h3 className="text-white font-poppins text-base sm:text-xl ">
+              VEENO
+            </h3>
+            <nav className="ml-5 h-full hidden sm:flex">
+              <ul className="text-white text-medium text-sm flex items-center gap-5 h-full">
+                <li>Trade</li>
+                <li>Dashboard</li>
+                <li>Portfolio</li>
+              </ul>
+            </nav>
+          </div>{" "}
+        </Link>
       </div>
       <div className="flex items-center gap-5">
         <div className="flex relative w-fit h-fit">
