@@ -1,6 +1,8 @@
+import { useGeneralContext } from "@/context";
 import { MarketTickerProps } from "@/models";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
 import { useMarkets } from "@orderly.network/hooks";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -15,6 +17,7 @@ export const PairSelector = () => {
   const sections: string[] = ["All Coins", "x10", "x20", "x50"];
   const [activeSection, setActiveSection] = useState(sections[0]);
   const [searchInput, setSearchInput] = useState("");
+  const { isChartLoading, setIsChartLoading } = useGeneralContext();
   const [
     data,
     {
@@ -101,30 +104,42 @@ export const PairSelector = () => {
                 <tbody
                   key={i}
                   className="hover:bg-terciary transition-all duration-100 ease-in-out"
-                  onClick={() => router.push(`/perp/${token.symbol}`)}
                 >
-                  <tr className="text-font-80">
+                  <tr
+                    className="text-font-80"
+                    onClick={() => setIsChartLoading(true)}
+                  >
                     <td className="py-1">
-                      <div className="flex w-full items-center">
-                        {formatSymbol(token.symbol)}
-                        <span className="bg-base_color rounded text-[11px] px-1 py-[1px] ml-2">
-                          x{token.leverage}
-                        </span>
-                      </div>
+                      <Link href={`/perp/${token.symbol}`}>
+                        <div className="flex w-full items-center">
+                          {formatSymbol(token.symbol)}
+                          <span className="bg-base_color rounded text-[11px] px-1 py-[1px] ml-2">
+                            x{token.leverage}
+                          </span>
+                        </div>
+                      </Link>
                     </td>
                     <td className="text-end">
-                      {getFormattedAmount(token.mark_price)}
+                      <Link href={`/perp/${token.symbol}`}>
+                        {getFormattedAmount(token.mark_price)}
+                      </Link>
                     </td>
                     <td
                       className={`text-end ${isUp ? "text-green" : "text-red"}`}
                     >
-                      {getFormattedAmount(token.change)}%
+                      <Link href={`/perp/${token.symbol}`}>
+                        {getFormattedAmount(token.change)}%
+                      </Link>
                     </td>
                     <td className="text-end">
-                      {getFormattedAmount(token["24h_volume"])}
+                      <Link href={`/perp/${token.symbol}`}>
+                        {getFormattedAmount(token["24h_volume"])}
+                      </Link>
                     </td>
                     <td className="text-end">
-                      {getFormattedAmount(token.open_interest)}
+                      <Link href={`/perp/${token.symbol}`}>
+                        {getFormattedAmount(token.open_interest)}
+                      </Link>
                     </td>
                   </tr>
                 </tbody>
