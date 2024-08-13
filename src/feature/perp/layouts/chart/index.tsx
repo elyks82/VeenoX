@@ -71,8 +71,6 @@ const TradingViewChart = ({
 
   useEffect(() => {
     chartInit();
-
-    // Cleanup
     return () => {
       if (tvWidget !== null) {
         tvWidget.remove();

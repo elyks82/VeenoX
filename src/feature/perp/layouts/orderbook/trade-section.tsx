@@ -19,7 +19,7 @@ export const TradeSection = ({
           <img src="/loader/loader.gif" className="w-[150px]" />
         </div>
       ) : (
-        <table className="w-full">
+        <table className="w-full h-full">
           <thead>
             <tr className="text-font-60 text-xs font-normal sticky top-0 bg-secondary border-b border-borderColor-DARK ">
               <th className="pl-2.5 text-start py-1 font-normal">Price</th>
