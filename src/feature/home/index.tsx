@@ -75,7 +75,7 @@ export const Home = () => {
                 animate={mainControls}
                 transition={{ duration: 0.5, delay: 0.5 }}
                 className="overflow-hidden block relative whitespace-nowrap
-  text-7xl font-bold  mb-2 w-auto text-white"
+  text-7xl font-bold  mb-2 w-auto text-outlined "
               >
                 Veeno
               </motion.h1>
@@ -212,7 +212,7 @@ text-7xl font-bold dark:text-white text-black mb-5 pt-1 h-[78px] w-full"
                   duration: 0.5,
                   delay: 1.3,
                 }}
-                className="mt-[50px] rounded px-5 py-3 text-white text-xl mr-auto cursor-pointer bg-base_color"
+                className="mt-[50px] rounded px-5 py-3 text-white text-lg mr-auto cursor-pointer bg-base_color"
               >
                 <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
                   Access preview
