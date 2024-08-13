@@ -2,12 +2,22 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="h-screen w-full flex items-center justify-center">
-      <h1 className="text-base_color text-4xl">
-        <Link href="/perp/PERP_BTC_USDC">
-          Click here to access the trading platform (Build in progress)
-        </Link>
+    <div
+      className="h-screen flex-col w-full flex items-center justify-center"
+      style={{
+        background:
+          "radial-gradient(circle at right bottom, #200052, rgb(10,10,10)),radial-gradient(circle at left, #443a7e, rgb(10,10,10))",
+      }}
+    >
+      <h1 className="text-base_color text-6xl font-bold font-poppins text-center">
+        WELCOME TO VEENOX
       </h1>
+      <p className="text-font-60 text-lg mt-2 text-center">
+        Build in progress. You can access the preview by clicking on the button.
+      </p>
+      <button className="border-base_color border text-lg bg-[rgba(255,255,255,0.05)] h-[45px] text-base_color rounded w-fit px-6 mx-auto mt-10">
+        <Link href="/perp/PERP_BTC_USDC">Preview</Link>
+      </button>
     </div>
   );
 }

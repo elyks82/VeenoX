@@ -53,6 +53,13 @@ input {
   background: none;
 }
 
+input:focus {
+  border: none;
+}
+input:active {
+  border: none;
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
