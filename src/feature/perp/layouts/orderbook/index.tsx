@@ -6,7 +6,7 @@ import {
   useMarketTradeStream,
   useOrderbookStream,
 } from "@orderly.network/hooks";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { TradeSection } from "./trade-section";
 
 enum OrderbookSection {
@@ -25,6 +25,7 @@ export const Orderbook = ({
   isMobile = false,
   isMobileOpenTrade = false,
 }: OrderbookProps) => {
+  const sectionRef = useRef<HTMLDivElement>(null);
   const { mobileActiveSection, setMobileActiveSection } = useGeneralContext();
   const [activeSection, setActiveSection] = useState(
     OrderbookSection.ORDERBOOK
@@ -32,7 +33,12 @@ export const Orderbook = ({
 
   const [data, { isLoading, onItemClick, depth, allDepths }] =
     useOrderbookStream(asset?.symbol, undefined, {
-      level: isMobileOpenTrade || isMobile ? 8 : 12,
+      level:
+        isMobileOpenTrade || isMobile
+          ? 8
+          : sectionRef?.current?.clientHeight > 800
+          ? 14
+          : 12,
       padding: false,
     });
   const bestBid: number | undefined = (data?.bids as [number[]])[0]?.[0];
@@ -80,6 +86,7 @@ export const Orderbook = ({
 
   return (
     <section
+      ref={sectionRef}
       className={`w-full md:max-h-full ${
         isMobileOpenTrade ? "h-auto max-h-full" : "h-[450px] max-h-[450px]"
       } md:h-full  overflow-y-hidden`}
@@ -175,7 +182,7 @@ export const Orderbook = ({
                       })}
 
                       <div
-                        className="absolute left-0 h-full bg-red-opacity-10 z-0 transition-all duration-150 ease-linear"
+                        className="absolute left-0 h-full max-h-full bg-red-opacity-10 z-0 transition-all duration-150 ease-linear"
                         style={{ width: `${asksWidth[i]}%` }}
                       />
                     </tr>
