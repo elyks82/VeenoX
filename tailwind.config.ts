@@ -47,6 +47,7 @@ const config: Config = {
         "calc-leverage-height": "calc(100% - 143px)",
         "calc-full-button": "calc(100% - 44px)",
         "calc-full-chart": "calc(100% - 108px)",
+        "calc-full-header": "calc(100vh - 60px)",
       },
       inset: {
         "calc-slide-long": "calc(50% - 4px)",

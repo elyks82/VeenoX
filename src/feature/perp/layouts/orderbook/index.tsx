@@ -192,7 +192,7 @@ export const Orderbook = ({
                     className="px-2.5 border-y border-borderColor-DARK bg-terciary"
                   >
                     <div className="whitespace-nowrap flex justify-between items-center">
-                      <p className="text-sm text-white font-bold ">
+                      <p className="text-sm text-white font-bold">
                         {getFormattedAmount(data?.middlePrice as any, true) ||
                           0}
                       </p>

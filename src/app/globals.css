@@ -179,3 +179,11 @@ input[type="number"] {
 .resizerY:hover {
   background-color: rgba(0, 0, 0, 0.1);
 }
+
+.text-outlined {
+  background-color: black;
+  background-clip: text; /* Découpe le fond pour qu'il soit visible uniquement à l'intérieur des lettres */
+  -webkit-background-clip: text; /* Support pour les navigateurs WebKit (Chrome, Safari) */
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff,
+    1px 1px 0 #fff;
+}
