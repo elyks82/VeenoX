@@ -6,6 +6,7 @@ export const ENABLED_FEATURES = [
   "save_load_adapter",
   "header_saveload",
   "save_shortcut",
+
   // "hide_last_na_study_output",
   // "dont_show_boolean_study_arguments",
 ];
@@ -28,7 +29,7 @@ export const DISABLED_FEATURES = [
   //    "header_saveload",defzfefefe
   "header_symbol_search",
   "symbol_info",
-  // "volume_force_overlay",
+  "volume_force_overlay",
   "show_interval_dialog_on_key_press",
   "symbol_search_hot_key",
   "symbol_info",

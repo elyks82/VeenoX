@@ -1,6 +1,6 @@
 import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { OpenTrade } from "../open-trade";
 import { Orderbook } from "../orderbook";
 import { TriggerMobileTradeCreator } from "./trigger";
@@ -13,10 +13,15 @@ export const MobileOpenTrade = ({ asset }: MobileOpenTradeProps) => {
   const { showMobileTradeCreator, setShowMobileTradeCreator } =
     useGeneralContext();
   const tradeCreatorRef = useRef<HTMLDivElement>(null);
-  const getPositionFromContainerRef = () => {
-    const clientHeight = tradeCreatorRef?.current?.clientHeight || 0;
-    return `calc(100% - ${clientHeight}px)`;
-  };
+  const { tradeInfo } = useGeneralContext();
+  const [position, setPosition] = useState("100%");
+
+  useEffect(() => {
+    if (showMobileTradeCreator) {
+      const clientHeight = tradeCreatorRef?.current?.clientHeight || 0;
+      setPosition(`calc(100% - ${clientHeight}px)`);
+    }
+  }, [showMobileTradeCreator, tradeInfo.type, tradeInfo.tp_sl]);
   return (
     <>
       <div
@@ -30,7 +35,7 @@ export const MobileOpenTrade = ({ asset }: MobileOpenTradeProps) => {
       <div
         ref={tradeCreatorRef}
         style={{
-          top: showMobileTradeCreator ? getPositionFromContainerRef() : "100%",
+          top: showMobileTradeCreator ? position : "100%",
         }}
         className={`fixed h-fit w-full md:w-[350px] z-[100] left-0  transition-all duration-200 ease-in-out bg-secondary border-t border-borderColor shadow-2xl flex`}
       >

@@ -53,8 +53,9 @@ const TradingViewChart = ({
           theme: "Dark",
           loading_screen: { backgroundColor: "rgba(20, 20, 20, 1)" },
           studies_overrides: {
-            "volume.volume.color.0": "rgba(14, 203, 129,0.3)",
-            "volume.volume.color.1": "rgba(234, 57, 67, 0.3)",
+            "volume.volume.color.0": "#ea3943",
+            "volume.volume.color.1": "#0ECB81",
+            volumePaneSize: "small",
           },
           ...widgetOptionsDefault,
         });

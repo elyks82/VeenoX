@@ -25,6 +25,6 @@ export const overrides = () => ({
   "mainSeriesProperties.haStyle.drawWick": true,
   "mainSeriesProperties.haStyle.drawBorder": true,
   "paneProperties.legendProperties.backgroundTransparency": 10,
-  volumePaneSize: "small",
   "scalesProperties.fontSize": 12,
+  volumePaneSize: "small",
 });

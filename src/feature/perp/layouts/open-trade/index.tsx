@@ -276,7 +276,7 @@ export const OpenTrade = ({ isMobile = false }: OpenTradeProps) => {
           ) : null}
         </div>
         <button
-          className={`w-full mt-2.5 sm:mt-auto h-[32px] sm:h-[35px] ${
+          className={`w-full mt-2.5 md:mt-auto h-[32px] sm:h-[35px] ${
             tradeInfo.side === "Buy" ? "bg-green" : "bg-red"
           } mt-4 text-white rounded transition-all duration-200 ease-in-out text-xs sm:text-sm`}
         >
