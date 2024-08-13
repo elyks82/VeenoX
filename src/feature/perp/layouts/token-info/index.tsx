@@ -90,7 +90,6 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
   ) => {
     if (percentage > "0") return "text-green";
     else if (percentage < "0") {
-      if (isTest) console.log("perd", percentage, fundingChange);
       return "text-red";
     } else "text-white";
   };

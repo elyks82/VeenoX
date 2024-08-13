@@ -3,7 +3,7 @@ import { MarketTickerProps } from "@/models";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
 import { useMarkets } from "@orderly.network/hooks";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
 enum MarketsType {
@@ -18,6 +18,7 @@ export const PairSelector = () => {
   const [activeSection, setActiveSection] = useState(sections[0]);
   const [searchInput, setSearchInput] = useState("");
   const { isChartLoading, setIsChartLoading } = useGeneralContext();
+  const pathname = usePathname();
   const [
     data,
     {
@@ -103,26 +104,31 @@ export const PairSelector = () => {
           </thead>
           {filteredMarketData?.length > 0 ? (
             filteredMarketData?.map((token: MarketTickerProps, i: number) => {
-              console.log("token", token);
               const percentage_change =
                 ((token?.["24h_close"] - token?.["24h_open"]) /
                   token?.["24h_open"]) *
                 100;
               const isUp = token.change > 0;
+              const isActivePair = pathname.includes(token.symbol);
               return (
                 <tbody
                   key={i}
-                  className="hover:bg-terciary transition-all duration-100 ease-in-out"
+                  className="hover:bg-[#242424] transition-all duration-75 ease-linear"
                 >
                   <tr
                     className="text-font-80"
                     onClick={() => setIsChartLoading(true)}
                   >
                     <td className="py-1">
-                      <Link href={`/perp/${token.symbol}`}>
+                      <Link
+                        className={`hover:text-white ${
+                          isActivePair ? "text-base_color" : "text-white"
+                        } transition-all duration-75 ease-in-out`}
+                        href={`/perp/${token.symbol}`}
+                      >
                         <div className="flex w-full items-center">
                           {formatSymbol(token.symbol)}
-                          <span className="bg-base_color rounded text-[11px] px-1 py-[1px] ml-2">
+                          <span className="bg-base_color text-white hover:text-white rounded text-[11px] px-1 py-[1px] ml-2">
                             x{token.leverage}
                           </span>
                         </div>

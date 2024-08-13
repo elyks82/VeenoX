@@ -2,8 +2,8 @@
 import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { useWalletConnector } from "@orderly.network/hooks";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import TradingViewChart from "./layouts/chart";
 import { Favorites } from "./layouts/favorites";
 import { MobileOpenTrade } from "./layouts/mobile-open-trade";
 import { MobilePnL } from "./layouts/mobile-pnl";
@@ -12,6 +12,10 @@ import { OpenTrade } from "./layouts/open-trade";
 import { Orderbook } from "./layouts/orderbook";
 import { Position } from "./layouts/position";
 import { TokenInfo } from "./layouts/token-info";
+
+const TradingViewChart = dynamic(() => import("./layouts/chart"), {
+  ssr: false,
+});
 
 type PerpProps = {
   asset: FuturesAssetProps;
@@ -22,8 +26,8 @@ export const Perp = ({ asset }: PerpProps) => {
   const chartRef = useRef<HTMLDivElement>(null);
   const [colWidths, setColWidths] = useState([6, 2, 2]);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [topHeight, setTopHeight] = useState(70); // Initial height as a percentage (80% pour la div du haut)
-  const { setMobileActiveSection, mobileActiveSection } = useGeneralContext();
+  const [topHeight, setTopHeight] = useState(70);
+  const { mobileActiveSection, setIsChartLoading } = useGeneralContext();
   const rowUpRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (index: number, e: any) => {
@@ -96,6 +100,7 @@ export const Perp = ({ asset }: PerpProps) => {
   };
 
   useEffect(() => {
+    setTimeout(() => setIsChartLoading(false), 7000);
     const handleResize = () => {
       if (window.innerWidth <= 600) {
         setColWidths([1, 1, 1]);
@@ -108,6 +113,7 @@ export const Perp = ({ asset }: PerpProps) => {
 
     window.addEventListener("resize", handleResize);
     handleResize();
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 

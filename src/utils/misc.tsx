@@ -18,8 +18,16 @@ export const formatSymbol = (symbol: string, isOnlySymbol?: boolean) => {
   }
 };
 
+function formatNumber(number: number) {
+  return number.toLocaleString("en-US", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 10,
+  });
+}
+
 export function getFormattedAmount(
   price: number | string | undefined,
+  midAmount = false,
   lessPrecision = 0,
   settings: {
     shouldNotMinifyBigNumbers?: boolean;
@@ -58,7 +66,9 @@ export function getFormattedAmount(
           : formatAmount(price, 0);
       }
       if (Math.abs(parseFloat(price)) > 1000) {
-        return String(parseInt(price)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        if (!midAmount)
+          return String(parseInt(price)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return formatNumber(parseFloat(price));
       }
       if (Math.abs(parseFloat(price)) < 0.0000001 && settings.canUseHTML) {
         return formatSmallNumber(Math.abs(parseFloat(price)));

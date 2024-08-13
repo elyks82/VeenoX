@@ -186,7 +186,6 @@ export const Orderbook = ({
                     </tr>
                   );
                 })}
-
                 <tr>
                   <td
                     colSpan={4}
@@ -194,7 +193,8 @@ export const Orderbook = ({
                   >
                     <div className="whitespace-nowrap flex justify-between items-center">
                       <p className="text-sm text-white font-bold ">
-                        {getFormattedAmount((data?.middlePrice as any) || 0)}
+                        {getFormattedAmount(data?.middlePrice as any, true) ||
+                          0}
                       </p>
                       <span className="text-[13px] text-white hidden sm:flex">
                         Spread

@@ -80,17 +80,10 @@ export const Datafeed = (
       }));
 
       if (bars.length) {
-        const firstData = {
-          time: data.t[data.t.length - 1] * 1000,
-          open: data.o[data.o.length - 1],
-          high: data.h[data.h.length - 1],
-          low: data.l[data.l.length - 1],
-          close: data.c[data.c.length - 1],
-          volume: data.v[data.v.length - 1],
-        };
+        const mostRecentCandle = bars[bars.length - 1];
         onResult(bars, { noData: false });
         if (firstDataRequest) {
-          Cookies.set(symbolInfo.name, JSON.stringify(firstData));
+          // Cookies.set(symbolInfo.name, JSON.stringify(mostRecentCandle));
         }
       } else {
         onResult([], { noData: true });
@@ -105,52 +98,75 @@ export const Datafeed = (
     resolution: string,
     onRealtimeCallback: (bar: CustomBarProps) => void
   ) => {
-    const timeframe = resolutionToTimeframe(resolution);
-    setIsChartLoading(false);
+    try {
+      setIsChartLoading(false);
+      const timeframe = resolutionToTimeframe(resolution);
+      let lastDailyBar: CustomBarProps | null = Cookies.get(symbolInfo.name)
+        ? JSON.parse(Cookies.get(symbolInfo.name)!)
+        : null;
 
-    let lastDailyBar: CustomBarProps | null = Cookies.get(symbolInfo.name)
-      ? JSON.parse(Cookies.get(symbolInfo.name)!)
-      : null;
+      const getNextBarTime = (
+        resolution: string,
+        lastBarTime: number
+      ): number => {
+        const intervalMs = resolutionToMilliseconds(resolution);
+        return lastBarTime + intervalMs;
+      };
 
-    // Fonction pour obtenir le temps de la prochaine bougie
-    const getNextBarTime = (
-      resolution: string,
-      lastBarTime: number
-    ): number => {
-      const intervalMs = resolutionToMilliseconds(resolution);
-      return lastBarTime + intervalMs;
-    };
+      let nextDailyBarTime: number | null = lastDailyBar
+        ? getNextBarTime(resolution, lastDailyBar.time)
+        : null;
 
-    let nextDailyBarTime: number | null = lastDailyBar
-      ? getNextBarTime(resolution, lastDailyBar.time)
-      : null;
+      let initialDataLoaded = false;
 
-    let initialDataLoaded = false;
+      const unsubscribe = ws.subscribe(
+        {
+          id: `${symbolInfo.ticker}@kline_${timeframe}`,
+          topic: `${symbolInfo.ticker}@kline_${timeframe}`,
+          event: "subscribe",
+        },
+        {
+          onMessage: (data: any) => {
+            if (data) {
+              const currentTimeInMs = data.endTime * 1000;
+              const price = data.close;
+              if (lastDailyBar) {
+                if (currentTimeInMs >= nextDailyBarTime!) {
+                  console.log("Create  candle");
+                  const bar: CustomBarProps = {
+                    time: currentTimeInMs,
+                    open: price,
+                    high: price,
+                    low: price,
+                    close: price,
+                    volume: data.volume,
+                  };
 
-    const unsubscribe = ws.subscribe(
-      {
-        id: `${asset?.symbol}@kline_${timeframe}`,
-        topic: `${asset?.symbol}@kline_${timeframe}`,
-        event: "subscribe",
-      },
-      {
-        onMessage: (data: any) => {
-          if (data) {
-            const currentTimeInMs = data.endTime * 1000;
-            const price = data.close;
+                  lastDailyBar = bar;
+                  Cookies.set(symbolInfo.name, JSON.stringify(bar));
+                  onRealtimeCallback(bar);
 
-            if (!initialDataLoaded) {
-              if (lastDailyBar && currentTimeInMs < nextDailyBarTime!) {
-                return;
+                  // Mettre à jour le temps pour la prochaine bougie
+                  nextDailyBarTime = getNextBarTime(
+                    resolution,
+                    currentTimeInMs
+                  );
+                } else {
+                  console.log("Update  candle");
+                  const updatedBar: CustomBarProps = {
+                    ...lastDailyBar,
+                    high: Math.max(lastDailyBar.high, data.high),
+                    low: Math.min(lastDailyBar.low, data.low),
+                    close: price,
+                    volume: lastDailyBar.volume + data.volume,
+                  };
+
+                  lastDailyBar = updatedBar;
+                  Cookies.set(symbolInfo.name, JSON.stringify(lastDailyBar));
+                  onRealtimeCallback(updatedBar);
+                }
               } else {
-                initialDataLoaded = true;
-              }
-            }
-
-            if (lastDailyBar) {
-              const nextDailyBarTimeInMs = Number(nextDailyBarTime);
-
-              if (currentTimeInMs >= nextDailyBarTimeInMs) {
+                // Créer la première bougie s'il n'y en a pas
                 const bar: CustomBarProps = {
                   time: currentTimeInMs,
                   open: price,
@@ -165,46 +181,19 @@ export const Datafeed = (
                 onRealtimeCallback(bar);
 
                 nextDailyBarTime = getNextBarTime(resolution, currentTimeInMs);
-              } else {
-                console.log("Updating the existing bar.");
-                const bar: CustomBarProps = {
-                  ...lastDailyBar,
-                  high: Math.max(lastDailyBar.high, data.high),
-                  low: Math.min(lastDailyBar.low, data.low),
-                  close: price,
-                  volume: lastDailyBar.volume + data.volume,
-                };
-
-                lastDailyBar = bar;
-                Cookies.set(symbolInfo.name, JSON.stringify(lastDailyBar));
-                onRealtimeCallback(bar);
               }
-            } else {
-              console.log("No previous data, creating initial bar.");
-              const bar: CustomBarProps = {
-                time: currentTimeInMs,
-                open: price,
-                high: price,
-                low: price,
-                close: price,
-                volume: data.volume,
-              };
-
-              lastDailyBar = bar;
-              Cookies.set(symbolInfo.name, JSON.stringify(bar));
-              onRealtimeCallback(bar);
-
-              nextDailyBarTime = getNextBarTime(resolution, currentTimeInMs);
             }
-          }
-        },
-      }
-    );
+          },
+        }
+      );
 
-    return () => {
-      if (unsubscribe) unsubscribe();
-      sockets.delete(`${asset?.symbol}@kline_${timeframe}`);
-    };
+      return () => {
+        if (unsubscribe) unsubscribe();
+        sockets.delete(`${symbolInfo.name}@kline_${timeframe}`);
+      };
+    } catch (e) {
+      console.log("e", e);
+    }
   },
 
   unsubscribeBars: () => {},

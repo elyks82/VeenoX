@@ -37,15 +37,14 @@ export const Header = () => {
   const { createAccount, createOrderlyKey, account, state } =
     useOrderlyAccount();
   const wallet = useWalletConnector();
-  console.log("GET ORDERLY KEY", account.keyStore.getOrderlyKey(), account);
 
   const handleConnect = async () => {
     try {
       const result = await wallet.connect();
-      console.log("Wallet connection result:", result);
+      // console.log("Wallet connection result:", result);
 
-      console.log("Account information:", account);
-      console.log("account", account);
+      // console.log("Account information:", account);
+      // console.log("account", account);
       if (!account) {
         console.error("Account ID is undefined after wallet connection.");
         return;
