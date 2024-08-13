@@ -43,7 +43,7 @@ export const Home = () => {
       {/* <Loader3D /> */}
       {/* <SplineScene /> */}
       <section
-        className="h-calc-full-header flex items-center w-screen-header ml-[240px]"
+        className="h-calc-full-header flex items-center w-screen-header ml-[10%]"
         // style={{
         //   backgroundImage: "url('/logo/darkv.png')",
         //   backgroundPosition: "100% 50%",
@@ -52,7 +52,6 @@ export const Home = () => {
       >
         <motion.img
           initial="initial"
-          whileHover="hovered"
           variants={{
             initial: {
               opacity: 0,
@@ -62,7 +61,7 @@ export const Home = () => {
             },
           }}
           animate={mainControls}
-          transition={{ duration: 0.3, delay: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
           src="/logo/veeno-purple.png"
           className="h-[640px] z-[0] w-auto absolute translate-y-1/2 left-1/2 top-1/2 opacity-100"
           style={{

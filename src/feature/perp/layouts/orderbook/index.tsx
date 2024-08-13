@@ -44,7 +44,7 @@ export const Orderbook = ({
   const bestBid: number | undefined = (data?.bids as [number[]])[0]?.[0];
   const bestAsk = (data?.asks as [])[(data.asks as []).length - 1]?.[0];
   const spread = bestAsk - bestBid;
-
+  console.log("allDepths", allDepths, depth);
   type AsksBidsType = "asks" | "bids";
 
   const getWidthFromVolume = (type: AsksBidsType): number[] => {
@@ -116,6 +116,33 @@ export const Orderbook = ({
           </div>
         </>
       )}
+
+      {/* <Tooltip
+          className="right-1 w-1/2 sm:w-1/3 left-auto shadow-2xl border-borderColor translate-x-0 z-20 top-[90%] p-2.5"
+          isOpen={isTooltipMarketTypeOpen}
+        >
+          <button
+            className="w-full text-white text-sm pb-1 text-start"
+            onClick={() => {
+              handleTypeChange("Stop Limit");
+              setIsTooltipMarketTypeOpen(false);
+            }}
+          >
+            Stop Limit
+          </button>
+          <button
+            className="w-full text-white text-sm pt-1 text-start"
+            onClick={() => {
+              handleTypeChange("Stop Market");
+              setIsTooltipMarketTypeOpen(false);
+            }}
+          >
+            Stop Market
+          </button>
+        </Tooltip> */}
+      <button className="bg-red border border-borderColor h-[30px] w-fit px-2">
+        0.001
+      </button>
       {activeSection === OrderbookSection.ORDERBOOK &&
       (mobileActiveSection === "Orderbook" || !mobileActiveSection) ? (
         <div
