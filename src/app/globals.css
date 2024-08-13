@@ -54,10 +54,8 @@ input {
 }
 
 input:focus {
-  border: none;
-}
-input:active {
-  border: none;
+  outline: none;
+  border-color: initial; /* Remplacez 'initial' par la couleur de votre choix si vous voulez garder une bordure spécifique */
 }
 
 input[type="number"]::-webkit-inner-spin-button,

@@ -137,12 +137,10 @@ export const Orderbook = ({
                     <th className="text-end font-normal">Size</th>
                   )}
                   <th className="pr-2.5 text-end font-normal">
-                    Total ({formatSymbol(asset?.symbol).split("-")[0]})
+                    Total {formatSymbol(asset?.symbol).split("-")[0]}
                   </th>
                   {isMobileOpenTrade ? null : (
-                    <th className="pr-2.5 text-end font-normal">
-                      Total (USDC)
-                    </th>
+                    <th className="pr-2.5 text-end font-normal">Total $</th>
                   )}
                 </tr>
               </thead>
@@ -254,7 +252,13 @@ export const Orderbook = ({
       ) : (
         <TradeSection
           asset={asset}
-          trades={trades as TradeExtension[]}
+          trades={
+            trades?.filter((e, i) =>
+              (sectionRef?.current?.clientHeight as number) > 800
+                ? i < 32
+                : i < 28
+            ) as TradeExtension[]
+          }
           isLoading={isTradesLoading}
         />
       )}

@@ -29,22 +29,22 @@ export const TradeSection = ({
           </thead>
           <tbody>
             {trades?.map((trade, i: number) => (
-              <tr key={i} className="text-font-80 text-xs">
+              <tr key={i} className="text-font-80 text-xs ">
                 <td
-                  className={`pl-2.5 ${i === 0 ? "py-2" : "py-[5.2px]"} ${
+                  className={`pl-2.5 ${
                     trade.side === "BUY" ? "text-green" : "text-red"
                   }`}
                 >
                   {getFormattedAmount(trade.price)}
                 </td>
                 <td
-                  className={`py-1 text-end ${
+                  className={`text-end ${
                     trade.side === "BUY" ? "text-green" : "text-red"
                   }`}
                 >
                   {trade.size}
                 </td>
-                <td className="text-end pr-2.5 py-1">
+                <td className="text-end pr-2.5">
                   {getFormattedDate(trade.ts)}
                 </td>
               </tr>

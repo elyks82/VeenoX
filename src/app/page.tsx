@@ -16,7 +16,9 @@ export default function Home() {
         Build in progress. You can access the preview by clicking on the button.
       </p>
       <button className="border-base_color border text-lg bg-[rgba(255,255,255,0.05)] h-[45px] text-base_color rounded w-fit px-6 mx-auto mt-10">
-        <Link href="/perp/PERP_BTC_USDC">Preview</Link>
+        <Link className="h-full w-full" href="/perp/PERP_BTC_USDC">
+          Preview
+        </Link>
       </button>
     </div>
   );
