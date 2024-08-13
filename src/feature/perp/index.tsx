@@ -5,6 +5,7 @@ import { useWalletConnector } from "@orderly.network/hooks";
 import { useEffect, useRef, useState } from "react";
 import TradingViewChart from "./layouts/chart";
 import { Favorites } from "./layouts/favorites";
+import { MobileOpenTrade } from "./layouts/mobile-open-trade";
 import { MobilePnL } from "./layouts/mobile-pnl";
 import { MobileSectionSelector } from "./layouts/mobile-section-selector";
 import { OpenTrade } from "./layouts/open-trade";
@@ -231,17 +232,9 @@ export const Perp = ({ asset }: PerpProps) => {
               </button>
             </div>
           </div>
-          <div className="space-y-2">
-            <button className="w-full text-sm text-white h-[40px] flex items-center justify-center border border-borderColor-DARK bg-terciary rounded">
-              Deposit
-            </button>
-            <button className="w-full text-sm text-white h-[40px] flex items-center justify-center border border-borderColor-DARK bg-terciary rounded">
-              Withdraw
-            </button>
-          </div>
         </div>
       </div>
-      {/* <MobileOpenTrade asset={asset} /> */}
+      <MobileOpenTrade asset={asset} />
     </div>
   );
 };

@@ -108,6 +108,13 @@ export const Header = () => {
         <div className="flex relative w-fit h-fit">
           <button
             className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
+            h-[30px] sm:h-[35px] px-2.5 rounded sm:rounded-md mr-2.5 flex items-center
+        "
+          >
+            Deposit
+          </button>
+          <button
+            className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
             h-[30px] sm:h-[35px] px-2 rounded sm:rounded-md mr-2.5 flex items-center
         "
           >
