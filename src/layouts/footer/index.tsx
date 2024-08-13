@@ -26,7 +26,7 @@ export const Footer = () => {
     };
   }, [ws]);
   return (
-    <footer className="h-[35px] sm:h-[40px] flex items-center justify-between sm:fixed bottom-0 w-full bg-secondary border-t border-borderColor">
+    <footer className="h-[35px] sm:h-[40px] flex items-center justify-between w-full bg-secondary border-t border-borderColor">
       <div className="flex items-center px-2.5">
         <FaWifi className="text-green text-sm mr-2 font-bold" />
         <p className="text-green text-xs sm:text-sm font-bold">Operational</p>

@@ -107,8 +107,8 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
     <div className="flex items-center w-full h-[55px] sm:h-[65px] px-3 border-b border-borderColor whitespace-nowrap overflow-x-scroll">
       <div className="flex items-center gap-3 relative text-white h-full">
         <Popover>
-          <PopoverTrigger className="h-full">
-            <div className="flex items-center mr-1 whitespace-nowrap w-fit min-w-[168px] border-r border-borderColor h-full cursor-pointer">
+          <PopoverTrigger className="h-full min-w-fit">
+            <div className="flex items-center mr-1 whitespace-nowrap w-fit min-w-fit border-r border-borderColor h-full cursor-pointer">
               <img
                 className="sm:w-[28px] sm:h-[28px] w-[22px] h-[22px] bg-gray-500 rounded-full"
                 src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
@@ -120,6 +120,7 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
                 {formatSymbol(assetBuffer.symbol)}
               </p>
               <IoChevronDown className="text-white text-base sm:text-lg min-w-[18px] ml-1" />
+              <div className="w-3 min-w-3 md:w-4 md:min-w-4 h-full" />
             </div>
           </PopoverTrigger>
           <PopoverContent

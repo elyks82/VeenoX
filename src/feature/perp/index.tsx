@@ -205,7 +205,7 @@ export const Perp = ({ asset }: PerpProps) => {
           <Position asset={asset} />
         </div>
         <div className="p-4 border-b border-borderColor hidden md:block">
-          <div className="border-b border-borderColor pb-4 mb-4">
+          <div className="pb-4 mb-4">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-font-60 mb-[3px]">
