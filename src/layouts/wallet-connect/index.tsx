@@ -97,7 +97,7 @@ export const ConnectWallet = () => {
               {getActiveStep(status).description}
             </DialogDescription>
           </DialogHeader>
-          {status === "idle" || status === "error" ? (
+          {status === "idle" || isError ? (
             <div className="flex flex-wrap gap-2 w-full items-center">
               {connectors?.map((connector, i) => {
                 const image = getImageFromConnector(
