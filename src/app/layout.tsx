@@ -2,10 +2,14 @@ import { GeneralProvider } from "@/context";
 import { Footer } from "@/layouts/footer";
 import { Header } from "@/layouts/header";
 import ReactQueryProvider from "@/lib/react-query/provider";
-import { WalletProvider } from "@/lib/wallet-connector";
+import { Provider } from "@/lib/wallet-connect";
+import { config } from "@/lib/wallet-connect/config";
+import AppKitProvider from "@/lib/wallet-connect/provider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { headers } from "next/headers";
+import { cookieToInitialState } from "wagmi";
 import { OrderlyProvider } from "./common/OrderlyProvider";
 import "./globals.css";
 
@@ -29,21 +33,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialState = cookieToInitialState(config, headers().get("cookie"));
   return (
     <html lang="en">
       <body className={inter.className}>
-        <WalletProvider>
-          <OrderlyProvider>
-            <ReactQueryProvider>
-              <GeneralProvider>
-                <Header />
-                {children}
-                <SpeedInsights />
-                <Footer />
-              </GeneralProvider>
-            </ReactQueryProvider>
-          </OrderlyProvider>{" "}
-        </WalletProvider>
+        <Provider>
+          <AppKitProvider initialState={initialState}>
+            <OrderlyProvider>
+              <ReactQueryProvider>
+                <GeneralProvider>
+                  <Header />
+                  {children}
+                  <SpeedInsights />
+                  <Footer />
+                </GeneralProvider>
+              </ReactQueryProvider>
+            </OrderlyProvider>
+          </AppKitProvider>
+        </Provider>
       </body>
     </html>
   );

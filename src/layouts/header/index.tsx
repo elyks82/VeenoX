@@ -1,17 +1,14 @@
 "use client";
 import { Tooltip } from "@/components/tooltip";
-import {
-  useAccount as useOrderlyAccount,
-  useWalletConnector,
-} from "@orderly.network/hooks";
+import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import Link from "next/link";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";
 import { MdContentCopy } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
+import { useAccount, useConnect } from "wagmi";
 import { MobileModal } from "./mobile";
-// import { useAccount } from "wagmi";
 
 export enum AccountStatusEnum {
   NotConnected = 0,
@@ -25,62 +22,68 @@ export enum AccountStatusEnum {
 export const Header = () => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  // const { address, isDisconnected, isConnected, isConnecting } = useAccount();
-  // const { connect, connectors, pendingConnector } = useConnect({
-  //   onError: () => {
-  //     //   setStatus("error");
-  //   },
-  //   onSuccess() {
-  //     //   console.log("connected");
-  //   },
-  // });
+  const { account, state } = useOrderlyAccount();
+  const { address, isDisconnected, isConnecting } = useAccount();
+  const { connect, connectors, pendingConnector } = useConnect({
+    onSuccess() {
+      console.log("dede");
+    },
+  });
 
-  const { createAccount, createOrderlyKey, account, state } =
-    useOrderlyAccount();
-  const wallet = useWalletConnector();
+  // const provider = useProvider();
+  // const { chain } = useNetwork();
 
-  const handleConnect = async () => {
-    try {
-      const result = await wallet.connect();
-      // console.log("Wallet connection result:", result);
+  // async function connectWallet() {
+  //   try {
+  //     await connect({ connector: connectors[0] }); // assuming MetaMask connector
+  //     const walletProvider = provider.provider;
+  //     const chainInfo = {
+  //       id: `0x${chain.id.toString(16)}`,
+  //     };
+  //     const walletInfo = {
+  //       name: "MetaMask", // or any other wallet
+  //     };
 
-      // console.log("Account information:", account);
-      // console.log("account", account);
-      if (!account) {
-        console.error("Account ID is undefined after wallet connection.");
-        return;
-      }
+  //     const nextState = await account.setAddress(address, {
+  //       provider: walletProvider,
+  //       chain: chainInfo,
+  //       wallet: walletInfo,
+  //     });
 
-      if (state.status === AccountStatusEnum.NotConnected) {
-        await createAccount();
-      }
-
-      await createOrderlyKey(true);
-    } catch (error) {
-      console.error("Error during connection process:", error);
-    }
-  };
-
-  // useEffect(() => {
-  //   if (state.status === AccountStatusEnum.NotConnected) {
-  //     handleConnect();
+  //     console.log("Next State:", nextState);
+  //   } catch (error) {
+  //     console.error("Failed to connect wallet:", error);
   //   }
-  // }, [state.status]);
+  // }
 
-  const handleDisconnect = () => {
-    // disconnect();
+  // const handleAccountCreation = async () => {
+  //   const nextState = await account.setAddress("<address>", {
+  //     provider: "provider", // EIP1193Provider, usually window.ethereum
+  //     chain: {
+  //       id: "0x1", // chain id, e.g. 0x1 for Ethereum Mainnet, it's a hex string
+  //     },
+  //     wallet: {
+  //       name: "", // Wallet app name, e.g. MetaMask
+  //     },
+  //   });
+  // };
+
+  const handleConnect = () => {
+    if (isDisconnected) connect({ connector: connectors[0] });
+    else setIsTooltipOpen((prev) => !prev);
   };
 
-  // console.log("state", wallet, account);
+  // const handleDisconnect = () => {
+  //   disconnect();
+  // };
 
   const handleCopy = () => {
-    // navigator.clipboard.writeText(address || "");
+    navigator.clipboard.writeText(address || "");
     setIsCopied(true);
     setTimeout(() => {
       setIsCopied(false);
     }, 2000);
   };
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -106,6 +109,7 @@ export const Header = () => {
           </div>{" "}
         </Link>
       </div>
+      <w3m-button />
       <div className="flex items-center gap-5">
         <div className="flex relative w-fit h-fit">
           <button
@@ -166,7 +170,7 @@ export const Header = () => {
             </div>
             <button
               className="text-white text-bold font-poppins text-sm mt-2"
-              onClick={handleDisconnect}
+              // onClick={handleDisconnect}
             >
               Disconnect
             </button>

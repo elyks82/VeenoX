@@ -1,5 +1,4 @@
 import { useGeneralContext } from "@/context";
-import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { FuturesAssetProps, TradeExtension } from "@/models";
 import { cn } from "@/utils/cn";
 import {
@@ -12,7 +11,6 @@ import {
   useOrderbookStream,
 } from "@orderly.network/hooks";
 import { useRef, useState } from "react";
-import { IoChevronDown } from "react-icons/io5";
 import { TradeSection } from "./trade-section";
 
 enum OrderbookSection {
@@ -107,7 +105,7 @@ export const Orderbook = ({
           </div>
         </>
       )}
-      <div className="flex items-center py-1.5">
+      {/* <div className="flex items-center py-1.5">
         <Popover>
           <PopoverTrigger className="h-full min-w-fit">
             <button
@@ -136,7 +134,7 @@ export const Orderbook = ({
             ))}
           </PopoverContent>
         </Popover>{" "}
-      </div>
+      </div> */}
       {(activeSection === OrderbookSection.ORDERBOOK &&
         (mobileActiveSection === "Orderbook" || !mobileActiveSection)) ||
       isMobileOpenTrade ? (
