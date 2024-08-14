@@ -1,4 +1,6 @@
 "use client";
+import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import {
   motion,
   useAnimation,
@@ -8,6 +10,7 @@ import {
 } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { useAccount } from "wagmi";
 
 export const Home = () => {
   const ref = useRef<HTMLHeadingElement>(null);
@@ -20,16 +23,36 @@ export const Home = () => {
   const { scrollYProgress } = useScroll({
     offset: ["1 1", "1 1"],
   });
-
+  const { account, state } = useOrderlyAccount();
+  const { address, chain, isConnected } = useAccount();
   const springConfig = { stiffness: 300, damping: 30, bounce: 100 };
 
   const translateY = useTransform(scrollYProgress, [0, 1], ["-100vh", "100vh"]);
-
+  console.log("account", account);
+  console.log("address", address);
+  console.log("chain", chain);
+  console.log("state", state);
   useEffect(() => {
     if (isInView) {
       mainControls.start("visible");
     }
   }, [isInView]);
+
+  const { open } = useWeb3Modal();
+
+  useEffect(() => {
+    if (isConnected && address) {
+      account.setAddress(address, {
+        provider: window.ethereum, // Assurez-vous que c'est le bon fournisseur
+        chain: {
+          id: "0x1", // Utilisez l'ID de chaîne approprié
+        },
+        wallet: {
+          name: "Web3Modal", // Ou le nom approprié du portefeuille
+        },
+      });
+    }
+  }, [isConnected, address, account]);
 
   return (
     <div
@@ -42,6 +65,9 @@ export const Home = () => {
     >
       {/* <Loader3D /> */}
       {/* <SplineScene /> */}
+
+      <button onClick={() => open()}>Connect Wallet</button>
+
       <section
         className="h-calc-full-header flex items-center w-screen-header ml-[10%]"
         // style={{
