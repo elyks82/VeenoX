@@ -1,4 +1,5 @@
 import { useGeneralContext } from "@/context";
+import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { FuturesAssetProps, TradeExtension } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
@@ -7,6 +8,7 @@ import {
   useOrderbookStream,
 } from "@orderly.network/hooks";
 import { useRef, useState } from "react";
+import { IoChevronDown } from "react-icons/io5";
 import { TradeSection } from "./trade-section";
 
 enum OrderbookSection {
@@ -31,7 +33,7 @@ export const Orderbook = ({
     OrderbookSection.ORDERBOOK
   );
 
-  const [data, { isLoading, onItemClick, onDepthChange, depth, allDepths }] =
+  const [data, { isLoading, onDepthChange, depth, allDepths }] =
     useOrderbookStream(asset?.symbol, undefined, {
       level:
         isMobileOpenTrade || isMobile
@@ -116,33 +118,36 @@ export const Orderbook = ({
           </div>
         </>
       )}
-
-      {/* <Tooltip
-          className="right-1 w-1/2 sm:w-1/3 left-auto shadow-2xl border-borderColor translate-x-0 z-20 top-[90%] p-2.5"
-          isOpen={isTooltipMarketTypeOpen}
-        >
-          <button
-            className="w-full text-white text-sm pb-1 text-start"
-            onClick={() => {
-              handleTypeChange("Stop Limit");
-              setIsTooltipMarketTypeOpen(false);
-            }}
+      <div className="flex items-center py-1.5">
+        <Popover>
+          <PopoverTrigger className="h-full min-w-fit">
+            <button
+              className="border-base_color border rounded text-[12px] flex items-center
+             justify-center min-w-[50px] pl-1 text-white font-medium h-[24px] ml-1 w-fit"
+            >
+              {depth}
+              <IoChevronDown className="text-white text-xs min-w-[18px] ml-[1px]" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            sideOffset={0}
+            className="flex flex-col p-2 w-fit whitespace-nowrap bg-primary border border-borderColor shadow-xl"
           >
-            Stop Limit
-          </button>
-          <button
-            className="w-full text-white text-sm pt-1 text-start"
-            onClick={() => {
-              handleTypeChange("Stop Market");
-              setIsTooltipMarketTypeOpen(false);
-            }}
-          >
-            Stop Market
-          </button>
-        </Tooltip> */}
-      {/* <button className="bg-red border border-borderColor h-[30px] w-fit px-2">
-        0.001
-      </button> */}
+            {allDepths?.map((entry) => (
+              <button
+                onClick={() => {
+                  if (onDepthChange) onDepthChange(entry);
+                }}
+                className={`h-[22px] ${
+                  depth === entry ? "text-base_color font-bold" : "text-white"
+                } w-fit px-2 text-xs`}
+              >
+                {entry}
+              </button>
+            ))}
+          </PopoverContent>
+        </Popover>{" "}
+      </div>
       {activeSection === OrderbookSection.ORDERBOOK &&
       (mobileActiveSection === "Orderbook" || !mobileActiveSection) ? (
         <div
