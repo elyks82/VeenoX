@@ -8,6 +8,7 @@ import { IoChevronDown } from "react-icons/io5";
 import { MdContentCopy } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useAccount, useConnect } from "wagmi";
+import { ConnectWallet } from "../wallet-connect";
 import { MobileModal } from "./mobile";
 
 export enum AccountStatusEnum {
@@ -24,11 +25,7 @@ export const Header = () => {
   const [isCopied, setIsCopied] = useState(false);
   const { account, state } = useOrderlyAccount();
   const { address, isDisconnected, isConnecting } = useAccount();
-  const { connect, connectors, pendingConnector } = useConnect({
-    onSuccess() {
-      console.log("dede");
-    },
-  });
+  const { connect, connectors } = useConnect();
 
   // const provider = useProvider();
   // const { chain } = useNetwork();
@@ -69,8 +66,7 @@ export const Header = () => {
   // };
 
   const handleConnect = () => {
-    if (isDisconnected) connect({ connector: connectors[0] });
-    else setIsTooltipOpen((prev) => !prev);
+    connect({ connector: connectors[2] });
   };
 
   // const handleDisconnect = () => {
@@ -131,31 +127,7 @@ export const Header = () => {
             />
             <IoChevronDown className="ml-1.5" />
           </button>
-          <button
-            className="text-white bg-base_color border border-borderColor-DARK text-bold font-poppins text-xs
-        h-[30px] sm:h-[35px] px-2 sm:px-2.5 rounded sm:rounded-md 
-        "
-            onClick={handleConnect}
-            // onClick={async () => {
-            //   wallet.connect();
-
-            // handleConnection();
-            // if (isConnected) {
-            //   createAccount();
-            //   createOrderlyKey(30);
-            // }
-            // }}
-          >
-            {/* {isDisconnected || isConnecting ? ( */}
-            Connect
-            {/* ) : (
-              <span className="inline-flex items-center">
-                <p>{addressSlicer(address)}</p>
-                <IoChevronDown className="ml-1" />
-              </span>
-            )} */}
-          </button>
-
+          <ConnectWallet />
           {/* {!isDisconnected ? ( */}
           <Tooltip isOpen={isTooltipOpen}>
             <div className="flex items-center  text-sm" onClick={handleCopy}>

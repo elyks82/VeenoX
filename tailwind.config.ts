@@ -90,8 +90,21 @@ const config: Config = {
           "0%": { transform: "translateX(100%)" },
           "100%": { transform: "translateX(0)" },
         },
+        "pulse-scale": {
+          "0%, 100%": { transform: "scale(0.9)" },
+          "50%": { transform: "scale(1.05)" },
+        },
+        "float-y": {
+          "0%, 100%": {
+            transform: "rotateZ(15deg) translateX(-20%) translateY(-40%)",
+          },
+          "50%": {
+            transform: "rotateZ(15deg) translateX(-20%) translateY(-39%)",
+          },
+        },
       },
       animation: {
+        "pulse-scale": "pulse-scale 3s infinite",
         "fade-in-0": "fade-in 0.2s ease-out",
         "fade-out-0": "fade-out 0.2s ease-in",
         "zoom-in-95": "zoom-in 0.2s ease-out",
@@ -101,6 +114,7 @@ const config: Config = {
         "slide-in-from-left-2": "slide-in-from-left 0.2s ease-out",
         "slide-in-from-right-2": "slide-in-from-right 0.2s ease-out",
         fadeIn: "fadeIn 0.5s ease-out",
+        "float-y": "float-y 3s ease-in-out infinite",
       },
     },
   },

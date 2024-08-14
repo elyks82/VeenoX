@@ -1,58 +1,18 @@
 "use client";
-import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
-import {
-  motion,
-  useAnimation,
-  useInView,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { motion, useAnimation, useInView } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { useAccount } from "wagmi";
 
 export const Home = () => {
   const ref = useRef<HTMLHeadingElement>(null);
-  const text1 = "";
-  const text2 = "";
-  const textSplit = text1.split("");
-  const text2split = text2.split("");
   const mainControls = useAnimation();
   const isInView = useInView(ref, { once: false });
-  const { scrollYProgress } = useScroll({
-    offset: ["1 1", "1 1"],
-  });
-  const { account, state } = useOrderlyAccount();
-  const { address, chain, isConnected } = useAccount();
-  const springConfig = { stiffness: 300, damping: 30, bounce: 100 };
 
-  const translateY = useTransform(scrollYProgress, [0, 1], ["-100vh", "100vh"]);
-  console.log("account", account);
-  console.log("address", address);
-  console.log("chain", chain);
-  console.log("state", state);
   useEffect(() => {
     if (isInView) {
       mainControls.start("visible");
     }
   }, [isInView]);
-
-  const { open } = useWeb3Modal();
-
-  useEffect(() => {
-    if (isConnected && address) {
-      account.setAddress(address, {
-        provider: window.ethereum, // Assurez-vous que c'est le bon fournisseur
-        chain: {
-          id: "0x1", // Utilisez l'ID de chaîne approprié
-        },
-        wallet: {
-          name: "Web3Modal", // Ou le nom approprié du portefeuille
-        },
-      });
-    }
-  }, [isConnected, address, account]);
 
   return (
     <div
@@ -63,19 +23,7 @@ export const Home = () => {
       }}
       ref={ref}
     >
-      {/* <Loader3D /> */}
-      {/* <SplineScene /> */}
-
-      <button onClick={() => open()}>Connect Wallet</button>
-
-      <section
-        className="h-calc-full-header flex items-center w-screen-header ml-[10%]"
-        // style={{
-        //   backgroundImage: "url('/logo/darkv.png')",
-        //   backgroundPosition: "100% 50%",
-        //   backgroundRepeat: "no-repeat",
-        // }}
-      >
+      <section className="h-calc-full-header flex items-center w-screen-header ml-[10%]">
         <motion.img
           initial="initial"
           variants={{
@@ -89,10 +37,7 @@ export const Home = () => {
           animate={mainControls}
           transition={{ duration: 0.3, delay: 0.1 }}
           src="/logo/veeno-purple.png"
-          className="h-[640px] z-[0] w-auto absolute translate-y-1/2 left-1/2 top-1/2 opacity-100"
-          style={{
-            transform: "rotateZ(15deg) translateX(-20%) translateY(-40%)",
-          }}
+          className="h-[640px] z-[0] w-auto absolute translate-y-1/2 left-1/2 top-1/2 opacity-100 animate-float-y"
         />
         <div className="h-full w-[90%] mx-auto flex items-center z-10">
           <div className="w-full flex items-center">
@@ -165,64 +110,6 @@ export const Home = () => {
                   <p className=" dark:text-white">Trading with </p>
                   <span className="text-white ml-3">minimal fees</span>
                 </h2>
-
-                {/* <motion.div
-                  className="overflow-hidden block relative whitespace-nowrap
-text-7xl font-bold dark:text-white text-black mb-5 pt-1 h-[78px] w-full"
-                  style={{
-                    lineHeight: "78px",
-                    verticalAlign: "middle",
-                    margin: 0,
-                    padding: 0,
-                  }}
-                >
-                  <div>
-                    {textSplit?.map((l, i) => (
-                      <motion.span
-                        key={i}
-                        variants={{
-                          initial: {
-                            y: 0,
-                          },
-                          hovered: {
-                            y: "-100%",
-                          },
-                        }}
-                        transition={{
-                          duration: 0.25,
-                          ease: "easeInOut",
-                          delay: i * 0.025,
-                        }}
-                        className="inline-block"
-                      >
-                        {l}
-                      </motion.span>
-                    ))}
-                  </div>
-                  <div className="absolute inset-0">
-                    {text2split?.map((l, i) => (
-                      <motion.span
-                        key={i}
-                        variants={{
-                          initial: {
-                            y: "100%",
-                          },
-                          hovered: {
-                            y: 0,
-                          },
-                        }}
-                        transition={{
-                          duration: 0.25,
-                          ease: "easeInOut",
-                          delay: i * 0.025,
-                        }}
-                        className="inline-block pt-1"
-                      >
-                        {l}
-                      </motion.span>
-                    ))}
-                  </div>
-                </motion.div> */}
               </motion.div>
               <motion.div
                 className="flex items-center"
@@ -274,12 +161,9 @@ text-7xl font-bold dark:text-white text-black mb-5 pt-1 h-[78px] w-full"
                 </Link>
               </motion.button>
             </motion.div>
-            {/* <img src="/logo/v3D.png" className="ml-[10%]" /> */}
           </div>
         </div>
       </section>
-
-      {/* <div className="h-screen bg-red-200 w-screen-header ml-[240px]"></div> */}
     </div>
   );
 };
