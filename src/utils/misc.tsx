@@ -351,3 +351,18 @@ export function getTokenPercentage(status?: number) {
   }
   return status.toFixed(4);
 }
+
+export const getStyleFromDevice = (i: number, color: string) => {
+  switch (i) {
+    case 0:
+      return `pl-2.5  ${color}`;
+    case 1:
+      return " text-end";
+    case 2:
+      return "pr-2.5  text-end";
+    case 3:
+      return "pr-2.5  text-end";
+    default:
+      return "pr-2.5  text-end";
+  }
+};

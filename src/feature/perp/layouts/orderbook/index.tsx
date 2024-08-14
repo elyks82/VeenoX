@@ -2,7 +2,11 @@ import { useGeneralContext } from "@/context";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { FuturesAssetProps, TradeExtension } from "@/models";
 import { cn } from "@/utils/cn";
-import { formatSymbol, getFormattedAmount } from "@/utils/misc";
+import {
+  formatSymbol,
+  getFormattedAmount,
+  getStyleFromDevice,
+} from "@/utils/misc";
 import {
   useMarketTradeStream,
   useOrderbookStream,
@@ -21,6 +25,8 @@ type OrderbookProps = {
   isMobile?: boolean;
   isMobileOpenTrade?: boolean;
 };
+
+type AsksBidsType = "asks" | "bids";
 
 export const Orderbook = ({
   asset,
@@ -46,8 +52,6 @@ export const Orderbook = ({
   const bestBid: number | undefined = (data?.bids as [number[]])[0]?.[0];
   const bestAsk = (data?.asks as [])[(data.asks as []).length - 1]?.[0];
   const spread = bestAsk - bestBid;
-  console.log("allDepths", allDepths, depth);
-  type AsksBidsType = "asks" | "bids";
 
   const getWidthFromVolume = (type: AsksBidsType): number[] => {
     const is_asks = type === "asks";
@@ -70,21 +74,6 @@ export const Orderbook = ({
   const { data: trades, isLoading: isTradesLoading } = useMarketTradeStream(
     asset?.symbol
   );
-
-  const getStyleFromDevice = (i: number, color: string) => {
-    switch (i) {
-      case 0:
-        return `pl-2.5  ${color}`;
-      case 1:
-        return " text-end";
-      case 2:
-        return "pr-2.5  text-end";
-      case 3:
-        return "pr-2.5  text-end";
-      default:
-        return "pr-2.5  text-end";
-    }
-  };
 
   return (
     <section
@@ -131,7 +120,7 @@ export const Orderbook = ({
           </PopoverTrigger>
           <PopoverContent
             sideOffset={0}
-            className="flex flex-col p-2 w-fit whitespace-nowrap bg-primary border border-borderColor shadow-xl"
+            className="flex flex-col p-2 z-[102] w-fit whitespace-nowrap bg-primary border border-borderColor shadow-xl"
           >
             {allDepths?.map((entry) => (
               <button
@@ -148,8 +137,9 @@ export const Orderbook = ({
           </PopoverContent>
         </Popover>{" "}
       </div>
-      {activeSection === OrderbookSection.ORDERBOOK &&
-      (mobileActiveSection === "Orderbook" || !mobileActiveSection) ? (
+      {(activeSection === OrderbookSection.ORDERBOOK &&
+        (mobileActiveSection === "Orderbook" || !mobileActiveSection)) ||
+      isMobileOpenTrade ? (
         <div
           // max-h-[670px]  overflow-y-scroll
           className={`relative h-full md:h-calc-full-button ${
