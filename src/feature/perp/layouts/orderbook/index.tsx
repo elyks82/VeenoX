@@ -31,7 +31,7 @@ export const Orderbook = ({
     OrderbookSection.ORDERBOOK
   );
 
-  const [data, { isLoading, onItemClick, depth, allDepths }] =
+  const [data, { isLoading, onItemClick, onDepthChange, depth, allDepths }] =
     useOrderbookStream(asset?.symbol, undefined, {
       level:
         isMobileOpenTrade || isMobile
@@ -140,9 +140,9 @@ export const Orderbook = ({
             Stop Market
           </button>
         </Tooltip> */}
-      <button className="bg-red border border-borderColor h-[30px] w-fit px-2">
+      {/* <button className="bg-red border border-borderColor h-[30px] w-fit px-2">
         0.001
-      </button>
+      </button> */}
       {activeSection === OrderbookSection.ORDERBOOK &&
       (mobileActiveSection === "Orderbook" || !mobileActiveSection) ? (
         <div
