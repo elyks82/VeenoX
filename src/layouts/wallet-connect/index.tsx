@@ -8,11 +8,14 @@ import {
   DialogTrigger,
 } from "@/lib/shadcn/dialog";
 import { addressSlicer } from "@/utils/misc";
-import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
-import { useState } from "react";
+import {
+  useAccountInfo,
+  useAccount as useOrderlyAccount,
+} from "@orderly.network/hooks";
+import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import { TfiWallet } from "react-icons/tfi";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount, useConnect, useSwitchChain } from "wagmi";
 import { getActiveStep } from "./constant";
 
 export enum AccountStatusEnum {
@@ -27,15 +30,86 @@ export enum AccountStatusEnum {
 export const ConnectWallet = () => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const { account, state } = useOrderlyAccount();
+  const { account, state, signer, createOrderlyKey, createAccount } =
+    useOrderlyAccount();
   const { address, isDisconnected, isConnecting } = useAccount();
-  const { connect, connectors, isPending, isError, isSuccess, status } =
-    useConnect();
+  const [isVisible, setIsVisible] = useState(true);
+  const [status, setStatus] = useState("idle");
   const [isActive, setIsActive] = useState(0);
+  const { connect, connectors, isPending, isError, isSuccess, data } =
+    useConnect();
+  const { chains, switchChain } = useSwitchChain();
+  const { isConnected } = useAccount();
+
+  const { data: acc, error, isLoading } = useAccountInfo();
+  if (account == null || isLoading) {
+    return "Loading...";
+  }
+
+  console.log("acc", acc, error);
+  useEffect(() => {
+    if (!data?.chainId) return;
+
+    // Changer de chaîne si nécessaire
+    const switchChain = async () => {
+      try {
+        await switchChain(data?.chainId);
+        console.log(`Switched to chain ${data?.chainId}`);
+      } catch (error) {
+        console.log(`Failed to switch chain: `);
+      }
+    };
+
+    if (isConnected) {
+      switchChain();
+    }
+  }, [data?.chainId, isConnected, switchChain]);
+  console.log("publicClient", data?.chainId, account);
+
+  const statusChangeHandler = (nextState: any) => {
+    console.log("nextState", nextState);
+  };
+
+  useEffect(() => {
+    account.on("change:status", statusChangeHandler);
+
+    return () => {
+      account.off("change:status", statusChangeHandler);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isSuccess && address) {
+      const setAccount = async () => {
+        try {
+          const provider = await connectors[isActive - 1]?.getProvider();
+          const nextState = await account.setAddress(address, {
+            provider,
+            chain: {
+              id: data?.chainId,
+            },
+          });
+          console.log("const nextState =", nextState);
+        } catch (e) {
+          console.log("error", e);
+        }
+      };
+      setAccount();
+    }
+  }, [isSuccess, address, account]);
+
+  const handleCreateAccount = async () => {
+    try {
+      const resp = await createAccount();
+      console.log("ressssssss", resp);
+    } catch (e) {
+      console.log("error", e);
+    }
+  };
+
   const handleConnect = (i: number) => {
     connect({ connector: connectors[i] });
   };
-  console.log("connectors", connectors);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(address || "");
@@ -73,9 +147,15 @@ export const ConnectWallet = () => {
 
   return (
     <div className="w-fit h-fit relative">
+      <button className="h-10 w-10 bg-red" onClick={handleCreateAccount}>
+        Create Account
+      </button>
+      <button className="bg-green text-white" onClick={account.createAccount}>
+        Register
+      </button>
       <Dialog>
         <DialogTrigger>
-          <button
+          <div
             className="text-white bg-base_color border border-borderColor-DARK text-bold font-poppins text-xs
         h-[30px] sm:h-[35px] px-2 sm:px-2.5 rounded sm:rounded-md 
         "
@@ -88,7 +168,7 @@ export const ConnectWallet = () => {
                 <IoChevronDown className="ml-1" />
               </span>
             )}
-          </button>
+          </div>
         </DialogTrigger>
         <DialogContent className="w-full flex flex-col max-w-[475px] h-auto max-h-auto">
           <DialogHeader>
@@ -97,7 +177,7 @@ export const ConnectWallet = () => {
               {getActiveStep(status).description}
             </DialogDescription>
           </DialogHeader>
-          {status === "idle" || isError ? (
+          {status === "idle" || status === "error" ? (
             <div className="flex flex-wrap gap-2 w-full items-center">
               {connectors?.map((connector, i) => {
                 const image = getImageFromConnector(
@@ -114,8 +194,8 @@ export const ConnectWallet = () => {
                     <button
                       key={i}
                       onClick={() => {
+                        handleConnect(i);
                         setIsActive(i + 1);
-                        handleConnect(isActive - 1);
                       }}
                       className={`w-[100px] h-[100px] hover:bg-base_color ${
                         isActive === i + 1 ? "bg-base_color" : "bg-terciary"

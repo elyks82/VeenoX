@@ -2,7 +2,6 @@ import { GeneralProvider } from "@/context";
 import { Footer } from "@/layouts/footer";
 import { Header } from "@/layouts/header";
 import ReactQueryProvider from "@/lib/react-query/provider";
-import { Provider } from "@/lib/wallet-connect";
 import { config } from "@/lib/wallet-connect/config";
 import AppKitProvider from "@/lib/wallet-connect/provider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -37,20 +36,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Provider>
-          <AppKitProvider initialState={initialState}>
-            <OrderlyProvider>
-              <ReactQueryProvider>
-                <GeneralProvider>
-                  <Header />
-                  {children}
-                  <SpeedInsights />
-                  <Footer />
-                </GeneralProvider>
-              </ReactQueryProvider>
-            </OrderlyProvider>
-          </AppKitProvider>
-        </Provider>
+        {/* <Provider> */}
+        <AppKitProvider initialState={initialState}>
+          <OrderlyProvider>
+            <ReactQueryProvider>
+              <GeneralProvider>
+                <Header />
+                {children}
+                <SpeedInsights />
+                <Footer />
+              </GeneralProvider>
+            </ReactQueryProvider>
+          </OrderlyProvider>
+        </AppKitProvider>
+        {/* </Provider> */}
       </body>
     </html>
   );
