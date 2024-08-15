@@ -94,7 +94,7 @@ export const Deposit = () => {
         type="number"
         onChange={(e) => {
           let newValue = filterAllowedCharacters(e.target.value);
-          setAmount(newValue);
+          setAmount(newValue as any);
         }}
         // value={amount}
         className="bg-white h-[40px] w-[200px] px-2.5"
