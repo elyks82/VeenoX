@@ -2,7 +2,7 @@
 import { OrderlyConfigProvider } from "@orderly.network/hooks";
 import type { FC, PropsWithChildren } from "react";
 
-const brokerId = "woofi_dex";
+const brokerId = "orderly";
 
 export const OrderlyProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
