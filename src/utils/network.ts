@@ -11,7 +11,7 @@ type SupportedChain = Chain & { network: "mainnet" | "testnet"; icon: string };
 export const supportedChains: SupportedChain[] = [
   {
     network: "mainnet",
-    icon: "/assets/arbitrum.svg",
+    icon: "/assets/ARB.png",
     id: "0xa4b1",
     token: "ETH",
     label: "Arbitrum One",
@@ -19,7 +19,7 @@ export const supportedChains: SupportedChain[] = [
   },
   {
     network: "mainnet",
-    icon: "/assets/optimism.svg",
+    icon: "/assets/OP.png",
     id: "0xa",
     token: "ETH",
     label: "OP Mainnet",
@@ -27,7 +27,7 @@ export const supportedChains: SupportedChain[] = [
   },
   {
     network: "mainnet",
-    icon: "/assets/base.svg",
+    icon: "/assets/BASE_LOGO.png",
     id: "0x2105",
     token: "ETH",
     label: "Base",
