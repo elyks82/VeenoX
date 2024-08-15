@@ -24,7 +24,6 @@ export const Home = () => {
       }}
       ref={ref}
     >
-      <Deposit />
       <section className="h-calc-full-header flex items-center w-screen-header ml-[10%]">
         <motion.img
           initial="initial"
@@ -166,6 +165,7 @@ export const Home = () => {
           </div>
         </div>
       </section>
+      <Deposit />
     </div>
   );
 };
