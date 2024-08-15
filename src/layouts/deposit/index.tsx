@@ -78,7 +78,8 @@ export const Deposit = () => {
     } else {
       console.log("Depositing");
       try {
-        //   await deposit();
+        await deposit();
+        console.log("deposit successfull");
         setAmount(undefined);
         setNewWalletBalance(undefined);
         setNewOrderlyBalance(undefined);
@@ -87,6 +88,13 @@ export const Deposit = () => {
       }
     }
   };
+
+  console.log("balance", balance);
+  console.log("allowance", allowance);
+  console.log("dst", dst);
+  console.log("isNativeToken", isNativeToken);
+  console.log("balanceRevalidating", balanceRevalidating);
+  console.log("fetchBalance", fetchBalance);
 
   return (
     <div className="bg-purple-900 p-5">
