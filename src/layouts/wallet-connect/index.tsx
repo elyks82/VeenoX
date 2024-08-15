@@ -132,7 +132,7 @@ export const ConnectWallet = () => {
 
   return (
     <div className="w-fit h-fit relative">
-      {/* <button
+      <button
         className="h-10 w-10 bg-red"
         onClick={() => handleCreateAccount()}
       >
@@ -143,7 +143,7 @@ export const ConnectWallet = () => {
         onClick={() => handleEnableTrading()}
       >
         Enable trading
-      </button> */}
+      </button>
       <Dialog>
         <DialogTrigger>
           <div

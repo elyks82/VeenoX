@@ -18,7 +18,7 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: rgba(10, 10, 10, 1);
+  background: #1b1d22;
   user-select: none;
 }
 

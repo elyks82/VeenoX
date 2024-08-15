@@ -15,8 +15,8 @@
 } */
 
 .theme-dark {
-  --tv-color-platform-background: rgba(10, 10, 10, 1);
-  --tv-color-pane-background: rgba(10, 10, 10, 1);
+  --tv-color-platform-background: #1b1d22;
+  --tv-color-pane-background: #1b1d22;
 }
 
 /* :root:not(.theme-light) {

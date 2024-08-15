@@ -22,9 +22,9 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       colors: {
-        primary: "rgba(15, 15, 15, 1)",
-        secondary: "rgba(10, 10, 10, 1)",
-        terciary: "rgba(20, 20, 20, 1)",
+        primary: "#2b2f36e6",
+        secondary: "#1B1D22",
+        terciary: "#2b2f36e6",
         base_color: "#836ef9",
         green: "rgb(14 203 129)",
 
