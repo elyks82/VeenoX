@@ -8,10 +8,7 @@ import {
   DialogTrigger,
 } from "@/lib/shadcn/dialog";
 import { addressSlicer } from "@/utils/misc";
-import {
-  useAccountInfo,
-  useAccount as useOrderlyAccount,
-} from "@orderly.network/hooks";
+import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import { TfiWallet } from "react-icons/tfi";
@@ -30,7 +27,7 @@ export enum AccountStatusEnum {
 export const ConnectWallet = () => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
-  const { account, state, signer, createOrderlyKey, createAccount } =
+  const { account, state, createOrderlyKey, createAccount } =
     useOrderlyAccount();
   const { address, isDisconnected, isConnecting } = useAccount();
   const [isVisible, setIsVisible] = useState(true);
@@ -41,42 +38,27 @@ export const ConnectWallet = () => {
   const { chains, switchChain } = useSwitchChain();
   const { isConnected } = useAccount();
 
-  const { data: acc, error, isLoading } = useAccountInfo();
-  if (account == null || isLoading) {
-    return "Loading...";
-  }
+  // useEffect(() => {
+  //   if (!data?.chainId) return;
 
-  console.log("acc", acc, error);
-  useEffect(() => {
-    if (!data?.chainId) return;
+  //   // Changer de chaîne si nécessaire
+  //   const switchChain = async () => {
+  //     try {
+  //       await switchChain(data?.chainId);
+  //       console.log(`Switched to chain ${data?.chainId}`);
+  //     } catch (error) {
+  //       console.log(`Failed to switch chain: `);
+  //     }
+  //   };
 
-    // Changer de chaîne si nécessaire
-    const switchChain = async () => {
-      try {
-        await switchChain(data?.chainId);
-        console.log(`Switched to chain ${data?.chainId}`);
-      } catch (error) {
-        console.log(`Failed to switch chain: `);
-      }
-    };
-
-    if (isConnected) {
-      switchChain();
-    }
-  }, [data?.chainId, isConnected, switchChain]);
-  console.log("publicClient", data?.chainId, account);
+  //   if (isConnected) {
+  //     switchChain();
+  //   }
+  // }, [data?.chainId, isConnected, switchChain]);
 
   const statusChangeHandler = (nextState: any) => {
     console.log("nextState", nextState);
   };
-
-  useEffect(() => {
-    account.on("change:status", statusChangeHandler);
-
-    return () => {
-      account.off("change:status", statusChangeHandler);
-    };
-  }, []);
 
   useEffect(() => {
     if (isSuccess && address) {
@@ -101,7 +83,16 @@ export const ConnectWallet = () => {
   const handleCreateAccount = async () => {
     try {
       const resp = await createAccount();
-      console.log("ressssssss", resp);
+      console.log("ressssssss", resp); // RETURN undefined
+    } catch (e) {
+      console.log("error", e);
+    }
+  };
+
+  const handleEnableTrading = async () => {
+    try {
+      const resp = await createOrderlyKey(true);
+      console.log("ressssssss", resp); // RETURN undefined
     } catch (e) {
       console.log("error", e);
     }
@@ -143,15 +134,19 @@ export const ConnectWallet = () => {
     }
   };
 
-  console.log("status", status);
-
   return (
     <div className="w-fit h-fit relative">
-      <button className="h-10 w-10 bg-red" onClick={handleCreateAccount}>
+      <button
+        className="h-10 w-10 bg-red"
+        onClick={() => handleCreateAccount()}
+      >
         Create Account
       </button>
-      <button className="bg-green text-white" onClick={account.createAccount}>
-        Register
+      <button
+        className="bg-green text-white"
+        onClick={() => handleEnableTrading()}
+      >
+        Enable trading
       </button>
       <Dialog>
         <DialogTrigger>

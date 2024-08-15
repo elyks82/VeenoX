@@ -1,4 +1,5 @@
 "use client";
+import { Deposit } from "@/layouts/deposit";
 import { motion, useAnimation, useInView } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
@@ -23,6 +24,7 @@ export const Home = () => {
       }}
       ref={ref}
     >
+      <Deposit />
       <section className="h-calc-full-header flex items-center w-screen-header ml-[10%]">
         <motion.img
           initial="initial"
