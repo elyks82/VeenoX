@@ -24,8 +24,23 @@ export const Header = () => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { account, state } = useOrderlyAccount();
-  const { address, isDisconnected, isConnecting } = useAccount();
+  const { address, isDisconnected, isConnecting, chain, isConnected } =
+    useAccount();
   const { connect, connectors } = useConnect();
+  console.log("state", state);
+  // useEffect(() => {
+  //   if (isConnected && address) {
+  //     account.setAddress(address, {
+  //       provider: window.ethereum,
+  //       chain: {
+  //         id: "0x1",
+  //       },
+  //       wallet: {
+  //         name: "Web3Modal",
+  //       },
+  //     });
+  //   }
+  // }, [isConnected, address, account]);
 
   // const provider = useProvider();
   // const { chain } = useNetwork();
@@ -64,10 +79,6 @@ export const Header = () => {
   //     },
   //   });
   // };
-
-  const handleConnect = () => {
-    connect({ connector: connectors[2] });
-  };
 
   // const handleDisconnect = () => {
   //   disconnect();
