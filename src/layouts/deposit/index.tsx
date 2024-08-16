@@ -91,7 +91,6 @@ export const Deposit = () => {
   };
 
   const handleClick = async () => {
-    console.log("supportedChainId", isSupportedChain);
     if (isSupportedChain) {
       if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
         triggerAlert("Error", "Invalid amount.");
