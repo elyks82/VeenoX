@@ -60,3 +60,18 @@ export const supportedChains: SupportedChain[] = [
 ];
 
 export const supportedChainIds = supportedChains.map(({ id }) => Number(id));
+
+export type ChainsImageType = 1 | 56 | 324 | 137 | 534352 | 59144;
+const chainsImage = {
+  1: "/assets/ETH.png",
+  42161: "/assets/ETH.png",
+  56: "/assets/BSC.png",
+  324: "/assets/ZK.png",
+  137: "/assets/MATIC.png",
+  534352: "/assets/SCROLL.png",
+  59144: "/assets/LINEA.png",
+};
+
+export const getImageFromChainId = (id: ChainsImageType): string => {
+  return chainsImage[id];
+};

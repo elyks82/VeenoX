@@ -10,7 +10,12 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { triggerAlert } from "@/lib/toaster";
 import { addressSlicer, getFormattedAmount } from "@/utils/misc";
-import { supportedChainIds, supportedChains } from "@/utils/network";
+import {
+  ChainsImageType,
+  getImageFromChainId,
+  supportedChainIds,
+  supportedChains,
+} from "@/utils/network";
 import {
   useAccountInfo,
   useChains,
@@ -25,7 +30,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import { Oval } from "react-loader-spinner";
-import { useAccount } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { filterAllowedCharacters } from "./utils";
 
 export const Deposit = () => {
@@ -43,7 +48,8 @@ export const Deposit = () => {
   const [isDepositSuccess, setIsDepositSuccess] = useState(false);
   const { isWalletConnectorOpen, setIsWalletConnectorOpen } =
     useGeneralContext();
-
+  const networkIdSupported = [42161, 421614, 8453, 84532, 10, 11155420];
+  const isSupportedChain = networkIdSupported.includes(chainId as number);
   const [chains] = useChains("mainnet", {
     filter: (item: API.Chain) =>
       supportedChainIds.includes(item.network_infos?.chain_id),
@@ -77,6 +83,7 @@ export const Deposit = () => {
   });
   const { usdc, data } = useHoldingStream();
   const { data: acc, error, isLoading } = useAccountInfo();
+  const { switchChain } = useSwitchChain();
 
   const test = async () => {
     if (!address) return;
@@ -84,44 +91,49 @@ export const Deposit = () => {
   };
 
   const handleClick = async () => {
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      triggerAlert("Error", "Invalid amount.");
-      return;
-    }
-    if (parseFloat(amount as never) > parseFloat(balance)) {
-      triggerAlert("Error", "Amount exceed your holdings");
-      return;
-    }
-    const amountNumber = Number(amount);
-    const allowanceNumber = Number(allowance);
+    console.log("supportedChainId", isSupportedChain);
+    if (isSupportedChain) {
+      if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+        triggerAlert("Error", "Invalid amount.");
+        return;
+      }
+      if (parseFloat(amount as never) > parseFloat(balance)) {
+        triggerAlert("Error", "Amount exceed your holdings");
+        return;
+      }
+      const amountNumber = Number(amount);
+      const allowanceNumber = Number(allowance);
 
-    if (allowanceNumber < amountNumber) {
-      try {
+      if (allowanceNumber < amountNumber) {
+        try {
+          setIsApprovalDepositLoading(true);
+          await approve(amount.toString());
+          setIsApprovalDepositLoading(false);
+        } catch (err) {
+          setIsApprovalDepositLoading(false);
+        }
+      } else {
         setIsApprovalDepositLoading(true);
-        await approve(amount.toString());
-        setIsApprovalDepositLoading(false);
-      } catch (err) {
-        setIsApprovalDepositLoading(false);
+        try {
+          await deposit();
+          setIsDepositSuccess(true);
+          setIsApprovalDepositLoading(false);
+          setAmount(undefined);
+          setNewWalletBalance(undefined);
+          setNewOrderlyBalance(undefined);
+          setTimeout(() => {
+            setOpen(false);
+            setTimeout(() => {
+              setIsDepositSuccess(false);
+            }, 1000);
+          }, 3000);
+        } catch (err) {
+          triggerAlert("Error", "Error while depositing on Veeno.");
+          setIsApprovalDepositLoading(false);
+        }
       }
     } else {
-      setIsApprovalDepositLoading(true);
-      try {
-        await deposit();
-        setIsDepositSuccess(true);
-        setIsApprovalDepositLoading(false);
-        setAmount(undefined);
-        setNewWalletBalance(undefined);
-        setNewOrderlyBalance(undefined);
-        setTimeout(() => {
-          setOpen(false);
-          setTimeout(() => {
-            setIsDepositSuccess(false);
-          }, 1000);
-        }, 3000);
-      } catch (err) {
-        triggerAlert("Error", "Error while depositing on Veeno.");
-        setIsApprovalDepositLoading(false);
-      }
+      switchChain({ chainId: 42161 }); // Default switch to Arbitrum
     }
   };
 
@@ -130,7 +142,8 @@ export const Deposit = () => {
 
   const chainLogo =
     supportedChains.find((entry) => entry.label === (chain?.name as string))
-      ?.icon || "";
+      ?.icon || getImageFromChainId(chainId as ChainsImageType);
+
   return (
     <>
       <Dialog open={open}>
@@ -278,11 +291,17 @@ export const Deposit = () => {
                 wrapperClass=""
               />
             ) : null}
-            {amount != null && Number(allowance) < Number(amount)
-              ? "Approve"
-              : isDepositSuccess
-              ? "Deposit Successfull"
-              : "Deposit"}
+            {isSupportedChain ? (
+              <>
+                {amount != null && Number(allowance) < Number(amount)
+                  ? "Approve"
+                  : isDepositSuccess
+                  ? "Deposit Successfull"
+                  : "Deposit"}
+              </>
+            ) : (
+              "Swtich Network"
+            )}
           </button>
         </DialogContent>
       </Dialog>
