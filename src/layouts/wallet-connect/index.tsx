@@ -80,24 +80,6 @@ export const ConnectWallet = () => {
     }
   }, [isSuccess, address, account]);
 
-  const handleCreateAccount = async () => {
-    try {
-      const resp = await createAccount();
-      console.log("ressssssss", resp); // RETURN undefined
-    } catch (e) {
-      console.log("error", e);
-    }
-  };
-
-  const handleEnableTrading = async () => {
-    try {
-      const resp = await createOrderlyKey(true);
-      console.log("ressssssss", resp); // RETURN undefined
-    } catch (e) {
-      console.log("error", e);
-    }
-  };
-
   const handleConnect = (i: number) => {
     connect({ connector: connectors[i] });
   };
@@ -143,18 +125,6 @@ export const ConnectWallet = () => {
 
   return (
     <div className="w-fit h-fit relative">
-      <button
-        className="h-10 w-10 bg-red"
-        onClick={() => handleCreateAccount()}
-      >
-        Create Account
-      </button>
-      <button
-        className="bg-green text-white"
-        onClick={() => handleEnableTrading()}
-      >
-        Enable trading
-      </button>
       <Dialog open={isWalletConnectorOpen}>
         <DialogTrigger>
           <div
@@ -163,13 +133,13 @@ export const ConnectWallet = () => {
               setIsWalletConnectorOpen(true);
             }}
             className="text-white bg-base_color border border-borderColor-DARK text-bold font-poppins text-xs
-        h-[30px] sm:h-[35px] px-2 sm:px-2.5 rounded sm:rounded-md 
+        h-[30px] sm:h-[35px] px-2 sm:px-2.5 flex items-center justify-center rounded sm:rounded-md 
         "
           >
             {isDisconnected || isConnecting ? (
               "Connect"
             ) : (
-              <span className="inline-flex items-center">
+              <span className="flex items-center w-full h-full">
                 <p>{addressSlicer(address)}</p>
                 <IoChevronDown className="ml-1" />
               </span>
