@@ -193,8 +193,11 @@ export const Deposit = () => {
                 >
                   {supportedChains
                     ?.filter((item) => item.network !== "testnet")
-                    .map((supportedChain) => (
-                      <div className="flex items-center py-1 flex-nowrap">
+                    .map((supportedChain, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center py-1 flex-nowrap"
+                      >
                         <Image
                           src={supportedChain.icon}
                           width={20}
