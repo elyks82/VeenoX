@@ -11,6 +11,7 @@ import {
 import { addressSlicer } from "@/utils/misc";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { useEffect, useState } from "react";
+import { FaCheck } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";
 import { TfiWallet } from "react-icons/tfi";
 import { useAccount, useConnect, useSwitchChain } from "wagmi";
@@ -133,6 +134,13 @@ export const ConnectWallet = () => {
     }
   };
 
+  useEffect(() => {
+    if (isSuccess)
+      setTimeout(() => {
+        setIsWalletConnectorOpen(false);
+      }, 3000);
+  }, [isSuccess]);
+
   return (
     <div className="w-fit h-fit relative">
       <button
@@ -150,7 +158,10 @@ export const ConnectWallet = () => {
       <Dialog open={isWalletConnectorOpen}>
         <DialogTrigger>
           <div
-            onClick={() => setIsWalletConnectorOpen(true)}
+            onClick={() => {
+              if (address) return;
+              setIsWalletConnectorOpen(true);
+            }}
             className="text-white bg-base_color border border-borderColor-DARK text-bold font-poppins text-xs
         h-[30px] sm:h-[35px] px-2 sm:px-2.5 rounded sm:rounded-md 
         "
@@ -175,7 +186,38 @@ export const ConnectWallet = () => {
               {getActiveStep(status).description}
             </DialogDescription>
           </DialogHeader>
-          {status === "idle" || status === "error" ? (
+          {isPending ? (
+            <div className="h-[208px] w-full flex flex-col items-center justify-center">
+              {getImageFromConnector(
+                connectors[isActive - 1].name,
+                connectors[isActive - 1].icon as string
+              ) ? (
+                <img
+                  src={
+                    getImageFromConnector(
+                      connectors[isActive - 1].name,
+                      connectors[isActive - 1].icon as string
+                    ) as string
+                  }
+                  height={80}
+                  width={80}
+                  className="rounded-full animate-pulse-scale"
+                />
+              ) : (
+                <TfiWallet className="text-6xl text-white animate-pulse-scale shadow-xl shadow-slate-800" />
+              )}
+              <p className="text-white text-sm mt-5">
+                {`Connecting to ${connectors[isActive - 1].name}`}
+              </p>
+            </div>
+          ) : isSuccess ? (
+            <div className="h-[208px] w-full flex flex-col items-center justify-center">
+              <FaCheck className="text-6xl text-green" />
+              <p className="text-white mt-5 font-medium">
+                Successfully Connected!
+              </p>
+            </div>
+          ) : (
             <div className="flex flex-wrap gap-2 w-full items-center">
               {connectors?.map((connector, i) => {
                 const image = getImageFromConnector(
@@ -215,30 +257,6 @@ export const ConnectWallet = () => {
                   );
                 return null;
               })}
-            </div>
-          ) : (
-            <div className="h-[208px] w-full flex flex-col items-center justify-center">
-              {getImageFromConnector(
-                connectors[isActive - 1].name,
-                connectors[isActive - 1].icon as string
-              ) ? (
-                <img
-                  src={
-                    getImageFromConnector(
-                      connectors[isActive - 1].name,
-                      connectors[isActive - 1].icon as string
-                    ) as string
-                  }
-                  height={80}
-                  width={80}
-                  className="rounded-full animate-pulse-scale"
-                />
-              ) : (
-                <TfiWallet className="text-6xl text-white animate-pulse-scale shadow-xl shadow-slate-800" />
-              )}
-              <p className="text-white text-sm mt-5">
-                {`Connecting to ${connectors[isActive - 1].name}`}
-              </p>
             </div>
           )}
         </DialogContent>

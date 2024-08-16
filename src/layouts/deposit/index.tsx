@@ -114,7 +114,9 @@ export const Deposit = () => {
         setNewOrderlyBalance(undefined);
         setTimeout(() => {
           setOpen(false);
-          setIsDepositSuccess(false);
+          setTimeout(() => {
+            setIsDepositSuccess(false);
+          }, 1000);
         }, 3000);
       } catch (err) {
         triggerAlert("Error", "Error while depositing on Veeno.");
