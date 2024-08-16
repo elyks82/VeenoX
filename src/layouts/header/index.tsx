@@ -1,5 +1,6 @@
 "use client";
 import { Tooltip } from "@/components/tooltip";
+import { useGeneralContext } from "@/context";
 import { triggerAlert } from "@/lib/toaster";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import Link from "next/link";
@@ -10,6 +11,7 @@ import { MdContentCopy } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useAccount, useConnect } from "wagmi";
 import { Deposit } from "../deposit";
+import { EnableTrading } from "../enable-trading";
 import { ConnectWallet } from "../wallet-connect";
 import { MobileModal } from "./mobile";
 
@@ -29,6 +31,8 @@ export const Header = () => {
   const { address, isDisconnected, isConnecting, chain, isConnected } =
     useAccount();
   const { connect, connectors } = useConnect();
+  const { isEnableTradingModalOpen, setIsEnableTradingModalOpen } =
+    useGeneralContext();
   console.log("state", state);
   // useEffect(() => {
   //   if (isConnected && address) {
@@ -126,7 +130,9 @@ export const Header = () => {
         </Link>
       </div>
       <button
-        onClick={triggerAlertClick}
+        onClick={() => {
+          setIsEnableTradingModalOpen(true);
+        }}
         className="border-l-indigo-600 h-10 w-10"
       >
         CLICK ME
@@ -180,6 +186,7 @@ export const Header = () => {
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen((prev) => !prev)}
       />
+      <EnableTrading />
     </header>
   );
 };

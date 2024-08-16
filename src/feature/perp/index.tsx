@@ -1,5 +1,6 @@
 "use client";
 import { useGeneralContext } from "@/context";
+import { EnableTrading } from "@/layouts/enable-trading";
 import { FuturesAssetProps } from "@/models";
 import { useWalletConnector } from "@orderly.network/hooks";
 import dynamic from "next/dynamic";
@@ -122,6 +123,7 @@ export const Perp = ({ asset }: PerpProps) => {
       ref={containerRef}
       className="container overflow-scroll w-full max-w-full"
     >
+      <EnableTrading />
       <div
         ref={rowUpRef}
         className="relative w-full border-b border-borderColor topPane md:flex-grow "
