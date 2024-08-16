@@ -1,5 +1,6 @@
 "use client";
 import { Tooltip } from "@/components/tooltip";
+import { triggerAlert } from "@/lib/toaster";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import Link from "next/link";
 import { useState } from "react";
@@ -8,6 +9,7 @@ import { IoChevronDown } from "react-icons/io5";
 import { MdContentCopy } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useAccount, useConnect } from "wagmi";
+import { Deposit } from "../deposit";
 import { ConnectWallet } from "../wallet-connect";
 import { MobileModal } from "./mobile";
 
@@ -93,6 +95,13 @@ export const Header = () => {
   };
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const triggerAlertClick = () => {
+    triggerAlert(
+      "Success",
+      "Successfully deposit on Veeno. Your balance will update shortly."
+    );
+  };
+
   return (
     <header className="flex items-center justify-between h-[60px] px-2.5 border-b border-borderColor">
       <div className="flex items-center gap-5">
@@ -116,15 +125,15 @@ export const Header = () => {
           </div>{" "}
         </Link>
       </div>
+      <button
+        onClick={triggerAlertClick}
+        className="border-l-indigo-600 h-10 w-10"
+      >
+        CLICK ME
+      </button>
       <div className="flex items-center gap-5">
         <div className="flex relative w-fit h-fit">
-          <button
-            className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
-            h-[30px] sm:h-[35px] px-2.5 rounded sm:rounded-md mr-2.5 flex items-center
-        "
-          >
-            Deposit
-          </button>
+          <Deposit />
           <button
             className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
             h-[30px] sm:h-[35px] px-2 rounded sm:rounded-md mr-2.5 flex items-center

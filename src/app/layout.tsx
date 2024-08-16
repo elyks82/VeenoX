@@ -7,6 +7,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { headers } from "next/headers";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { cookieToInitialState } from "wagmi";
 import { OrderlyProvider } from "./common/OrderlyProvider";
 import "./globals.css";
@@ -35,19 +37,21 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* <Provider> */}{" "}
         <AppKitProvider initialState={initialState}>
-          {" "}
           <OrderlyProvider>
+            <ToastContainer
+              icon={false}
+              toastClassName="bg-primary text-white p-2 rounded shadow-md border border-borderColor-DARK relative"
+              bodyClassName="bg-primary text-white"
+            />
             <GeneralProvider>
               <Header />
               {children}
               <SpeedInsights />
               <Footer />
-            </GeneralProvider>{" "}
+            </GeneralProvider>
           </OrderlyProvider>
-        </AppKitProvider>{" "}
-        {/* </Provider> */}
+        </AppKitProvider>
       </body>
     </html>
   );
