@@ -2,15 +2,23 @@ import { useGeneralContext } from "@/context";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/lib/shadcn/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { triggerAlert } from "@/lib/toaster";
-import { addressSlicer, getFormattedAmount } from "@/utils/misc";
-import { supportedChainIds, supportedChains } from "@/utils/network";
+import {
+  ConnectorNameType,
+  addressSlicer,
+  connectorsToImage,
+  getFormattedAmount,
+} from "@/utils/misc";
+import {
+  ChainsImageType,
+  getImageFromChainId,
+  supportedChainIds,
+  supportedChains,
+} from "@/utils/network";
 import {
   useAccountInfo,
   useChains,
@@ -23,9 +31,10 @@ import { API } from "@orderly.network/types";
 import { FixedNumber } from "ethers";
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { FaArrowDownLong } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";
 import { Oval } from "react-loader-spinner";
-import { useAccount } from "wagmi";
+import { useAccount, useSwitchChain } from "wagmi";
 import { filterAllowedCharacters } from "./utils";
 
 export const Deposit = () => {
@@ -41,9 +50,10 @@ export const Deposit = () => {
   const [isApprovalDepositLoading, setIsApprovalDepositLoading] =
     useState<boolean>(false);
   const [isDepositSuccess, setIsDepositSuccess] = useState(false);
-  const { isWalletConnectorOpen, setIsWalletConnectorOpen } =
+  const { setIsWalletConnectorOpen, isDeposit, setIsDeposit } =
     useGeneralContext();
-
+  const networkIdSupported = [42161, 421614, 8453, 84532, 10, 11155420];
+  const isSupportedChain = networkIdSupported.includes(chainId as number);
   const [chains] = useChains("mainnet", {
     filter: (item: API.Chain) =>
       supportedChainIds.includes(item.network_infos?.chain_id),
@@ -77,6 +87,9 @@ export const Deposit = () => {
   });
   const { usdc, data } = useHoldingStream();
   const { data: acc, error, isLoading } = useAccountInfo();
+  const { switchChain } = useSwitchChain();
+
+  console.log("usdc", usdc);
 
   const test = async () => {
     if (!address) return;
@@ -84,44 +97,48 @@ export const Deposit = () => {
   };
 
   const handleClick = async () => {
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      triggerAlert("Error", "Invalid amount.");
-      return;
-    }
-    if (parseFloat(amount as never) > parseFloat(balance)) {
-      triggerAlert("Error", "Amount exceed your holdings");
-      return;
-    }
-    const amountNumber = Number(amount);
-    const allowanceNumber = Number(allowance);
+    if (isSupportedChain) {
+      if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+        triggerAlert("Error", "Invalid amount.");
+        return;
+      }
+      if (parseFloat(amount as never) > parseFloat(balance)) {
+        triggerAlert("Error", "Amount exceed your holdings");
+        return;
+      }
+      const amountNumber = Number(amount);
+      const allowanceNumber = Number(allowance);
 
-    if (allowanceNumber < amountNumber) {
-      try {
+      if (allowanceNumber < amountNumber) {
+        try {
+          setIsApprovalDepositLoading(true);
+          await approve(amount.toString());
+          setIsApprovalDepositLoading(false);
+        } catch (err) {
+          setIsApprovalDepositLoading(false);
+        }
+      } else {
         setIsApprovalDepositLoading(true);
-        await approve(amount.toString());
-        setIsApprovalDepositLoading(false);
-      } catch (err) {
-        setIsApprovalDepositLoading(false);
+        try {
+          await deposit();
+          setIsDepositSuccess(true);
+          setIsApprovalDepositLoading(false);
+          setAmount(undefined);
+          setNewWalletBalance(undefined);
+          setNewOrderlyBalance(undefined);
+          setTimeout(() => {
+            setOpen(false);
+            setTimeout(() => {
+              setIsDepositSuccess(false);
+            }, 1000);
+          }, 3000);
+        } catch (err) {
+          triggerAlert("Error", "Error while depositing on Veeno.");
+          setIsApprovalDepositLoading(false);
+        }
       }
     } else {
-      setIsApprovalDepositLoading(true);
-      try {
-        await deposit();
-        setIsDepositSuccess(true);
-        setIsApprovalDepositLoading(false);
-        setAmount(undefined);
-        setNewWalletBalance(undefined);
-        setNewOrderlyBalance(undefined);
-        setTimeout(() => {
-          setOpen(false);
-          setTimeout(() => {
-            setIsDepositSuccess(false);
-          }, 1000);
-        }, 3000);
-      } catch (err) {
-        triggerAlert("Error", "Error while depositing on Veeno.");
-        setIsApprovalDepositLoading(false);
-      }
+      switchChain({ chainId: 42161 }); // Default switch to Arbitrum
     }
   };
 
@@ -130,7 +147,8 @@ export const Deposit = () => {
 
   const chainLogo =
     supportedChains.find((entry) => entry.label === (chain?.name as string))
-      ?.icon || "";
+      ?.icon || getImageFromChainId(chainId as ChainsImageType);
+
   return (
     <>
       <Dialog open={open}>
@@ -150,37 +168,69 @@ export const Deposit = () => {
         </DialogTrigger>
         <DialogContent
           close={() => setOpen(false)}
-          className="w-full flex flex-col max-w-[475px] h-auto max-h-auto"
+          className="w-full max-w-[475px] h-auto max-h-auto flex flex-col gap-0"
         >
           <DialogHeader>
-            <DialogTitle>
-              {isDepositSuccess ? "Deposit Successfull" : "Deposit on VeenoX"}
-            </DialogTitle>
-            <DialogDescription className="text-font-60">
-              {isDepositSuccess
-                ? "You deposit is in progress, your balance will update shortly."
-                : "Initiate a transaction to deposit into your account from your wallet.."}
-            </DialogDescription>
+            <div className="w-full mb-5">
+              <div className="flex items-center w-full h-[34px] relative">
+                <button
+                  className={`${
+                    isDeposit ? "text-white" : "text-font-60"
+                  } w-1/2 h-fit pb-4 text-base font-medium transition-all duration-200 ease-in-out`}
+                  onClick={() => setIsDeposit(true)}
+                >
+                  Deposit
+                </button>
+                <button
+                  className={`${
+                    !isDeposit ? "text-white" : "text-font-60"
+                  } w-1/2 h-fit pb-4 text-base font-medium transition-all duration-200 ease-in-out`}
+                  onClick={() => setIsDeposit(false)}
+                >
+                  Withdraw
+                </button>
+              </div>
+              <div className="bg-terciary h-[1px] w-full relative">
+                <div
+                  className={`h-[1px] w-1/2 bottom-0 transition-all duration-200 ease-in-out bg-font-80 absolute ${
+                    isDeposit ? "left-0" : "left-1/2"
+                  } `}
+                />
+              </div>
+            </div>
           </DialogHeader>
-          <div className="w-full flex items-center ">
-            <div className="bg-terciary h-[35px] border rounded w-full border-borderColor-DARK mr-2">
+          <div className="flex items-center w-full justify-between mb-2">
+            <p>Your Wallet</p>
+            <Image
+              src={
+                connectorsToImage[
+                  state?.connectWallet?.name as ConnectorNameType
+                ] || "/logo/v.png"
+              }
+              height={20}
+              width={20}
+              alt="Veeno logo"
+              className="rounded-full"
+            />
+          </div>
+          <div className="w-full flex items-center mb-2">
+            <div className="bg-terciary h-[35px]  border rounded w-full border-borderColor-DARK mr-2">
               <input
                 type="text"
                 readOnly
                 placeholder={addressSlicer(address)}
-                className="h-full px-2.5 w-full text-sm"
+                className="h-full px-2.5 w-full text-xs"
               />{" "}
             </div>
             <div className="bg-terciary h-[35px] border rounded border-borderColor-DARK">
               <Popover>
                 <PopoverTrigger className="h-full min-w-fit">
                   <button className="h-full whitespace-nowrap text-sm px-2.5 text-white w-full flex-nowrap flex items-center justify-center">
-                    {/* <img src={} /> */}
                     <Image
                       src={chainLogo}
-                      width={20}
-                      height={20}
-                      className="h-5 w-5 ml-2 object-cover rounded-full mr-2"
+                      width={18}
+                      height={18}
+                      className="ml-2 object-cover rounded-full mr-2"
                       alt="Chain logo"
                     />
                     {chain?.name}
@@ -194,9 +244,14 @@ export const Deposit = () => {
                   {supportedChains
                     ?.filter((item) => item.network !== "testnet")
                     .map((supportedChain, i) => (
-                      <div
+                      <button
                         key={i}
                         className="flex items-center py-1 flex-nowrap"
+                        onClick={() =>
+                          switchChain({
+                            chainId: parseInt(supportedChain.id, 16),
+                          })
+                        }
                       >
                         <Image
                           src={supportedChain.icon}
@@ -205,10 +260,16 @@ export const Deposit = () => {
                           className="h-5 w-5 object-cover rounded-full mr-2"
                           alt="Chain logo"
                         />
-                        <p className="w-full text-sm text-white">
+                        <p
+                          className={`w-full text-start text-xs ${
+                            parseInt(supportedChain.id, 16) === chainId
+                              ? "text-white"
+                              : "text-font-60"
+                          } `}
+                        >
                           {supportedChain.label}
                         </p>
-                      </div>
+                      </button>
                     ))}
                 </PopoverContent>
               </Popover>{" "}
@@ -219,7 +280,7 @@ export const Deposit = () => {
               <input
                 type="number"
                 placeholder={amount?.toString() || "Quantity"}
-                className="h-[30px] pr-2.5 w-full max-w-[280px] text-sm"
+                className="h-[30px] pr-2.5 w-full max-w-[280px] text-sm placeholder:text-white"
                 onChange={(e) => {
                   const newValue = filterAllowedCharacters(e.target.value);
                   setAmount(newValue as any);
@@ -250,10 +311,43 @@ export const Deposit = () => {
               <div className="flex items-center">
                 <div className="flex items-center ml-5">
                   <p className="text-font-60 text-xs">
-                    Available: {getFormattedAmount(balance)} USDC
+                    Available:{" "}
+                    {parseFloat(balance) > 0 ? getFormattedAmount(balance) : 0}
+                    USDC
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="h-[20px] w-full flex items-center justify-center my-5">
+            <div className="h-0.5 w-full bg-borderColor-DARK" />
+            <FaArrowDownLong className="text-white text-2xl mx-2" />
+            <div className="h-0.5 w-full bg-borderColor-DARK" />
+          </div>
+          <div className="flex flex-col w-full">
+            <div className="flex items-center w-full justify-between">
+              <p>Your VeenoX account</p>
+              <Image
+                src="/logo/v.png"
+                height={20}
+                width={20}
+                alt="Veeno logo"
+                className="rounded-full"
+              />
+            </div>
+            <div className="bg-terciary mt-2 h-[35px] border rounded w-full border-borderColor-DARK mr-2">
+              <input
+                type="text"
+                readOnly
+                placeholder={
+                  amount ? `${amount?.toString() as string} USDC` : "Quantity"
+                }
+                className="h-full px-2.5 w-full text-xs placeholder:opacity-100 placeholder:text-white"
+              />
+            </div>
+            <div className="flex text-xs text-white items-center justify-between my-4 ">
+              <p className="text-font-60 mr-2">Deposit Fees:</p>
+              <p>0.00$</p>
             </div>
           </div>
           <button
@@ -278,11 +372,17 @@ export const Deposit = () => {
                 wrapperClass=""
               />
             ) : null}
-            {amount != null && Number(allowance) < Number(amount)
-              ? "Approve"
-              : isDepositSuccess
-              ? "Deposit Successfull"
-              : "Deposit"}
+            {isSupportedChain ? (
+              <>
+                {amount != null && Number(allowance) < Number(amount)
+                  ? "Approve"
+                  : isDepositSuccess
+                  ? "Deposit Successfull"
+                  : "Deposit"}
+              </>
+            ) : (
+              "Swtich Network"
+            )}
           </button>
         </DialogContent>
       </Dialog>

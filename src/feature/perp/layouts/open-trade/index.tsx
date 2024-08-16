@@ -3,16 +3,17 @@ import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
+import { getFormattedAmount } from "@/utils/misc";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { useState } from "react";
 import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
 
 type KeyBooleanType = "reduce_only" | "tp_sl";
-type OpenTradeProps = { isMobile?: boolean };
+type OpenTradeProps = { isMobile?: boolean; holding?: number };
 const marketType = ["Market", "Limit"];
 
-export const OpenTrade = ({ isMobile = false }: OpenTradeProps) => {
+export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
   const { tradeInfo, setTradeInfo } = useGeneralContext();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
   const { state } = useOrderlyAccount();
@@ -185,7 +186,9 @@ export const OpenTrade = ({ isMobile = false }: OpenTradeProps) => {
           </div>
           <div className="flex items-center w-full justify-between mt-4">
             <p className="text-xs text-font-60">Available to Trade</p>
-            <p className="text-xs text-white font-medium">0 USDC</p>
+            <p className="text-xs text-white font-medium">
+              {getFormattedAmount(holding)} USDC
+            </p>
           </div>
 
           {tradeInfo.type === "Stop Limit" ||

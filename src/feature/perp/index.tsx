@@ -2,7 +2,8 @@
 import { useGeneralContext } from "@/context";
 import { EnableTrading } from "@/layouts/enable-trading";
 import { FuturesAssetProps } from "@/models";
-import { useWalletConnector } from "@orderly.network/hooks";
+import { getFormattedAmount } from "@/utils/misc";
+import { useHoldingStream, useWalletConnector } from "@orderly.network/hooks";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { Favorites } from "./layouts/favorites";
@@ -30,6 +31,7 @@ export const Perp = ({ asset }: PerpProps) => {
   const [topHeight, setTopHeight] = useState(70);
   const { mobileActiveSection, setIsChartLoading } = useGeneralContext();
   const rowUpRef = useRef<HTMLDivElement>(null);
+  const { usdc } = useHoldingStream();
 
   const handleMouseDown = (index: number, e: any) => {
     if (window.innerWidth < 1024) return;
@@ -178,7 +180,7 @@ export const Perp = ({ asset }: PerpProps) => {
             <Orderbook asset={asset} />
           </div>
           <div className="hidden md:block h-full ">
-            <OpenTrade />
+            <OpenTrade holding={usdc?.holding} />
           </div>
         </div>
         {window.innerWidth >= 1024 &&
@@ -219,7 +221,9 @@ export const Perp = ({ asset }: PerpProps) => {
                 <p className="text-xs text-font-60 mb-[3px]">
                   Total value (USDC)
                 </p>
-                <p className="text-base text-white font-medium">0.00</p>
+                <p className="text-base text-white font-medium">
+                  {getFormattedAmount(usdc?.holding)}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-font-60 mb-1">Unreal PnL (USDC)</p>
@@ -242,7 +246,7 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
         </div>
       </div>
-      <MobileOpenTrade asset={asset} />
+      <MobileOpenTrade asset={asset} holding={usdc?.holding} />
     </div>
   );
 };
