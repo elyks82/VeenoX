@@ -123,7 +123,7 @@ export const Perp = ({ asset }: PerpProps) => {
   return (
     <div
       ref={containerRef}
-      className="container overflow-scroll w-full max-w-full"
+      className="container overflow-scroll no-scrollbar w-full max-w-full"
     >
       <EnableTrading />
       <div
@@ -141,7 +141,7 @@ export const Perp = ({ asset }: PerpProps) => {
           }}
         >
           <div
-            className="border-r border-borderColor overflow-x-hidden "
+            className="border-r border-borderColor overflow-x-hidden no-scrollbar"
             ref={chartRef}
           >
             {!mobileActiveSection ? (
