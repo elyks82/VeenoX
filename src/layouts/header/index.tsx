@@ -129,14 +129,6 @@ export const Header = () => {
           </div>{" "}
         </Link>
       </div>
-      <button
-        onClick={() => {
-          setIsEnableTradingModalOpen(true);
-        }}
-        className="border-l-indigo-600 h-10 w-10"
-      >
-        CLICK ME
-      </button>
       <div className="flex items-center gap-5">
         <div className="flex relative w-fit h-fit">
           <Deposit />
