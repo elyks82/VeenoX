@@ -187,7 +187,6 @@ export const Deposit = () => {
               <Popover>
                 <PopoverTrigger className="h-full min-w-fit">
                   <button className="h-full whitespace-nowrap text-sm px-2.5 text-white w-full flex-nowrap flex items-center justify-center">
-                    {/* <img src={} /> */}
                     <Image
                       src={chainLogo}
                       width={20}
@@ -206,9 +205,14 @@ export const Deposit = () => {
                   {supportedChains
                     ?.filter((item) => item.network !== "testnet")
                     .map((supportedChain, i) => (
-                      <div
+                      <button
                         key={i}
                         className="flex items-center py-1 flex-nowrap"
+                        onClick={() =>
+                          switchChain({
+                            chainId: parseInt(supportedChain.id, 16),
+                          })
+                        }
                       >
                         <Image
                           src={supportedChain.icon}
@@ -217,10 +221,16 @@ export const Deposit = () => {
                           className="h-5 w-5 object-cover rounded-full mr-2"
                           alt="Chain logo"
                         />
-                        <p className="w-full text-sm text-white">
+                        <p
+                          className={`w-full text-start text-sm ${
+                            parseInt(supportedChain.id, 16) === chainId
+                              ? "text-white"
+                              : "text-font-60"
+                          } `}
+                        >
                           {supportedChain.label}
                         </p>
-                      </div>
+                      </button>
                     ))}
                 </PopoverContent>
               </Popover>{" "}
