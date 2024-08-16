@@ -2,9 +2,7 @@ import { useGeneralContext } from "@/context";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from "@/lib/shadcn/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
@@ -52,7 +50,7 @@ export const Deposit = () => {
   const [isApprovalDepositLoading, setIsApprovalDepositLoading] =
     useState<boolean>(false);
   const [isDepositSuccess, setIsDepositSuccess] = useState(false);
-  const { isWalletConnectorOpen, setIsWalletConnectorOpen } =
+  const { setIsWalletConnectorOpen, isDeposit, setIsDeposit } =
     useGeneralContext();
   const networkIdSupported = [42161, 421614, 8453, 84532, 10, 11155420];
   const isSupportedChain = networkIdSupported.includes(chainId as number);
@@ -173,16 +171,35 @@ export const Deposit = () => {
           className="w-full max-w-[475px] h-auto max-h-auto flex flex-col gap-0"
         >
           <DialogHeader>
-            <DialogTitle>
-              {isDepositSuccess ? "Deposit Successfull" : "Deposit on VeenoX"}
-            </DialogTitle>
-            <DialogDescription className="text-font-60">
-              {isDepositSuccess
-                ? "You deposit is in progress, your balance will update shortly."
-                : "Initiate a transaction to deposit into your account from your wallet.."}
-            </DialogDescription>
+            <div className="w-full mb-5">
+              <div className="flex items-center w-full h-[34px] relative">
+                <button
+                  className={`${
+                    isDeposit ? "text-white" : "text-font-60"
+                  } w-1/2 h-fit pb-4 text-base font-medium transition-all duration-200 ease-in-out`}
+                  onClick={() => setIsDeposit(true)}
+                >
+                  Deposit
+                </button>
+                <button
+                  className={`${
+                    !isDeposit ? "text-white" : "text-font-60"
+                  } w-1/2 h-fit pb-4 text-base font-medium transition-all duration-200 ease-in-out`}
+                  onClick={() => setIsDeposit(false)}
+                >
+                  Withdraw
+                </button>
+              </div>
+              <div className="bg-terciary h-[1px] w-full relative">
+                <div
+                  className={`h-[1px] w-1/2 bottom-0 transition-all duration-200 ease-in-out bg-font-80 absolute ${
+                    isDeposit ? "left-0" : "left-1/2"
+                  } `}
+                />
+              </div>
+            </div>
           </DialogHeader>
-          <div className="flex items-center w-full justify-between mt-5 mb-2">
+          <div className="flex items-center w-full justify-between mb-2">
             <p>Your Wallet</p>
             <Image
               src={
@@ -304,7 +321,7 @@ export const Deposit = () => {
           </div>
           <div className="h-[20px] w-full flex items-center justify-center my-5">
             <div className="h-0.5 w-full bg-borderColor-DARK" />
-            <FaArrowDownLong className="text-base_color text-4xl mx-2" />
+            <FaArrowDownLong className="text-white text-2xl mx-2" />
             <div className="h-0.5 w-full bg-borderColor-DARK" />
           </div>
           <div className="flex flex-col w-full">
