@@ -2,6 +2,8 @@ import { GraduateSlider } from "@/components/graduate-slider.tsx";
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
+import { triggerAlert } from "@/lib/toaster";
+import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { useState } from "react";
 import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
@@ -13,6 +15,9 @@ const marketType = ["Market", "Limit"];
 export const OpenTrade = ({ isMobile = false }: OpenTradeProps) => {
   const { tradeInfo, setTradeInfo } = useGeneralContext();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
+  const { state } = useOrderlyAccount();
+  const { setIsEnableTradingModalOpen, setIsWalletConnectorOpen } =
+    useGeneralContext();
 
   const handleTypeChange = (type: string) => {
     setTradeInfo((prevState) => ({
@@ -55,6 +60,47 @@ export const OpenTrade = ({ isMobile = false }: OpenTradeProps) => {
     else return "left-2/3";
   };
   const barPosition = getSectionBarPosition();
+
+  const handleButtonLongClick = () => {
+    if (state.status === 0) setIsWalletConnectorOpen(true);
+    else if (state.status === 2 || state.status === 4)
+      setIsEnableTradingModalOpen(true);
+    else triggerAlert("Success", "Should active a long/short");
+  };
+
+  type ButtonStatusType = {
+    title: string;
+    color: string;
+  };
+
+  const getButtonStatus = (): ButtonStatusType => {
+    if (state.status === 0)
+      return {
+        title: "Connect wallet",
+        color: "bg-base_color",
+      };
+    else if (state.status === 2 || state.status === 4)
+      return {
+        title: "Enable trading",
+        color: "bg-base_color",
+      };
+    else if (state.status > 4) {
+      if (tradeInfo.side === "Buy")
+        return {
+          title: "Buy / Long",
+          color: "bg-green",
+        };
+      return {
+        title: "Sell / Short",
+        color: "bg-red",
+      };
+    } else
+      return {
+        title: "Connect wallet",
+        color: "bg-base_color",
+      };
+  };
+  const buttonStatus = getButtonStatus();
 
   return (
     <section className="h-full w-full">
@@ -276,11 +322,11 @@ export const OpenTrade = ({ isMobile = false }: OpenTradeProps) => {
           ) : null}
         </div>
         <button
-          className={`w-full mt-2.5 md:mt-auto h-[32px] sm:h-[35px] ${
-            tradeInfo.side === "Buy" ? "bg-green" : "bg-red"
-          } mt-4 text-white rounded transition-all duration-200 ease-in-out text-xs sm:text-sm`}
+          onClick={handleButtonLongClick}
+          className={`w-full mt-2.5 md:mt-auto h-[32px] sm:h-[35px] ${buttonStatus?.color} 
+          mt-4 text-white rounded transition-all duration-200 ease-in-out text-xs sm:text-sm`}
         >
-          {tradeInfo.side === "Buy" ? "Buy / Long" : "Sell / Short"}
+          {buttonStatus?.title}
         </button>
       </div>
     </section>
