@@ -9,7 +9,12 @@ import {
 } from "@/lib/shadcn/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { triggerAlert } from "@/lib/toaster";
-import { addressSlicer, getFormattedAmount } from "@/utils/misc";
+import {
+  ConnectorNameType,
+  addressSlicer,
+  connectorsToImage,
+  getFormattedAmount,
+} from "@/utils/misc";
 import {
   ChainsImageType,
   getImageFromChainId,
@@ -84,6 +89,8 @@ export const Deposit = () => {
   const { usdc, data } = useHoldingStream();
   const { data: acc, error, isLoading } = useAccountInfo();
   const { switchChain } = useSwitchChain();
+
+  console.log("usdc", usdc);
 
   const test = async () => {
     if (!address) return;
@@ -162,7 +169,7 @@ export const Deposit = () => {
         </DialogTrigger>
         <DialogContent
           close={() => setOpen(false)}
-          className="w-full flex flex-col max-w-[475px] h-auto max-h-auto"
+          className="w-full max-w-[475px] h-auto max-h-auto flex flex-col gap-0"
         >
           <DialogHeader>
             <DialogTitle>
@@ -174,8 +181,22 @@ export const Deposit = () => {
                 : "Initiate a transaction to deposit into your account from your wallet.."}
             </DialogDescription>
           </DialogHeader>
-          <div className="w-full flex items-center ">
-            <div className="bg-terciary h-[35px] border rounded w-full border-borderColor-DARK mr-2">
+          <div className="flex items-center w-full justify-between mt-5 mb-2">
+            <p>Your Wallet</p>
+            <Image
+              src={
+                connectorsToImage[
+                  state?.connectWallet?.name as ConnectorNameType
+                ] || "/logo/v.png"
+              }
+              height={20}
+              width={20}
+              alt="Veeno logo"
+              className="rounded-full"
+            />
+          </div>
+          <div className="w-full flex items-center mb-2">
+            <div className="bg-terciary h-[35px]  border rounded w-full border-borderColor-DARK mr-2">
               <input
                 type="text"
                 readOnly
@@ -272,10 +293,41 @@ export const Deposit = () => {
               <div className="flex items-center">
                 <div className="flex items-center ml-5">
                   <p className="text-font-60 text-xs">
-                    Available: {getFormattedAmount(balance)} USDC
+                    Available:{" "}
+                    {parseFloat(balance) > 0 ? getFormattedAmount(balance) : 0}
+                    USDC
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+          <div className="h-[20px] w-full flex items-center justify-center my-3.5">
+            <div className="h-0.5 w-full bg-borderColor-DARK" />
+          </div>
+          <div className="flex flex-col w-full">
+            <div className="flex items-center w-full justify-between">
+              <p>Your VeenoX account</p>
+              <Image
+                src="/logo/v.png"
+                height={20}
+                width={20}
+                alt="Veeno logo"
+                className="rounded-full"
+              />
+            </div>
+            <div className="bg-terciary mt-2 h-[35px] border rounded w-full border-borderColor-DARK mr-2">
+              <input
+                type="text"
+                readOnly
+                placeholder={
+                  amount ? `${amount?.toString() as string} USDC` : "Quantity"
+                }
+                className="h-full px-2.5 w-full text-sm placeholder:opacity-100 placeholder:text-white"
+              />
+            </div>
+            <div className="flex text-xs text-white items-center justify-between my-4 ">
+              <p className="text-font-60 mr-2">Deposit Fees:</p>
+              <p>0.00$</p>
             </div>
           </div>
           <button

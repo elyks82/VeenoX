@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/lib/shadcn/dialog";
-import { addressSlicer } from "@/utils/misc";
+import { addressSlicer, getConnectorsImage } from "@/utils/misc";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
@@ -39,39 +39,42 @@ export const ConnectWallet = () => {
     useConnect();
   const { isWalletConnectorOpen, setIsWalletConnectorOpen } =
     useGeneralContext();
+  console.log("data", data, connectors);
   const { chains, switchChain } = useSwitchChain();
   const { isConnected } = useAccount();
+  const [activeConnector, setActiveConnector] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   if (!data?.chainId) return;
+  //  useEffect(() => {
+  //    if () return;
+  //    const switchChain = async () => {
+  //      try {
+  //        await switchChain(data?.chainId);
+  //        console.log(`Switched to chain ${data?.chainId}`);
+  //      } catch (error) {
+  //        console.log(`Failed to switch chain: `);
+  //      }
+  //    };
 
-  //   // Changer de chaîne si nécessaire
-  //   const switchChain = async () => {
-  //     try {
-  //       await switchChain(data?.chainId);
-  //       console.log(`Switched to chain ${data?.chainId}`);
-  //     } catch (error) {
-  //       console.log(`Failed to switch chain: `);
-  //     }
-  //   };
-
-  //   if (isConnected) {
-  //     switchChain();
-  //   }
-  // }, [data?.chainId, isConnected, switchChain]);
+  //    if (isConnected) {
+  //      switchChain();
+  //    }
+  //  }, [data?.chainId, isConnected, switchChain]);
 
   useEffect(() => {
     if (isSuccess && address) {
       const setAccount = async () => {
         try {
           const provider = await connectors[isActive - 1]?.getProvider();
-          const nextState = await account.setAddress(address, {
+          await account.setAddress(address, {
             provider,
             chain: {
               id: data?.chainId,
             },
+            wallet: {
+              name: activeConnector as string,
+            },
           });
-          console.log("const nextState =", nextState);
+          setActiveConnector(null);
         } catch (e) {
           console.log("error", e);
         }
@@ -91,6 +94,8 @@ export const ConnectWallet = () => {
       setIsCopied(false);
     }, 2000);
   };
+  console.log("connectors:", connectors);
+  getConnectorsImage("MetaMask");
 
   const getImageFromConnector = (
     name: string,
@@ -206,6 +211,7 @@ export const ConnectWallet = () => {
                       onClick={() => {
                         handleConnect(i);
                         setIsActive(i + 1);
+                        setActiveConnector(connector.name);
                       }}
                       className={`w-[100px] h-[100px] hover:bg-base_color ${
                         isActive === i + 1 ? "bg-base_color" : "bg-terciary"
