@@ -20,6 +20,8 @@ body {
   color: rgb(var(--foreground-rgb));
   background: #1b1d22;
   user-select: none;
+  margin: 0;
+  padding: 0;
 }
 
 * {
