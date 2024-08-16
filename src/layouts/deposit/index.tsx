@@ -33,6 +33,7 @@ import { API } from "@orderly.network/types";
 import { FixedNumber } from "ethers";
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { FaArrowDownLong } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";
 import { Oval } from "react-loader-spinner";
 import { useAccount, useSwitchChain } from "wagmi";
@@ -301,7 +302,9 @@ export const Deposit = () => {
               </div>
             </div>
           </div>
-          <div className="h-[20px] w-full flex items-center justify-center my-3.5">
+          <div className="h-[20px] w-full flex items-center justify-center my-5">
+            <div className="h-0.5 w-full bg-borderColor-DARK" />
+            <FaArrowDownLong className="text-base_color text-4xl mx-2" />
             <div className="h-0.5 w-full bg-borderColor-DARK" />
           </div>
           <div className="flex flex-col w-full">
