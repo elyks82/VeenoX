@@ -82,9 +82,9 @@ export const Datafeed = (
       if (bars.length) {
         const mostRecentCandle = bars[bars.length - 1];
         onResult(bars, { noData: false });
-        // if (firstDataRequest) {
-        //   lastBarsCache.set(symbolInfo.name, mostRecentCandle);
-        // }
+        if (firstDataRequest) {
+          lastBarsCache.set(symbolInfo.name, mostRecentCandle);
+        }
       } else {
         onResult([], { noData: true });
       }
@@ -141,7 +141,6 @@ export const Datafeed = (
                   lastBarsCache.set(symbolInfo.name, bar);
                   onRealtimeCallback(bar);
 
-                  // Mettre à jour le temps pour la prochaine bougie
                   nextDailyBarTime = getNextBarTime(
                     resolution,
                     currentTimeInMs
