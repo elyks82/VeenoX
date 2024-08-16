@@ -33,7 +33,7 @@ export const Datafeed = (
     callback({ supported_resolutions: supportedResolutions });
   },
   resolveSymbol: (symbolName: string, onResolve: Function) => {
-    const price = asset?.mark_price || 1; // Valeur par défaut pour éviter les erreurs
+    const price = asset?.mark_price || 1;
     const params = {
       name: symbolName,
       description: "",
@@ -195,23 +195,3 @@ export const Datafeed = (
   getTimeScaleMarks: () => ({}),
   getServerTime: () => ({}),
 });
-const resolutionToInterval = (resolution: string): number => {
-  switch (resolution) {
-    case "1D": // 1 jour
-      return 86400000; // 24 heures en millisecondes
-    case "1W": // 1 semaine
-      return 604800000; // 7 jours en millisecondes
-    case "1M": // 1 mois
-      return 2592000000; // 30 jours en millisecondes
-    case "1h": // 1 heure
-      return 3600000; // 1 heure en millisecondes
-    case "15m": // 15 minutes
-      return 900000; // 15 minutes en millisecondes
-    case "5m": // 5 minutes
-      return 300000; // 5 minutes en millisecondes
-    case "1m": // 1 minute
-      return 60000; // 1 minute en millisecondes
-    default:
-      throw new Error(`Unknown resolution: ${resolution}`);
-  }
-};
