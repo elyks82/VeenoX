@@ -1,4 +1,4 @@
-![Bannière](/orderly/public/logo/veeno.png)
+![Bannière](./public/logo/veeno.png)
 
 <br />
 VeenoX is built using a modern tech stack comprising Next.js 13, Tailwind CSS, TypeScript and relies on npm for package management.
