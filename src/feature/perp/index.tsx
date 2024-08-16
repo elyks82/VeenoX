@@ -211,7 +211,7 @@ export const Perp = ({ asset }: PerpProps) => {
           zIndex: 0,
         }}
       >
-        <div className="border-r border-b border-borderColor overflow-x-hidden">
+        <div className="border-r border-b border-borderColor overflow-x-hidden no-scrollbar">
           <Position asset={asset} />
         </div>
         <div className="p-4 border-b border-borderColor hidden md:block">
