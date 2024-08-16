@@ -102,7 +102,7 @@ export const Header = () => {
   const triggerAlertClick = () => {
     triggerAlert(
       "Success",
-      "Successfully deposit on Veeno. Your balance will update shortly."
+      "Successfully deposit on VeenoX. Your balance will update shortly."
     );
   };
 
@@ -117,7 +117,7 @@ export const Header = () => {
               className="h-[30px] w-[30px] max-w-[25px] max-h-[25px] sm:max-w-[30px] sm:max-h-[30px]"
             />
             <h3 className="text-white font-poppins text-base sm:text-xl ">
-              VEENO
+              VEENOX
             </h3>
             <nav className="ml-5 h-full hidden sm:flex">
               <ul className="text-white text-medium text-sm flex items-center gap-5 h-full">

@@ -202,7 +202,7 @@ export const Deposit = () => {
                 type="text"
                 readOnly
                 placeholder={addressSlicer(address)}
-                className="h-full px-2.5 w-full text-sm"
+                className="h-full px-2.5 w-full text-xs"
               />{" "}
             </div>
             <div className="bg-terciary h-[35px] border rounded border-borderColor-DARK">
@@ -211,9 +211,9 @@ export const Deposit = () => {
                   <button className="h-full whitespace-nowrap text-sm px-2.5 text-white w-full flex-nowrap flex items-center justify-center">
                     <Image
                       src={chainLogo}
-                      width={20}
-                      height={20}
-                      className="h-5 w-5 ml-2 object-cover rounded-full mr-2"
+                      width={18}
+                      height={18}
+                      className="ml-2 object-cover rounded-full mr-2"
                       alt="Chain logo"
                     />
                     {chain?.name}
@@ -244,7 +244,7 @@ export const Deposit = () => {
                           alt="Chain logo"
                         />
                         <p
-                          className={`w-full text-start text-sm ${
+                          className={`w-full text-start text-xs ${
                             parseInt(supportedChain.id, 16) === chainId
                               ? "text-white"
                               : "text-font-60"
@@ -263,7 +263,7 @@ export const Deposit = () => {
               <input
                 type="number"
                 placeholder={amount?.toString() || "Quantity"}
-                className="h-[30px] pr-2.5 w-full max-w-[280px] text-sm"
+                className="h-[30px] pr-2.5 w-full max-w-[280px] text-sm placeholder:text-white"
                 onChange={(e) => {
                   const newValue = filterAllowedCharacters(e.target.value);
                   setAmount(newValue as any);
@@ -325,7 +325,7 @@ export const Deposit = () => {
                 placeholder={
                   amount ? `${amount?.toString() as string} USDC` : "Quantity"
                 }
-                className="h-full px-2.5 w-full text-sm placeholder:opacity-100 placeholder:text-white"
+                className="h-full px-2.5 w-full text-xs placeholder:opacity-100 placeholder:text-white"
               />
             </div>
             <div className="flex text-xs text-white items-center justify-between my-4 ">

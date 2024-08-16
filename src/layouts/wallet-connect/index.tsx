@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/lib/shadcn/dialog";
-import { addressSlicer, getConnectorsImage } from "@/utils/misc";
+import { addressSlicer } from "@/utils/misc";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
@@ -94,8 +94,6 @@ export const ConnectWallet = () => {
       setIsCopied(false);
     }, 2000);
   };
-  console.log("connectors:", connectors);
-  getConnectorsImage("MetaMask");
 
   const getImageFromConnector = (
     name: string,
