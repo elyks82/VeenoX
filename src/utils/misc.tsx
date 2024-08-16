@@ -391,7 +391,3 @@ export const connectorsToImage = {
   Keplr: "/logo/keplr.png",
   Backpack: "/logo/backpack-wallet.png",
 };
-
-export const getConnectorsImage = (name: ConnectorNameType) => {
-  return connectorsToImage[name];
-};

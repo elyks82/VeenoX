@@ -7,9 +7,10 @@ import { TriggerMobileTradeCreator } from "./trigger";
 
 type MobileOpenTradeProps = {
   asset: FuturesAssetProps;
+  holding?: number;
 };
 
-export const MobileOpenTrade = ({ asset }: MobileOpenTradeProps) => {
+export const MobileOpenTrade = ({ asset, holding }: MobileOpenTradeProps) => {
   const { showMobileTradeCreator, setShowMobileTradeCreator } =
     useGeneralContext();
   const tradeCreatorRef = useRef<HTMLDivElement>(null);
@@ -39,7 +40,7 @@ export const MobileOpenTrade = ({ asset }: MobileOpenTradeProps) => {
         }}
         className={`fixed h-fit w-full md:w-[350px] z-[100] left-0  transition-all duration-200 ease-in-out bg-secondary border-t border-borderColor shadow-2xl flex`}
       >
-        <OpenTrade isMobile />
+        <OpenTrade isMobile holding={holding} />
         <Orderbook asset={asset} isMobileOpenTrade isMobile />
       </div>
       {showMobileTradeCreator ? null : <TriggerMobileTradeCreator />}
