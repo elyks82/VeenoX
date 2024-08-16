@@ -1,7 +1,7 @@
 export const MobilePnL = () => {
   return (
     <div className="w-full h-[50px] border-b border-borderColor flex items-center px-2.5 md:hidden">
-      <div className="flex items-center justify-between w-full whitespace-nowrap overflow-x-scroll">
+      <div className="flex items-center justify-between w-full whitespace-nowrap overflow-x-scroll no-scrollbar">
         <div className="flex items-center">
           <div className="pr-2">
             <p className="text-xs text-font-60 ">Tot. value</p>
