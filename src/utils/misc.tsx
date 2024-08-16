@@ -366,3 +366,28 @@ export const getStyleFromDevice = (i: number, color: string) => {
       return "pr-2.5  text-end";
   }
 };
+
+export type ConnectorNameType =
+  | "WalletConnect"
+  | "Injected"
+  | "Coinbase Wallet"
+  | "Web3Modal Auth"
+  | "Phantom"
+  | "MetaMask"
+  | "SubWallet"
+  | "Rabby Wallet"
+  | "Keplr"
+  | "Backpack";
+
+export const connectorsToImage = {
+  WalletConnect: "/logo/wallet-connect.png",
+  Injected: "/logo/injected.png",
+  "Coinbase Wallet": "/logo/coinbase.png",
+  "Web3Modal Auth": "/logo/web3modal.png",
+  Phantom: "/logo/phantom.png",
+  MetaMask: "/logo/metamask.png",
+  SubWallet: "/logo/subwallet.png",
+  "Rabby Wallet": "/logo/rabby.png",
+  Keplr: "/logo/keplr.png",
+  Backpack: "/logo/backpack-wallet.png",
+};

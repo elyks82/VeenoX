@@ -124,7 +124,7 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
           </PopoverTrigger>
           <PopoverContent
             sideOffset={0}
-            className="md:transform-x-[10px] w-[330px] bg-red md:w-[550px] bg-primary border border-borderColor shadow-xl"
+            className="md:transform-x-[10px] w-[330px] md:w-[550px] bg-secondary border border-borderColor shadow-2xl"
           >
             <PairSelector />
           </PopoverContent>

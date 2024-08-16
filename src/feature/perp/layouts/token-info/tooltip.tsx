@@ -67,7 +67,7 @@ export const PairSelector = () => {
 
   return (
     <div className="w-full">
-      <div className="w-full h-[35px] rounded bg-terciary border border-borderColor">
+      <div className="w-full h-[35px] rounded bg-terciary border border-borderColor-DARK">
         <input
           className="w-full h-full px-2.5 text-white text-sm"
           placeholder="Search coins"

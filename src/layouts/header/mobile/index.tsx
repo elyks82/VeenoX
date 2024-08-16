@@ -29,7 +29,7 @@ export const MobileModal = ({ isOpen, onClose }: MobileModalProps) => {
             className="h-[30px] w-[30px] max-w-[30px] max-h-[30px]"
           />
           <h3 className="text-white text-bold font-poppins text-xl ml-2">
-            VEENO
+            VEENOX
           </h3>
           <button className="text-white ml-auto text-2xl" onClick={onClose}>
             <IoClose />
