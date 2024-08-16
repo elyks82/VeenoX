@@ -1,5 +1,4 @@
 "use client";
-import { Deposit } from "@/layouts/deposit";
 import { motion, useAnimation, useInView } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
@@ -165,7 +164,6 @@ export const Home = () => {
           </div>
         </div>
       </section>
-      <Deposit />
     </div>
   );
 };

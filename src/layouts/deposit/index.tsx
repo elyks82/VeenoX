@@ -1,3 +1,4 @@
+import { useGeneralContext } from "@/context";
 import {
   Dialog,
   DialogContent,
@@ -7,7 +8,8 @@ import {
   DialogTrigger,
 } from "@/lib/shadcn/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
-import { addressSlicer } from "@/utils/misc";
+import { triggerAlert } from "@/lib/toaster";
+import { addressSlicer, getFormattedAmount } from "@/utils/misc";
 import { supportedChainIds, supportedChains } from "@/utils/network";
 import {
   useAccountInfo,
@@ -22,6 +24,7 @@ import { FixedNumber } from "ethers";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
+import { Oval } from "react-loader-spinner";
 import { useAccount } from "wagmi";
 import { filterAllowedCharacters } from "./utils";
 
@@ -35,6 +38,11 @@ export const Deposit = () => {
   const [mintedTestUSDC, setMintedTestUSDC] = useState(false);
   const [newWalletBalance, setNewWalletBalance] = useState<FixedNumber>();
   const [newOrderlyBalance, setNewOrderlyBalance] = useState<FixedNumber>();
+  const [isApprovalDepositLoading, setIsApprovalDepositLoading] =
+    useState<boolean>(false);
+  const [isDepositSuccess, setIsDepositSuccess] = useState(false);
+  const { isWalletConnectorOpen, setIsWalletConnectorOpen } =
+    useGeneralContext();
 
   const [chains] = useChains("mainnet", {
     filter: (item: API.Chain) =>
@@ -78,37 +86,42 @@ export const Deposit = () => {
     await fetchBalance(address, dst.decimals);
   };
 
-  console.log("balance", allowance, balance);
   const handleClick = async () => {
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      console.error("Invalid amount entered");
-      return; // Early exit if the amount is invalid
+      triggerAlert("Error", "Invalid amount.");
+      return;
     }
-    console.log("useHoldingStream", usdc?.holding);
+    if (parseFloat(amount as never) > parseFloat(balance)) {
+      triggerAlert("Error", "Amount exceed your holdings");
+      return;
+    }
     const amountNumber = Number(amount);
     const allowanceNumber = Number(allowance);
 
-    console.log("acc:", acc);
     if (allowanceNumber < amountNumber) {
-      setOpen(true);
-
       try {
+        setIsApprovalDepositLoading(true);
         await approve(amount.toString());
-        console.log("Approval successful");
+        setIsApprovalDepositLoading(false);
       } catch (err) {
-        console.error("Approval failed:", err);
+        setIsApprovalDepositLoading(false);
       }
     } else {
-      setQuantity(amount.toString());
-      console.log("Depositing", quantity);
+      setIsApprovalDepositLoading(true);
       try {
         await deposit();
-        console.log("deposit successfull");
+        setIsDepositSuccess(true);
+        setIsApprovalDepositLoading(false);
         setAmount(undefined);
         setNewWalletBalance(undefined);
         setNewOrderlyBalance(undefined);
+        setTimeout(() => {
+          setOpen(false);
+          setIsDepositSuccess(false);
+        }, 3000);
       } catch (err) {
-        console.error("Deposit failed:", err);
+        triggerAlert("Error", "Error while depositing on Veeno.");
+        setIsApprovalDepositLoading(false);
       }
     }
   };
@@ -116,151 +129,161 @@ export const Deposit = () => {
   console.log("usdc", usdc, balance, dst);
   console.log("state", state);
 
-  // console.log("balance", balance);
-  // console.log("allowance", allowance);
-  // console.log("dst", dst);
-  // console.log("isNativeToken", isNativeToken);
-  // console.log("balanceRevalidating", balanceRevalidating);
-
   const chainLogo =
     supportedChains.find((entry) => entry.label === (chain?.name as string))
       ?.icon || "";
-
   return (
-    <Dialog>
-      <DialogTrigger>
-        <div
-          className="text-white bg-base_color border border-borderColor-DARK text-bold font-poppins text-xs
-    h-[30px] sm:h-[35px] px-2 sm:px-2.5 rounded sm:rounded-md 
-    "
+    <>
+      <Dialog open={open}>
+        <DialogTrigger
+          onClick={() => {
+            if (state.status >= 2) setOpen(true);
+            else setIsWalletConnectorOpen(true);
+          }}
         >
-          Deposit
-        </div>
-      </DialogTrigger>
-      <DialogContent className="w-full flex flex-col max-w-[475px] h-auto max-h-auto">
-        <DialogHeader>
-          <DialogTitle>Deposit on VeenoX</DialogTitle>
-          <DialogDescription className="text-font-60">
-            Initiate a transaction to deposit into your account from your
-            wallet..
-          </DialogDescription>
-        </DialogHeader>
-        <div className="w-full flex items-center ">
-          <div className="bg-terciary h-[35px] border rounded w-full border-borderColor-DARK mr-2">
-            <input
-              type="text"
-              readOnly
-              placeholder={addressSlicer(address)}
-              className="h-full px-2.5 w-full text-sm"
-            />{" "}
+          <button
+            className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
+            h-[30px] sm:h-[35px] px-2.5 rounded sm:rounded-md mr-2.5 flex items-center
+        "
+          >
+            Deposit
+          </button>
+        </DialogTrigger>
+        <DialogContent
+          close={() => setOpen(false)}
+          className="w-full flex flex-col max-w-[475px] h-auto max-h-auto"
+        >
+          <DialogHeader>
+            <DialogTitle>
+              {isDepositSuccess ? "Deposit Successfull" : "Deposit on VeenoX"}
+            </DialogTitle>
+            <DialogDescription className="text-font-60">
+              {isDepositSuccess
+                ? "You deposit is in progress, your balance will update shortly."
+                : "Initiate a transaction to deposit into your account from your wallet.."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="w-full flex items-center ">
+            <div className="bg-terciary h-[35px] border rounded w-full border-borderColor-DARK mr-2">
+              <input
+                type="text"
+                readOnly
+                placeholder={addressSlicer(address)}
+                className="h-full px-2.5 w-full text-sm"
+              />{" "}
+            </div>
+            <div className="bg-terciary h-[35px] border rounded border-borderColor-DARK">
+              <Popover>
+                <PopoverTrigger className="h-full min-w-fit">
+                  <button className="h-full whitespace-nowrap text-sm px-2.5 text-white w-full flex-nowrap flex items-center justify-center">
+                    {/* <img src={} /> */}
+                    <Image
+                      src={chainLogo}
+                      width={20}
+                      height={20}
+                      className="h-5 w-5 ml-2 object-cover rounded-full mr-2"
+                      alt="Chain logo"
+                    />
+                    {chain?.name}
+                    <IoChevronDown className="min-w-[18px] text-xs ml-[1px] mr-2" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  sideOffset={3}
+                  className="flex flex-col px-2 py-0.5 rounded z-[102] w-fit whitespace-nowrap bg-primary border border-borderColor-DARK shadow-xl"
+                >
+                  {supportedChains
+                    ?.filter((item) => item.network !== "testnet")
+                    .map((supportedChain) => (
+                      <div className="flex items-center py-1 flex-nowrap">
+                        <Image
+                          src={supportedChain.icon}
+                          width={20}
+                          height={20}
+                          className="h-5 w-5 object-cover rounded-full mr-2"
+                          alt="Chain logo"
+                        />
+                        <p className="w-full text-sm text-white">
+                          {supportedChain.label}
+                        </p>
+                      </div>
+                    ))}
+                </PopoverContent>
+              </Popover>{" "}
+            </div>
           </div>
-          <div className="bg-terciary h-[35px] border rounded border-borderColor-DARK">
-            <Popover>
-              <PopoverTrigger className="h-full min-w-fit">
-                <button className="h-full whitespace-nowrap text-sm px-2.5 text-white w-full flex-nowrap flex items-center justify-center">
-                  {/* <img src={} /> */}
-                  <Image
-                    src={chainLogo}
-                    width={20}
-                    height={20}
-                    className="h-5 w-5 ml-2 object-cover rounded-full mr-2"
-                    alt="Chain logo"
-                  />
-                  {chain?.name}
-                  <IoChevronDown className="min-w-[18px] text-xs ml-[1px] mr-2" />
+          <div className="bg-terciary pb-2.5 px-2.5 py-1 border mt-0 rounded w-full border-borderColor-DARK">
+            <div className="w-full flex items-center justify-between">
+              <input
+                type="number"
+                placeholder={amount?.toString() || "Quantity"}
+                className="h-[30px] pr-2.5 w-full max-w-[280px] text-sm"
+                onChange={(e) => {
+                  const newValue = filterAllowedCharacters(e.target.value);
+                  setAmount(newValue as any);
+                  setQuantity(newValue.toString());
+                }}
+              />
+              <div className="flex items-center">
+                <button
+                  className="text-sm font-medium text-base_color uppercase"
+                  onClick={() => setAmount(balance as never)}
+                >
+                  MAX
                 </button>
-              </PopoverTrigger>
-              <PopoverContent
-                sideOffset={3}
-                className="flex flex-col px-2 py-0.5 rounded z-[102] w-fit whitespace-nowrap bg-primary border border-borderColor-DARK shadow-xl"
-              >
-                {supportedChains
-                  ?.filter((item) => item.network !== "testnet")
-                  .map((supportedChain) => (
-                    <div className="flex items-center py-1 flex-nowrap">
-                      <Image
-                        src={supportedChain.icon}
-                        width={20}
-                        height={20}
-                        className="h-5 w-5 object-cover rounded-full mr-2"
-                        alt="Chain logo"
-                      />
-                      <p className="w-full text-sm text-white">
-                        {supportedChain.label}
-                      </p>
-                    </div>
-                  ))}
-              </PopoverContent>
-            </Popover>{" "}
-          </div>
-        </div>
-        <div className="bg-terciary pb-2.5 px-2.5 py-1 border mt-0 rounded w-full border-borderColor-DARK">
-          <div className="w-full flex items-center justify-between">
-            <input
-              type="number"
-              placeholder="Quantity"
-              className="h-[30px] pr-2.5 w-full max-w-[280px] text-sm"
-              onChange={(e) => {
-                const newValue = filterAllowedCharacters(e.target.value);
-                setAmount(newValue as any);
-              }}
-            />
-            <div className="flex items-center">
-              <button className="text-sm font-medium text-base_color uppercase">
-                MAX
-              </button>
-              <div className="flex items-center ml-5">
-                <Image
-                  src="/assets/usdc.png"
-                  width={17}
-                  height={17}
-                  className="object-cover rounded-full mr-1.5 -mt-0.5"
-                  alt="USDC logo"
-                />
-                <p className="text-white text-sm ">USDC</p>
+                <div className="flex items-center ml-5">
+                  <Image
+                    src="/assets/usdc.png"
+                    width={17}
+                    height={17}
+                    className="object-cover rounded-full mr-1.5 -mt-0.5"
+                    alt="USDC logo"
+                  />
+                  <p className="text-white text-sm ">USDC</p>
+                </div>
+              </div>
+            </div>
+            <div className="w-full flex items-center justify-between mt-1.5">
+              <p className="text-font-60 text-xs ">${amount?.toString()}</p>
+              <div className="flex items-center">
+                <div className="flex items-center ml-5">
+                  <p className="text-font-60 text-xs">
+                    Available: {getFormattedAmount(balance)} USDC
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-          <div className="w-full flex items-center justify-between mt-1.5">
-            <p className="text-font-60 text-xs ">${amount?.toString()}</p>
-            <div className="flex items-center">
-              <div className="flex items-center ml-5">
-                <p className="text-font-60 text-xs">
-                  Available: {balance} USDC
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p> Amount === {amount?.toString() || "20202002"}</p>
-        <button
-          onClick={handleClick}
-          className="bg-purple-400 h-[40px] w-fit px-2.5 text-white text-sm"
-        >
-          {amount != null && Number(allowance) < Number(amount)
-            ? "Approve"
-            : "Deposit"}
-        </button>
-        <p className="text-xl text-blue-200">
-          Deposited amount: {usdc?.holding}
-        </p>
-
-        {/* Modal Component for Approval */}
-        {open && (
-          <div onClick={() => setOpen(false)}>
-            <div className="p-4">
-              <p>Approval needed to proceed with the deposit.</p>
-              <p>Please approve the transaction in your wallet.</p>
-              <button
-                onClick={() => setOpen(false)}
-                className="mt-4 bg-red-500 text-white px-4 py-2"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
+          <button
+            onClick={handleClick}
+            className={`${
+              isDepositSuccess ? "bg-green" : "bg-base_color"
+            } w-full h-[40px] rounded px-2.5 text-white text-sm flex items-center justify-center transition-all duration-200 ease-in-out`}
+          >
+            {isApprovalDepositLoading ? (
+              <Oval
+                visible={true}
+                height="18"
+                width="18"
+                color="#FFF"
+                secondaryColor="rgba(255,255,255,0.6)"
+                ariaLabel="oval-loading"
+                strokeWidth={6}
+                strokeWidthSecondary={6}
+                wrapperStyle={{
+                  marginRight: "8px",
+                }}
+                wrapperClass=""
+              />
+            ) : null}
+            {amount != null && Number(allowance) < Number(amount)
+              ? "Approve"
+              : isDepositSuccess
+              ? "Deposit Successfull"
+              : "Deposit"}
+          </button>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

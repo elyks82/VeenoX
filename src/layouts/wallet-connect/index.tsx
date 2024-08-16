@@ -1,4 +1,5 @@
 "use client";
+import { useGeneralContext } from "@/context";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +36,8 @@ export const ConnectWallet = () => {
   const [isActive, setIsActive] = useState(0);
   const { connect, connectors, isPending, isError, isSuccess, data } =
     useConnect();
+  const { isWalletConnectorOpen, setIsWalletConnectorOpen } =
+    useGeneralContext();
   const { chains, switchChain } = useSwitchChain();
   const { isConnected } = useAccount();
 
@@ -144,9 +147,10 @@ export const ConnectWallet = () => {
       >
         Enable trading
       </button>
-      <Dialog>
+      <Dialog open={isWalletConnectorOpen}>
         <DialogTrigger>
           <div
+            onClick={() => setIsWalletConnectorOpen(true)}
             className="text-white bg-base_color border border-borderColor-DARK text-bold font-poppins text-xs
         h-[30px] sm:h-[35px] px-2 sm:px-2.5 rounded sm:rounded-md 
         "
@@ -161,7 +165,10 @@ export const ConnectWallet = () => {
             )}
           </div>
         </DialogTrigger>
-        <DialogContent className="w-full flex flex-col max-w-[475px] h-auto max-h-auto">
+        <DialogContent
+          close={() => setIsWalletConnectorOpen(false)}
+          className="w-full flex flex-col max-w-[475px] h-auto max-h-auto"
+        >
           <DialogHeader>
             <DialogTitle>{getActiveStep(status).title}</DialogTitle>
             <DialogDescription className="text-font-60">
