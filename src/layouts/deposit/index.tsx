@@ -77,9 +77,6 @@ export const Deposit = () => {
   });
   const { usdc, data } = useHoldingStream();
   const { data: acc, error, isLoading } = useAccountInfo();
-  if (acc == null || isLoading) {
-    return "Loading...";
-  }
 
   const test = async () => {
     if (!address) return;
