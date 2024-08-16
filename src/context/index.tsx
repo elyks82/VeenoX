@@ -21,6 +21,8 @@ interface GeneralContextProps {
   setIsChartLoading: Dispatch<SetStateAction<boolean>>;
   isWalletConnectorOpen: boolean;
   setIsWalletConnectorOpen: Dispatch<SetStateAction<boolean>>;
+  isEnableTradingModalOpen: boolean;
+  setIsEnableTradingModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const INITIAL_TRADE_INFO = {
@@ -45,6 +47,8 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
   const [mobileActiveSection, setMobileActiveSection] = useState(null);
   const [isChartLoading, setIsChartLoading] = useState(true);
   const [isWalletConnectorOpen, setIsWalletConnectorOpen] = useState(false);
+  const [isEnableTradingModalOpen, setIsEnableTradingModalOpen] =
+    useState(false);
   const value = useMemo(
     () => ({
       showMobileTradeCreator,
@@ -57,6 +61,8 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
       setIsChartLoading,
       isWalletConnectorOpen,
       setIsWalletConnectorOpen,
+      isEnableTradingModalOpen,
+      setIsEnableTradingModalOpen,
     }),
     [
       showMobileTradeCreator,
@@ -64,6 +70,7 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
       tradeInfo,
       mobileActiveSection,
       isChartLoading,
+      isEnableTradingModalOpen,
     ]
   );
 
