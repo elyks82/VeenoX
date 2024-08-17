@@ -1,5 +1,3 @@
-// import { MarketTradesFetchProps } from "@/models";
-
 type ParamsType = {
   symbol: string;
   timeframe: string;
