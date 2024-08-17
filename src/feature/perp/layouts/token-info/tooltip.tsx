@@ -87,7 +87,7 @@ export const PairSelector = () => {
           </button>
         ))}
       </div>
-      <div className="w-full overflow-scroll max-h-[250px]">
+      <div className="w-full overflow-y-scroll no-scroll max-h-[250px]">
         <table className="w-full text-xs">
           <thead>
             <tr className="text-font-60">

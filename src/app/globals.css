@@ -20,6 +20,8 @@ body {
   color: rgb(var(--foreground-rgb));
   background: #1b1d22;
   user-select: none;
+  margin: 0;
+  padding: 0;
 }
 
 * {
@@ -190,4 +192,13 @@ input[type="number"] {
   -webkit-background-clip: text; /* Support pour les navigateurs WebKit (Chrome, Safari) */
   text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff,
     1px 1px 0 #fff;
+}
+
+.no-scrollbar {
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+.no-scroll::-webkit-scrollbar {
+  display: none;
 }

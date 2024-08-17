@@ -1,0 +1,213 @@
+import { useGeneralContext } from "@/context";
+import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
+import {
+  ConnectorNameType,
+  addressSlicer,
+  connectorsToImage,
+  getFormattedAmount,
+} from "@/utils/misc";
+import {
+  ChainsImageType,
+  getImageFromChainId,
+  supportedChains,
+} from "@/utils/network";
+import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
+import { FixedNumber } from "ethers";
+import Image from "next/image";
+import { Dispatch, ReactNode, SetStateAction } from "react";
+import { IoChevronDown } from "react-icons/io5";
+import { useAccount, useSwitchChain } from "wagmi";
+import { filterAllowedCharacters } from "../../utils";
+
+type TemplateDisplayProps = {
+  balance: string;
+  amount: FixedNumber | undefined;
+  setAmount: Dispatch<SetStateAction<FixedNumber | undefined>>;
+  setQuantity: Dispatch<SetStateAction<string>>;
+  children: ReactNode;
+};
+
+const InputQuantity = () => {
+  const { state } = useOrderlyAccount();
+  const { address, chainId, chain } = useAccount();
+  const { switchChain } = useSwitchChain();
+  const { isDeposit } = useGeneralContext();
+  const chainLogo =
+    supportedChains.find((entry) => entry.label === (chain?.name as string))
+      ?.icon || getImageFromChainId(chainId as ChainsImageType);
+
+  return (
+    <div className="w-full flex items-center mb-2">
+      <div className="bg-terciary h-[35px]  border rounded w-full border-borderColor-DARK mr-2">
+        <input
+          type="text"
+          readOnly
+          placeholder={addressSlicer(address)}
+          className="h-full px-2.5 w-full text-xs"
+        />
+      </div>
+      <div className="bg-terciary h-[35px] border rounded border-borderColor-DARK">
+        <Popover>
+          <PopoverTrigger className="h-full min-w-fit">
+            <button className="h-full whitespace-nowrap text-sm px-2.5 text-white w-full flex-nowrap flex items-center justify-center">
+              <Image
+                src={chainLogo}
+                width={18}
+                height={18}
+                className="ml-2 object-cover rounded-full mr-2"
+                alt="Chain logo"
+              />
+              {chain?.name}
+              <IoChevronDown className="min-w-[18px] text-xs ml-[1px] mr-2" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            sideOffset={3}
+            className="flex flex-col px-2 py-0.5 rounded z-[102] w-fit whitespace-nowrap bg-primary border border-borderColor-DARK shadow-xl"
+          >
+            {supportedChains
+              ?.filter((item) => item.network !== "testnet")
+              .map((supportedChain, i) => (
+                <button
+                  key={i}
+                  className="flex items-center py-1 flex-nowrap"
+                  onClick={() =>
+                    switchChain({
+                      chainId: parseInt(supportedChain.id, 16),
+                    })
+                  }
+                >
+                  <Image
+                    src={supportedChain.icon}
+                    width={20}
+                    height={20}
+                    className="h-5 w-5 object-cover rounded-full mr-2"
+                    alt="Chain logo"
+                  />
+                  <p
+                    className={`w-full text-start text-xs ${
+                      parseInt(supportedChain.id, 16) === chainId
+                        ? "text-white"
+                        : "text-font-60"
+                    } `}
+                  >
+                    {supportedChain.label}
+                  </p>
+                </button>
+              ))}
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
+  );
+};
+
+export const TemplateDisplay = ({
+  balance,
+  amount,
+  setAmount,
+  setQuantity,
+  children,
+}: TemplateDisplayProps) => {
+  const { state } = useOrderlyAccount();
+  const { isDeposit } = useGeneralContext();
+  return (
+    <>
+      <div className="flex items-center w-full justify-between mb-2">
+        <p>Your Wallet</p>
+        <Image
+          src={
+            connectorsToImage[
+              state?.connectWallet?.name as ConnectorNameType
+            ] || "/logo/v.png"
+          }
+          height={20}
+          width={20}
+          alt="Veeno logo"
+          className="rounded-full"
+        />
+      </div>
+      {isDeposit ? <InputQuantity /> : null}
+      <div className="bg-terciary pb-2.5 px-2.5 py-1 border mt-0 rounded w-full border-borderColor-DARK">
+        <div className="w-full flex items-center justify-between">
+          <input
+            type="number"
+            placeholder={amount?.toString() || "Quantity"}
+            className="h-[30px] pr-2.5 w-full max-w-[280px] text-sm placeholder:text-white"
+            onChange={(e) => {
+              const newValue = filterAllowedCharacters(e.target.value);
+              setAmount(newValue as any);
+              setQuantity(newValue.toString());
+            }}
+          />
+          <div className="flex items-center">
+            <button
+              className="text-sm font-medium text-base_color uppercase"
+              onClick={() => setAmount(balance as never)}
+            >
+              MAX
+            </button>
+            <div className="flex items-center ml-5">
+              <Image
+                src="/assets/usdc.png"
+                width={17}
+                height={17}
+                className="object-cover rounded-full mr-1.5 -mt-0.5"
+                alt="USDC logo"
+              />
+              <p className="text-white text-sm ">USDC</p>
+            </div>
+          </div>
+        </div>
+        <div className="w-full flex items-center justify-between mt-1.5">
+          <p className="text-font-60 text-xs ">${amount?.toString()}</p>
+          <div className="flex items-center">
+            <div className="flex items-center ml-5">
+              <p className="text-font-60 text-xs">
+                Available:{" "}
+                {parseFloat(balance) > 0 ? getFormattedAmount(balance) : 0}
+                USDC
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {children}
+      <div className="flex flex-col w-full">
+        <div
+          className={`flex items-center w-full justify-between ${
+            isDeposit ? "mb-0" : "mb-2"
+          }`}
+        >
+          <p>Your VeenoX account</p>
+          <Image
+            src="/logo/v.png"
+            height={20}
+            width={20}
+            alt="Veeno logo"
+            className="rounded-full"
+          />
+        </div>
+        {isDeposit ? null : <InputQuantity />}
+        <div
+          className={`bg-terciary ${
+            isDeposit ? "mt-2" : "mt-0"
+          } h-[35px] border rounded w-full border-borderColor-DARK mr-2`}
+        >
+          <input
+            type="text"
+            readOnly
+            placeholder={
+              amount ? `${amount?.toString() as string} USDC` : "Quantity"
+            }
+            className="h-full px-2.5 w-full text-xs placeholder:opacity-100 placeholder:text-white"
+          />
+        </div>
+        <div className="flex text-xs text-white items-center justify-between my-4 ">
+          <p className="text-font-60 mr-2">Deposit Fees:</p>
+          <p>0.00$</p>
+        </div>
+      </div>
+    </>
+  );
+};

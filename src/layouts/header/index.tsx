@@ -124,6 +124,8 @@ export const Header = () => {
                 <li>Trade</li>
                 <li>Dashboard</li>
                 <li>Portfolio</li>
+                <li>Swap</li>
+                <li>Learn Trading & Earn</li>
               </ul>
             </nav>
           </div>{" "}
