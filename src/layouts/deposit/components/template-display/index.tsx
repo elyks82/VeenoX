@@ -11,6 +11,7 @@ import {
   getImageFromChainId,
   supportedChains,
 } from "@/utils/network";
+import { utils } from "@orderly.network/core";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { FixedNumber } from "ethers";
 import Image from "next/image";
@@ -25,6 +26,7 @@ type TemplateDisplayProps = {
   setAmount: Dispatch<SetStateAction<FixedNumber | undefined>>;
   setQuantity: Dispatch<SetStateAction<string>>;
   children: ReactNode;
+  depositFee: BigInt;
 };
 
 const InputQuantity = () => {
@@ -102,25 +104,58 @@ const InputQuantity = () => {
   );
 };
 
+type PageContentType = {
+  title_top: string;
+  image_top: string;
+  title_bot: string;
+  image_bot: string;
+};
+
 export const TemplateDisplay = ({
   balance,
   amount,
   setAmount,
   setQuantity,
   children,
-}: TemplateDisplayProps) => {
+  depositFee,
+}: // dst,
+TemplateDisplayProps) => {
   const { state } = useOrderlyAccount();
   const { isDeposit } = useGeneralContext();
+  const { address, chainId, chain } = useAccount();
+
+  const getPageContent = (): PageContentType => {
+    if (isDeposit)
+      return {
+        title_top: "Your Wallet",
+        image_top:
+          connectorsToImage[state?.connectWallet?.name as ConnectorNameType] ||
+          "/logo/v.png",
+        title_bot: "Your VeenoX account",
+        image_bot: "/logo/v.png",
+      };
+    return {
+      title_top: "Your VeenoX account ",
+      image_top: "/logo/v.png",
+      title_bot: "Your Wallet",
+      image_bot:
+        connectorsToImage[state?.connectWallet?.name as ConnectorNameType] ||
+        "/logo/v.png",
+    };
+  };
+
+  const pageContent = getPageContent();
+  const formattedDepositFee = utils.formatByUnits(
+    depositFee as never,
+    chain?.nativeCurrency.decimals
+  );
+  console.log("formattedDepositFee", formattedDepositFee, chain);
   return (
     <>
       <div className="flex items-center w-full justify-between mb-2">
-        <p>Your Wallet</p>
+        <p>{pageContent.title_top}</p>
         <Image
-          src={
-            connectorsToImage[
-              state?.connectWallet?.name as ConnectorNameType
-            ] || "/logo/v.png"
-          }
+          src={pageContent.image_top}
           height={20}
           width={20}
           alt="Veeno logo"
@@ -178,9 +213,9 @@ export const TemplateDisplay = ({
             isDeposit ? "mb-0" : "mb-2"
           }`}
         >
-          <p>Your VeenoX account</p>
+          <p>{pageContent.title_bot}</p>
           <Image
-            src="/logo/v.png"
+            src={pageContent.image_bot}
             height={20}
             width={20}
             alt="Veeno logo"
@@ -204,7 +239,7 @@ export const TemplateDisplay = ({
         </div>
         <div className="flex text-xs text-white items-center justify-between my-4 ">
           <p className="text-font-60 mr-2">Deposit Fees:</p>
-          <p>0.00$</p>
+          <p>{isDeposit ? getFormattedAmount(formattedDepositFee) : "1.00"}$</p>
         </div>
       </div>
     </>
