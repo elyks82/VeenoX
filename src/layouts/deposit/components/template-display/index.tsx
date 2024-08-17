@@ -102,6 +102,13 @@ const InputQuantity = () => {
   );
 };
 
+type PageContentType = {
+  title_top: string;
+  image_top: string;
+  title_bot: string;
+  image_bot: string;
+};
+
 export const TemplateDisplay = ({
   balance,
   amount,
@@ -111,16 +118,35 @@ export const TemplateDisplay = ({
 }: TemplateDisplayProps) => {
   const { state } = useOrderlyAccount();
   const { isDeposit } = useGeneralContext();
+
+  const getPageContent = (): PageContentType => {
+    if (isDeposit)
+      return {
+        title_top: "Your Wallet",
+        image_top:
+          connectorsToImage[state?.connectWallet?.name as ConnectorNameType] ||
+          "/logo/v.png",
+        title_bot: "Your VeenoX account",
+        image_bot: "/logo/v.png",
+      };
+    return {
+      title_top: "Your VeenoX account ",
+      image_top: "/logo/v.png",
+      title_bot: "Your Wallet",
+      image_bot:
+        connectorsToImage[state?.connectWallet?.name as ConnectorNameType] ||
+        "/logo/v.png",
+    };
+  };
+
+  const pageContent = getPageContent();
+
   return (
     <>
       <div className="flex items-center w-full justify-between mb-2">
-        <p>Your Wallet</p>
+        <p>{pageContent.title_top}</p>
         <Image
-          src={
-            connectorsToImage[
-              state?.connectWallet?.name as ConnectorNameType
-            ] || "/logo/v.png"
-          }
+          src={pageContent.image_top}
           height={20}
           width={20}
           alt="Veeno logo"
@@ -178,9 +204,9 @@ export const TemplateDisplay = ({
             isDeposit ? "mb-0" : "mb-2"
           }`}
         >
-          <p>Your VeenoX account</p>
+          <p>{pageContent.title_bot}</p>
           <Image
-            src="/logo/v.png"
+            src={pageContent.image_bot}
             height={20}
             width={20}
             alt="Veeno logo"
@@ -204,7 +230,7 @@ export const TemplateDisplay = ({
         </div>
         <div className="flex text-xs text-white items-center justify-between my-4 ">
           <p className="text-font-60 mr-2">Deposit Fees:</p>
-          <p>0.00$</p>
+          <p>1.00$</p>
         </div>
       </div>
     </>

@@ -14,6 +14,7 @@ import {
   useHoldingStream,
   useAccount as useOrderlyAccount,
   useWalletConnector,
+  useWithdraw,
 } from "@orderly.network/hooks";
 import { API } from "@orderly.network/types";
 import { FixedNumber } from "ethers";
@@ -36,6 +37,7 @@ export const Deposit = () => {
   const [isApprovalDepositLoading, setIsApprovalDepositLoading] =
     useState<boolean>(false);
   const [isDepositSuccess, setIsDepositSuccess] = useState(false);
+  const [isWithdrawSuccess, setIsWithdrawSuccess] = useState(false);
   const { setIsWalletConnectorOpen, isDeposit, setIsDeposit } =
     useGeneralContext();
   const networkIdSupported = [42161, 421614, 8453, 84532, 10, 11155420];
@@ -52,6 +54,12 @@ export const Deposit = () => {
           ?.token_infos.find((t) => t.symbol === "USDC")
       : undefined;
   }, [chains, connectedChain]);
+  const {
+    withdraw,
+    isLoading: isWithdrawLoading,
+    availableWithdraw,
+    unsettledPnL,
+  } = useWithdraw();
 
   const {
     dst,
@@ -84,43 +92,78 @@ export const Deposit = () => {
 
   const handleClick = async () => {
     if (isSupportedChain) {
-      if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-        triggerAlert("Error", "Invalid amount.");
-        return;
-      }
-      if (parseFloat(amount as never) > parseFloat(balance)) {
-        triggerAlert("Error", "Amount exceed your holdings");
-        return;
-      }
-      const amountNumber = Number(amount);
-      const allowanceNumber = Number(allowance);
+      if (isDeposit) {
+        if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+          triggerAlert("Error", "Invalid amount.");
+          return;
+        }
+        if (parseFloat(amount as never) > parseFloat(balance)) {
+          triggerAlert("Error", "Amount exceed your holdings");
+          return;
+        }
+        const amountNumber = Number(amount);
+        const allowanceNumber = Number(allowance);
 
-      if (allowanceNumber < amountNumber) {
-        try {
+        if (allowanceNumber < amountNumber) {
+          try {
+            setIsApprovalDepositLoading(true);
+            await approve(amount.toString());
+            setIsApprovalDepositLoading(false);
+          } catch (err) {
+            setIsApprovalDepositLoading(false);
+          }
+        } else {
           setIsApprovalDepositLoading(true);
-          await approve(amount.toString());
-          setIsApprovalDepositLoading(false);
-        } catch (err) {
-          setIsApprovalDepositLoading(false);
+          try {
+            await deposit();
+            setIsDepositSuccess(true);
+            setIsApprovalDepositLoading(false);
+            setAmount(undefined);
+            setNewWalletBalance(undefined);
+            setNewOrderlyBalance(undefined);
+            setTimeout(() => {
+              setOpen(false);
+              setTimeout(() => {
+                setIsDepositSuccess(false);
+              }, 1000);
+            }, 3000);
+          } catch (err) {
+            triggerAlert("Error", "Error while depositing on Veeno.");
+            setIsApprovalDepositLoading(false);
+          }
         }
       } else {
-        setIsApprovalDepositLoading(true);
+        if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+          triggerAlert("Error", "Invalid amount.");
+          return;
+        }
         try {
-          await deposit();
-          setIsDepositSuccess(true);
-          setIsApprovalDepositLoading(false);
-          setAmount(undefined);
-          setNewWalletBalance(undefined);
-          setNewOrderlyBalance(undefined);
-          setTimeout(() => {
-            setOpen(false);
+          if (parseFloat(amount.toString()) <= availableWithdraw) {
+            console.log("", {
+              chainId: Number(chainId),
+              amount: amount.toString(),
+              token: "USDC",
+              allowCrossChainWithdraw: true,
+            });
+            await withdraw({
+              chainId: chainId as number,
+              amount: availableWithdraw.toString(),
+              token: "USDC",
+              allowCrossChainWithdraw: true,
+            });
+            setIsWithdrawSuccess(true);
+            setAmount(undefined);
+            setNewWalletBalance(undefined);
+            setNewOrderlyBalance(undefined);
             setTimeout(() => {
-              setIsDepositSuccess(false);
-            }, 1000);
-          }, 3000);
-        } catch (err) {
-          triggerAlert("Error", "Error while depositing on Veeno.");
-          setIsApprovalDepositLoading(false);
+              setOpen(false);
+              setTimeout(() => {
+                setIsWithdrawSuccess(false);
+              }, 1000);
+            }, 3000);
+          }
+        } catch (e) {
+          console.log("eeeeee", e);
         }
       }
     } else {
@@ -130,6 +173,21 @@ export const Deposit = () => {
 
   console.log("usdc", usdc, balance, dst);
   console.log("state", state);
+
+  const getButtonState = (): string => {
+    if (isSupportedChain) {
+      if (isDeposit) {
+        if (amount != null && Number(allowance) < Number(amount))
+          return "Approve";
+        else if (isDepositSuccess) return "Deposit Successfull";
+        else return "Deposit";
+      }
+      return "Withdraw";
+    }
+    return "Switch Network";
+  };
+
+  const buttonState = getButtonState();
 
   return (
     <>
@@ -182,7 +240,7 @@ export const Deposit = () => {
             </div>
           </DialogHeader>
           <TemplateDisplay
-            balance={balance}
+            balance={isDeposit ? balance : availableWithdraw.toString()}
             amount={amount}
             setAmount={setAmount}
             setQuantity={setQuantity}
@@ -215,17 +273,8 @@ export const Deposit = () => {
                 wrapperClass=""
               />
             ) : null}
-            {isSupportedChain ? (
-              <>
-                {amount != null && Number(allowance) < Number(amount)
-                  ? "Approve"
-                  : isDepositSuccess
-                  ? "Deposit Successfull"
-                  : "Deposit"}
-              </>
-            ) : (
-              "Swtich Network"
-            )}
+
+            {buttonState}
           </button>
         </DialogContent>
       </Dialog>
