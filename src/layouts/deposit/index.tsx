@@ -83,7 +83,7 @@ export const Deposit = () => {
   const { data: acc, error, isLoading } = useAccountInfo();
   const { switchChain } = useSwitchChain();
 
-  console.log("usdc", usdc);
+  console.log("usdc", depositFee);
 
   const test = async () => {
     if (!address) return;
@@ -244,6 +244,8 @@ export const Deposit = () => {
             amount={amount}
             setAmount={setAmount}
             setQuantity={setQuantity}
+            depositFee={depositFee}
+            dst={dst}
           >
             <div className="h-[20px] w-full flex items-center justify-center my-5">
               <div className="h-0.5 w-full bg-borderColor-DARK" />

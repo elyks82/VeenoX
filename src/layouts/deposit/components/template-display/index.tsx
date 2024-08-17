@@ -11,6 +11,7 @@ import {
   getImageFromChainId,
   supportedChains,
 } from "@/utils/network";
+import { utils } from "@orderly.network/core";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { FixedNumber } from "ethers";
 import Image from "next/image";
@@ -25,6 +26,7 @@ type TemplateDisplayProps = {
   setAmount: Dispatch<SetStateAction<FixedNumber | undefined>>;
   setQuantity: Dispatch<SetStateAction<string>>;
   children: ReactNode;
+  depositFee: BigInt;
 };
 
 const InputQuantity = () => {
@@ -115,9 +117,12 @@ export const TemplateDisplay = ({
   setAmount,
   setQuantity,
   children,
+  depositFee,
+  dst,
 }: TemplateDisplayProps) => {
   const { state } = useOrderlyAccount();
   const { isDeposit } = useGeneralContext();
+  const { address, chainId, chain } = useAccount();
 
   const getPageContent = (): PageContentType => {
     if (isDeposit)
@@ -140,7 +145,12 @@ export const TemplateDisplay = ({
   };
 
   const pageContent = getPageContent();
-
+  const formattedDepositFee = utils.formatByUnits(
+    depositFee,
+    chain?.nativeCurrency.decimals
+  );
+  console.log("formattedDepositFee", formattedDepositFee, chain);
+  // Supposons que le depositFee soit en wei (18 décimales)
   return (
     <>
       <div className="flex items-center w-full justify-between mb-2">
@@ -230,7 +240,7 @@ export const TemplateDisplay = ({
         </div>
         <div className="flex text-xs text-white items-center justify-between my-4 ">
           <p className="text-font-60 mr-2">Deposit Fees:</p>
-          <p>1.00$</p>
+          <p>{isDeposit ? getFormattedAmount(formattedDepositFee) : "1.00"}$</p>
         </div>
       </div>
     </>
