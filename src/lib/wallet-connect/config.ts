@@ -9,16 +9,6 @@ import {
   sepolia,
 } from "wagmi/chains";
 
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
-if (!projectId) throw new Error("Project ID is not defined");
-
-export const metadata = {
-  name: "Veeno",
-  description: "AppKit Example",
-  url: "https://web3modal.com",
-  icons: ["/logo/veeno.png"],
-};
-
 const chains = [
   mainnet,
   sepolia,
