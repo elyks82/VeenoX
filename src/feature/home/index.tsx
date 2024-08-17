@@ -18,8 +18,7 @@ export const Home = () => {
     <div
       className="flex flex-col w-screen-header"
       style={{
-        backgroundImage:
-          "radial-gradient(circle at right 350%, #443a7e, #0a0a0a)",
+        backgroundImage: "radial-gradient(circle at top, #1b1d22 , #0f0f0f)",
       }}
       ref={ref}
     >
