@@ -72,7 +72,7 @@ export const Position = ({ asset }: PositionProps) => {
           <p className="text-base text-white font-medium">0.00</p>
         </div>
       </div>
-      <div className="overflow-x-scroll min-h-[300px] w-full">
+      <div className="overflow-x-scroll min-h-[300px] w-full no-scrollbar">
         <table className="w-full">
           <thead>
             <tr>

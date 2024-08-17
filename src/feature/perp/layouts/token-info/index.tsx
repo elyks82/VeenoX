@@ -103,7 +103,7 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
   );
 
   return (
-    <div className="flex items-center w-full h-[55px] sm:h-[65px] px-3 border-b border-borderColor whitespace-nowrap overflow-x-scroll">
+    <div className="flex items-center w-full h-[55px] sm:h-[65px] px-3 border-b border-borderColor whitespace-nowrap overflow-x-scroll no-scrollbar">
       <div className="flex items-center gap-3 relative text-white h-full">
         <Popover>
           <PopoverTrigger className="h-full min-w-fit">
@@ -124,12 +124,12 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
           </PopoverTrigger>
           <PopoverContent
             sideOffset={0}
-            className="md:transform-x-[10px] w-[330px] md:w-[550px] bg-secondary border border-borderColor shadow-2xl"
+            className="md:transform-x-[10px] w-[330px] md:w-[550px] bg-secondary border border-borderColor shadow-2xl "
           >
             <PairSelector />
           </PopoverContent>
         </Popover>
-        <div className="flex items-center overflow-x-scroll min-w-[800px]">
+        <div className="flex items-center overflow-x-scroll no-scrollbar min-w-[800px]">
           <p
             className={`${lastPriceInfo.price_color} transition-color duration-200 ease-in-out text-base sm:text-lg mr-4`}
           >

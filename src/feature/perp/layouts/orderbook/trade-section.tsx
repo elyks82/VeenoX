@@ -13,7 +13,7 @@ export const TradeSection = ({
   isLoading,
 }: TradeSectionProps) => {
   return (
-    <div className="h-[467px] md:h-calc-full-button overflow-y-scroll relative">
+    <div className="h-[467px] md:h-calc-full-button overflow-y-scroll no-scrollbar relative">
       {!trades?.length ? (
         <div className="w-full h-[450px] md:h-full flex items-center justify-center">
           <img src="/loader/loader.gif" className="w-[150px]" />

@@ -23,8 +23,8 @@ export const Favorites = () => {
   const [favori, setFavori] = useState(INITIAL_FAVORITES);
 
   return (
-    <div className="hidden sm:flex items-center justify-between w-full relative h-[36px] sm:h-[44px]  py-1 border-b border-borderColor">
-      <div className="overflow-x-scroll flex items-center px-3">
+    <div className="hidden sm:flex items-center justify-between w-full relative h-[36px] sm:h-[44px]  py-1 border-b border-borderColor ">
+      <div className="overflow-x-scroll flex items-center px-3 no-scrollbar">
         <FaStar className="text-yellow-500 text-base mr-1" />
         {favori.map((item, index) => (
           <button
