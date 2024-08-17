@@ -1,6 +1,4 @@
-import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
-
-import { cookieStorage, createStorage } from "wagmi";
+import { createConfig, http } from "wagmi";
 import {
   arbitrum,
   base,
@@ -30,12 +28,15 @@ const chains = [
   polygon,
   bsc,
 ] as const;
-export const config = defaultWagmiConfig({
+export const config = createConfig({
   chains,
-  projectId,
-  metadata,
-  ssr: true,
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
+  transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
+    [arbitrum.id]: http(),
+    [optimism.id]: http(),
+    [base.id]: http(),
+    [polygon.id]: http(),
+    [bsc.id]: http(),
+  },
 });

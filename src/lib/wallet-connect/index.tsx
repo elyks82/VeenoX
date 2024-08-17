@@ -6,7 +6,7 @@ export const Provider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <OrderlyAppProvider
       networkId="mainnet"
-      brokerId="woofi_dex"
+      brokerId="orderly"
       brokerName="woofi_pro"
       theme={"dark"}
       shareOptions={{} as any}
