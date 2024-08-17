@@ -165,8 +165,7 @@ export const TemplateDisplay = ({
             <div className="flex items-center ml-5">
               <p className="text-font-60 text-xs">
                 Available:{" "}
-                {parseFloat(balance) > 0 ? getFormattedAmount(balance) : 0}
-                USDC
+                {parseFloat(balance) > 0 ? getFormattedAmount(balance) : 0} USDC
               </p>
             </div>
           </div>

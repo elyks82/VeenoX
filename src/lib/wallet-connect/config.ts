@@ -1,6 +1,4 @@
-import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
-
-import { cookieStorage, createStorage } from "wagmi";
+import { createConfig, http } from "wagmi";
 import {
   arbitrum,
   base,
@@ -11,16 +9,6 @@ import {
   sepolia,
 } from "wagmi/chains";
 
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
-if (!projectId) throw new Error("Project ID is not defined");
-
-export const metadata = {
-  name: "Veeno",
-  description: "AppKit Example",
-  url: "https://web3modal.com",
-  icons: ["/logo/veeno.png"],
-};
-
 const chains = [
   mainnet,
   sepolia,
@@ -30,12 +18,15 @@ const chains = [
   polygon,
   bsc,
 ] as const;
-export const config = defaultWagmiConfig({
+export const config = createConfig({
   chains,
-  projectId,
-  metadata,
-  ssr: true,
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
+  transports: {
+    [mainnet.id]: http(),
+    [sepolia.id]: http(),
+    [arbitrum.id]: http(),
+    [optimism.id]: http(),
+    [base.id]: http(),
+    [polygon.id]: http(),
+    [bsc.id]: http(),
+  },
 });

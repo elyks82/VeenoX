@@ -1,16 +1,13 @@
-import { GeneralProvider } from "@/context";
 import { Footer } from "@/layouts/footer";
 import { Header } from "@/layouts/header";
 import { config } from "@/lib/wallet-connect/config";
-import AppKitProvider from "@/lib/wallet-connect/provider";
+import { Providers } from "@/provider/wrapper";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { headers } from "next/headers";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { cookieToInitialState } from "wagmi";
-import { OrderlyProvider } from "./common/OrderlyProvider";
+import { State, cookieToInitialState } from "wagmi";
 import "./globals.css";
 
 // const OrderlyContainer = dynamic(() => import("./common/OrderlyProvider"), {
@@ -37,21 +34,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AppKitProvider initialState={initialState}>
-          <OrderlyProvider>
-            <ToastContainer
-              icon={false}
-              toastClassName="bg-primary text-white p-2 rounded shadow-md border border-borderColor-DARK relative"
-              bodyClassName="bg-primary text-white"
-            />
-            <GeneralProvider>
-              <Header />
-              {children}
-              <SpeedInsights />
-              <Footer />
-            </GeneralProvider>
-          </OrderlyProvider>
-        </AppKitProvider>
+        <Providers initialState={initialState as State}>
+          <Header />
+          {children}
+          <SpeedInsights />
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
