@@ -199,8 +199,9 @@ export const Home = () => {
           <p className="text-lg text-font-60 mt-5 max-w-[800px] text-center">
             This program aim to help users to learn trading. There is a lack of
             trading knowledge for our users. To solve that we will create a
-            "quizz" where people would have an explicative video to watch and
-            answer some question. If it's right, user will be rewarded.
+            &quot;quizz&quot; where people would have an explicative video to
+            watch and answer some question. If it's right, user will be
+            rewarded.
           </p>
         </div>
         <Image
