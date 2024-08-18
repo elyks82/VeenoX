@@ -20,7 +20,7 @@ export const MobileOpenTrade = ({ asset, holding }: MobileOpenTradeProps) => {
   useEffect(() => {
     if (showMobileTradeCreator) {
       const clientHeight = tradeCreatorRef?.current?.clientHeight || 0;
-      setPosition(`calc(100% - ${clientHeight}px)`);
+      setPosition(`calc(0% + 0px)`);
     }
   }, [showMobileTradeCreator, tradeInfo.type, tradeInfo.tp_sl]);
   return (
@@ -36,9 +36,10 @@ export const MobileOpenTrade = ({ asset, holding }: MobileOpenTradeProps) => {
       <div
         ref={tradeCreatorRef}
         style={{
-          top: showMobileTradeCreator ? position : "100%",
+          bottom: showMobileTradeCreator ? position : "-100%",
         }}
-        className={`fixed h-fit w-full md:w-[350px] z-[100] left-0  transition-all duration-200 ease-in-out bg-secondary border-t border-borderColor shadow-2xl flex`}
+        className={`fixed h-fit w-full md:w-[350px] z-[100] left-0  transition-all duration-200 
+        ease-in-out bg-secondary border-t border-borderColor shadow-2xl flex`}
       >
         <OpenTrade isMobile holding={holding} />
         <Orderbook asset={asset} isMobileOpenTrade isMobile />
