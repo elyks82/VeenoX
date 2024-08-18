@@ -78,7 +78,7 @@ export const Orderbook = ({
       ref={sectionRef}
       className={`w-full md:max-h-full ${
         isMobileOpenTrade ? "h-auto max-h-full" : "h-[450px] max-h-[450px]"
-      } md:h-full  overflow-y-hidden `}
+      } md:h-full  overflow-y-hidden min-w-[250px] `}
     >
       {isMobileOpenTrade || isMobile ? null : (
         <>

@@ -119,19 +119,52 @@ export const Perp = ({ asset }: PerpProps) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const [widths, setWidths] = useState([90, 10]);
+  const resizerRef = useRef(null);
+
+  const handleLastBoxResize = (e) => {
+    e.preventDefault();
+    document.addEventListener("mousemove", handleLastBoxMove);
+    document.addEventListener("mouseup", handleMLastBoxouseUp);
+  };
+
+  const handleLastBoxMove = (e) => {
+    const container = containerRef.current;
+    const resizer = resizerRef.current;
+    if (!container || !resizer) return;
+
+    const containerRect = container.getBoundingClientRect();
+
+    // Calculate the new width based on the mouse position
+    const newWidth1 =
+      ((e.clientX - containerRect.left) / containerRect.width) * 100;
+    const newWidth2 = 100 - newWidth1;
+
+    // Ensure the widths are within bounds
+    if (newWidth1 >= 10 && newWidth1 <= 90) {
+      setWidths([newWidth1, newWidth2]);
+    }
+  };
+
+  const handleMLastBoxouseUp = () => {
+    document.removeEventListener("mousemove", handleLastBoxMove);
+    document.removeEventListener("mouseup", handleMLastBoxouseUp);
+  };
+
   return (
-    <div
-      ref={containerRef}
-      className="container overflow-scroll no-scrollbar w-full max-w-full"
-    >
+    <div ref={containerRef} className="container  w-full max-w-full">
       <EnableTrading />
       <div className="w-full flex h-full">
-        <div className="container-width">
+        <div
+          style={{
+            width: `${widths[0]}%`,
+          }}
+        >
           <div
             ref={rowUpRef}
             className="relative w-full border-b border-borderColor topPane md:flex-grow "
             style={{
-              height: `${window.innerWidth < 768 ? "auto" : topHeight}%`,
+              height: `${window.innerWidth < 1168 ? "auto" : topHeight}%`,
               zIndex: 1,
             }}
           >
@@ -177,7 +210,7 @@ export const Perp = ({ asset }: PerpProps) => {
                   </>
                 )}
               </div>
-              <div className="hidden md:block h-full overflow-hidden">
+              <div className="hidden md:block h-full min-w-[250px]">
                 <Orderbook asset={asset} />
               </div>
             </div>
@@ -185,7 +218,7 @@ export const Perp = ({ asset }: PerpProps) => {
               colWidths.slice(0, -1).map((_, index) => (
                 <div
                   key={index}
-                  className="absolute top-0 bottom-0 w-[10px] cursor-col-resize z-10"
+                  className="absolute top-0 bottom-0 w-[10px] resizer z-10"
                   style={{
                     left: `calc(${
                       (colWidths
@@ -200,25 +233,21 @@ export const Perp = ({ asset }: PerpProps) => {
               ))}
           </div>
           <div className="resizerY hidden md:flex" onMouseDown={handleMouse} />
-          <div
-            className=" w-full h-auto bottomPane"
-            // style={{
-            //   gridTemplateColumns:
-            //     window.innerWidth >= 1024
-            //       ? `${colWidths[0] + colWidths[1]}fr ${colWidths[2]}fr`
-            //       : "1fr",
-            //   height: `${
-            //     window.innerWidth < 768 ? "auto" : `${100 - topHeight}%`
-            //   }`,
-            //   zIndex: 0,
-            // }}
-          >
+          <div className=" w-full h-auto bottomPane">
             <div className="overflow-x-hidden no-scrollbar">
               <Position asset={asset} />
             </div>
           </div>
         </div>
-        <div className="hidden md:block h-full min-w-[300px] border-l border-borderColor ">
+        <div
+          className="resizer hidden md:flex"
+          ref={resizerRef}
+          onMouseDown={(e) => handleLastBoxResize(e)}
+        />
+        <div
+          style={{ width: `${widths[1]}%` }}
+          className="hidden md:block h-full min-w-[265px] max-w-[400px] border-l border-borderColor "
+        >
           <OpenTrade holding={usdc?.holding} />
         </div>
       </div>
