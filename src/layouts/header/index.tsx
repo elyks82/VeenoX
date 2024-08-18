@@ -119,7 +119,7 @@ export const Header = () => {
             <h3 className="text-white font-poppins text-base sm:text-xl ">
               VEENOX
             </h3>
-            <nav className="ml-5 h-full hidden sm:flex">
+            <nav className="ml-5 h-full hidden lg:flex">
               <ul className="text-white text-medium text-sm flex items-center gap-5 h-full">
                 <li>Trade</li>
                 <li>Dashboard</li>
@@ -167,7 +167,7 @@ export const Header = () => {
             </button>
           </Tooltip>
           <button
-            className="sm:hidden flex items-center justify-center"
+            className="lg:hidden flex items-center justify-center"
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
           >
             <RxHamburgerMenu className="text-white ml-3 text-xl" />

@@ -31,9 +31,10 @@ export const Perp = ({ asset }: PerpProps) => {
   const { mobileActiveSection, setIsChartLoading } = useGeneralContext();
   const rowUpRef = useRef<HTMLDivElement>(null);
   const { usdc } = useHoldingStream();
+  const orderbookRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (index: number, e: any) => {
-    if (window.innerWidth < 1024) return;
+    if (window.innerWidth < 1268) return;
 
     const startX = e.clientX;
     const startWidths = [...colWidths];
@@ -68,7 +69,7 @@ export const Perp = ({ asset }: PerpProps) => {
   };
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (window.innerWidth < 1024) return;
+    if (window.innerWidth < 1268) return;
     const startY = e.clientY;
     const containerHeight = (
       containerRef.current as HTMLDivElement
@@ -122,26 +123,24 @@ export const Perp = ({ asset }: PerpProps) => {
   const [widths, setWidths] = useState([90, 10]);
   const resizerRef = useRef(null);
 
-  const handleLastBoxResize = (e) => {
+  const handleLastBoxResize = (e: any) => {
     e.preventDefault();
     document.addEventListener("mousemove", handleLastBoxMove);
     document.addEventListener("mouseup", handleMLastBoxouseUp);
   };
 
-  const handleLastBoxMove = (e) => {
+  const handleLastBoxMove = (e: any) => {
     const container = containerRef.current;
     const resizer = resizerRef.current;
     if (!container || !resizer) return;
 
     const containerRect = container.getBoundingClientRect();
 
-    // Calculate the new width based on the mouse position
     const newWidth1 =
       ((e.clientX - containerRect.left) / containerRect.width) * 100;
     const newWidth2 = 100 - newWidth1;
 
-    // Ensure the widths are within bounds
-    if (newWidth1 >= 10 && newWidth1 <= 90) {
+    if (newWidth1 >= 10 && newWidth1 <= 90 && newWidth2 <= 25) {
       setWidths([newWidth1, newWidth2]);
     }
   };
@@ -157,7 +156,7 @@ export const Perp = ({ asset }: PerpProps) => {
       <div className="w-full flex h-full">
         <div
           style={{
-            width: `${widths[0]}%`,
+            width: window.innerWidth > 1168 ? `${widths[0]}%` : "100%",
           }}
         >
           <div
@@ -175,7 +174,7 @@ export const Perp = ({ asset }: PerpProps) => {
               }}
             >
               <div
-                className="border-r border-borderColor overflow-x-hidden no-scrollbar"
+                className="border-r border-borderColor overflow-x-hidden no-scrollbar md:min-w-[400px] lg:min-w-[700px]"
                 ref={chartRef}
               >
                 {!mobileActiveSection ? (
@@ -210,27 +209,24 @@ export const Perp = ({ asset }: PerpProps) => {
                   </>
                 )}
               </div>
-              <div className="hidden md:block h-full min-w-[250px]">
-                <Orderbook asset={asset} />
+              <div
+                className="hidden md:block h-full relative"
+                ref={orderbookRef}
+              >
+                <Orderbook asset={asset} />{" "}
+                {window.innerWidth >= 1268 &&
+                  colWidths.slice(0, -1).map((_, index) => (
+                    <div
+                      key={index}
+                      className="absolute top-0 bottom-0 w-[10px] resizer z-10"
+                      style={{
+                        left: "0%",
+                      }}
+                      onMouseDown={(e) => handleMouseDown(index, e)}
+                    />
+                  ))}
               </div>
             </div>
-            {window.innerWidth >= 1024 &&
-              colWidths.slice(0, -1).map((_, index) => (
-                <div
-                  key={index}
-                  className="absolute top-0 bottom-0 w-[10px] resizer z-10"
-                  style={{
-                    left: `calc(${
-                      (colWidths
-                        .slice(0, index + 1)
-                        .reduce((a, b) => a + b, 0) /
-                        colWidths.reduce((a, b) => a + b, 0)) *
-                      100
-                    }% - 5px)`,
-                  }}
-                  onMouseDown={(e) => handleMouseDown(index, e)}
-                />
-              ))}
           </div>
           <div className="resizerY hidden md:flex" onMouseDown={handleMouse} />
           <div className=" w-full h-auto bottomPane">
@@ -239,15 +235,19 @@ export const Perp = ({ asset }: PerpProps) => {
             </div>
           </div>
         </div>
-        <div
-          className="resizer hidden md:flex"
-          ref={resizerRef}
-          onMouseDown={(e) => handleLastBoxResize(e)}
-        />
+
         <div
           style={{ width: `${widths[1]}%` }}
-          className="hidden md:block h-full min-w-[265px] max-w-[400px] border-l border-borderColor "
+          className="hidden md:block h-full min-w-[265px] max-w-[500px]  border-l relative border-borderColor "
         >
+          {window.innerWidth >= 1268 && (
+            <div
+              className="resizer hidden md:flex"
+              style={{ left: 0 }}
+              ref={resizerRef}
+              onMouseDown={(e) => handleLastBoxResize(e)}
+            />
+          )}
           <OpenTrade holding={usdc?.holding} />
         </div>
       </div>
