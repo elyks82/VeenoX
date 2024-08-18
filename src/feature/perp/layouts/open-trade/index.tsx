@@ -1,4 +1,3 @@
-import { GraduateSlider } from "@/components/graduate-slider.tsx";
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
@@ -8,6 +7,7 @@ import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { useState } from "react";
 import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
+import { Leverage } from "./components/leverage";
 
 type KeyBooleanType = "reduce_only" | "tp_sl";
 type OpenTradeProps = { isMobile?: boolean; holding?: number };
@@ -105,12 +105,7 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
 
   return (
     <section className="h-full w-full">
-      {isMobile ? null : (
-        <div className="flex flex-col p-4 border-b border-borderColor">
-          <p className="text-xs text-font-60 mb-1">Max account leverage</p>
-          <GraduateSlider />
-        </div>
-      )}
+      {isMobile ? null : <Leverage />}
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
           <button
@@ -163,7 +158,7 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
           className={`h-[1px] w-1/3 bottom-0 transition-all duration-200 ease-in-out bg-font-80 absolute ${barPosition}`}
         />
       </div>
-      <div className="flex flex-col justify-between w-full p-2 sm:p-4 h-calc-leverage-height">
+      <div className="flex flex-col w-full p-2 sm:p-4 h-calc-leverage-height">
         <div className="pb-0">
           <div className="flex items-center w-full">
             <div className="flex items-center p-0.5 sm:p-1 relative w-full bg-terciary border border-borderColor-DARK rounded">
@@ -324,13 +319,45 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
             </>
           ) : null}
         </div>
+        <div className="h-[100px] w-full" />
         <button
           onClick={handleButtonLongClick}
-          className={`w-full mt-2.5 md:mt-auto h-[32px] sm:h-[35px] ${buttonStatus?.color} 
-          mt-4 text-white rounded transition-all duration-200 ease-in-out text-xs sm:text-sm`}
+          className={`w-full mt-2.5 h-[32px] sm:h-[35px] ${buttonStatus?.color} 
+          mb-4 text-white rounded transition-all duration-200 ease-in-out text-xs sm:text-sm`}
         >
           {buttonStatus?.title}
         </button>
+        <div className="pt-4 border-t border-borderColor hidden md:block">
+          <div className="pb-4 mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-font-60 mb-[3px]">
+                  Total value (USDC)
+                </p>
+                <p className="text-base text-white font-medium">
+                  {getFormattedAmount(holding)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-font-60 mb-1">Unreal PnL (USDC)</p>
+                <p className="text-sm text-white font-medium text-end">
+                  0.00 (0.00%)
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between mt-5">
+              <div>
+                <p className="text-xs text-font-60 mb-1">
+                  Unsettled PnL (USDC)
+                </p>
+                <p className="text-sm text-white font-medium">0.00</p>
+              </div>
+              <button className="flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white">
+                <span>Settle PnL</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

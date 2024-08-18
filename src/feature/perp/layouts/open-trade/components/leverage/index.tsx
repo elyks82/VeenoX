@@ -1,14 +1,13 @@
+"use client";
 import {
   useAccount,
   useLeverage,
   useMarginRatio,
 } from "@orderly.network/hooks";
-import { Button } from "@radix-ui/themes";
-import { FC, PropsWithChildren, useRef, useState } from "react";
+import { useRef } from "react";
 import { LeverageEditor } from "./editor";
 
-export const LeverageDialog: FC<PropsWithChildren> = (props) => {
-  const [open, setOpen] = useState(false);
+export const Leverage = () => {
   const { currentLeverage } = useMarginRatio();
   const { state } = useAccount();
 
@@ -36,23 +35,17 @@ export const LeverageDialog: FC<PropsWithChildren> = (props) => {
 
   return (
     <>
-      <div className="flex flex-col text-font-80">
-        <div className="flex gap-1">
-          <span className="flex-1">Current:</span>
-          <span>{maxLeverage}</span>
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className="flex-1">Max account leverage</span>
-          <div className="my-5 h-[80px]">
-            <LeverageEditor
-              maxLeverage={maxLeverage}
-              leverageLevers={leverageLevers}
-              onSave={onSave}
-            />
-          </div>
-        </div>
+      <div className="flex flex-col p-4 border-b border-borderColor">
+        <p className="text-xs text-font-60 mb-1">Max account leverage</p>
+        <LeverageEditor
+          maxLeverage={maxLeverage}
+          leverageLevers={leverageLevers}
+          onSave={onSave}
+          isMutating={isMutating}
+          onSubmit={() => onSubmit()}
+        />
       </div>
-      <Button
+      {/* <Button
         onClick={() => {
           setOpen(false);
         }}
@@ -61,7 +54,7 @@ export const LeverageDialog: FC<PropsWithChildren> = (props) => {
       </Button>
       <Button onClick={() => onSubmit()} loading={isMutating}>
         Save
-      </Button>
+      </Button> */}
     </>
   );
 };

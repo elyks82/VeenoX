@@ -6,6 +6,10 @@
   --foreground-rgb: rgba(20, 20, 20, 1);
   --background-start-rgb: rgba(20, 20, 20, 1);
   --background-end-rgb: rgba(20, 20, 20, 1);
+  --toastify-color-info: #346edb;
+  --toastify-color-success: ;
+  --toastify-color-warning: #f1c40f;
+  --toastify-color-error: rgb(234 57 67);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -125,42 +129,60 @@ input[type="number"] {
   bottom: 0;
   width: 15px;
   cursor: col-resize;
-  background-color: transparent;
   z-index: 10;
+  /* background-color: #836ef9; */
 }
 
 .resizer:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  /* background-color: #836ef9; */
 }
-
+.resizer:nth-child(2) {
+  left: calc(60% + 0px);
+}
 .resizer:nth-child(2) {
   left: calc(80% + 0px);
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 colonnes par défaut */
+  grid-template-columns: repeat(3, 1fr);
 }
 
-@media (max-width: 1200px) {
-  .grid {
-    grid-template-columns: repeat(
-      2,
-      1fr
-    ); /* 2 colonnes pour les écrans de moins de 1200px */
-  }
+.container-width {
+  width: 100%;
 }
 
-@media (max-width: 768px) {
+.chart {
+  height: calc(100% - 108px);
+}
+
+@media (max-width: 1168px) {
   .grid {
     display: flex;
     flex-direction: column;
   }
 
+  .container-width {
+    width: calc(100% - 300px);
+  }
+
+  .chart {
+    height: 450px;
+  }
+
   .grid > div {
     width: 100%;
-    border-right: none; /* Enlever la bordure droite pour chaque div */
-    border-bottom: 1px solid #333; /* Ajouter une bordure en bas pour séparer les divs */
+    border-right: none;
+    border-bottom: 1px solid #333;
+  }
+}
+
+@media (max-width: 768px) {
+  .container-width {
+    width: 100%;
+  }
+  .chart {
+    height: 450px;
   }
 }
 
@@ -171,7 +193,7 @@ input[type="number"] {
 }
 
 .resizerY {
-  background: #ccc;
+  background: red;
   height: 5px;
   cursor: row-resize;
   flex-shrink: 0;
@@ -195,10 +217,16 @@ input[type="number"] {
 }
 
 .no-scrollbar {
-  overflow: auto;
   scrollbar-width: none;
 }
 
 .no-scroll::-webkit-scrollbar {
   display: none;
+}
+
+.resizer-last {
+  cursor: ew-resize;
+  background-color: transparent;
+  width: 5px;
+  height: 100%;
 }

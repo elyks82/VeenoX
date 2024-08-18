@@ -245,7 +245,6 @@ export const Deposit = () => {
             setAmount={setAmount}
             setQuantity={setQuantity}
             depositFee={depositFee}
-            dst={dst}
           >
             <div className="h-[20px] w-full flex items-center justify-center my-5">
               <div className="h-0.5 w-full bg-borderColor-DARK" />

@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { AiOutlineSwap } from "react-icons/ai";
 import { FaRegUser } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { LuBarChart3, LuWallet } from "react-icons/lu";
+import { MdOutlineAreaChart } from "react-icons/md";
 
 type MobileModalProps = {
   isOpen: boolean;
@@ -53,11 +55,27 @@ export const MobileModal = ({ isOpen, onClose }: MobileModalProps) => {
                 </span>
               </Link>
             </li>
-            <li>
+            <li className="my-5">
               <Link href="/perp/PERP_BTC_USDC">
                 <span className="flex items-center">
                   <LuWallet className="mr-3 text-xl" />
                   Wallet
+                </span>
+              </Link>
+            </li>
+            <li className="my-5">
+              <Link href="/perp/PERP_BTC_USDC">
+                <span className="flex items-center">
+                  <AiOutlineSwap className="mr-3 text-xl" />
+                  Swap
+                </span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/perp/PERP_BTC_USDC">
+                <span className="flex items-center">
+                  <MdOutlineAreaChart className="mr-3 text-xl" />
+                  Learn Trading & Earn
                 </span>
               </Link>
             </li>

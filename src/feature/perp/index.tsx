@@ -2,7 +2,6 @@
 import { useGeneralContext } from "@/context";
 import { EnableTrading } from "@/layouts/enable-trading";
 import { FuturesAssetProps } from "@/models";
-import { getFormattedAmount } from "@/utils/misc";
 import { useHoldingStream, useWalletConnector } from "@orderly.network/hooks";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
@@ -11,8 +10,6 @@ import { MobileOpenTrade } from "./layouts/mobile-open-trade";
 import { MobilePnL } from "./layouts/mobile-pnl";
 import { MobileSectionSelector } from "./layouts/mobile-section-selector";
 import { OpenTrade } from "./layouts/open-trade";
-import { LeverageDialog } from "./layouts/open-trade/components/leverage";
-import { CreateOrder } from "./layouts/open-trade/hook";
 import { Orderbook } from "./layouts/orderbook";
 import { Position } from "./layouts/position";
 import { TokenInfo } from "./layouts/token-info";
@@ -28,15 +25,16 @@ type PerpProps = {
 export const Perp = ({ asset }: PerpProps) => {
   const wallet = useWalletConnector();
   const chartRef = useRef<HTMLDivElement>(null);
-  const [colWidths, setColWidths] = useState([6, 2, 2]);
+  const [colWidths, setColWidths] = useState([8, 2]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [topHeight, setTopHeight] = useState(70);
   const { mobileActiveSection, setIsChartLoading } = useGeneralContext();
   const rowUpRef = useRef<HTMLDivElement>(null);
   const { usdc } = useHoldingStream();
+  const orderbookRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (index: number, e: any) => {
-    if (window.innerWidth < 1024) return;
+    if (window.innerWidth < 1268) return;
 
     const startX = e.clientX;
     const startWidths = [...colWidths];
@@ -71,7 +69,7 @@ export const Perp = ({ asset }: PerpProps) => {
   };
 
   const handleMouse = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (window.innerWidth < 1024) return;
+    if (window.innerWidth < 1268) return;
     const startY = e.clientY;
     const containerHeight = (
       containerRef.current as HTMLDivElement
@@ -108,11 +106,11 @@ export const Perp = ({ asset }: PerpProps) => {
     setTimeout(() => setIsChartLoading(false), 7000);
     const handleResize = () => {
       if (window.innerWidth <= 600) {
-        setColWidths([1, 1, 1]);
-      } else if (window.innerWidth < 1200) {
-        setColWidths([2, 1, 1]);
+        setColWidths([1, 1]);
+      } else if (window.innerWidth <= 1200) {
+        setColWidths([3, 1]);
       } else {
-        setColWidths([6, 2, 2]);
+        setColWidths([8, 2]);
       }
     };
 
@@ -122,134 +120,138 @@ export const Perp = ({ asset }: PerpProps) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const [widths, setWidths] = useState([90, 10]);
+  const resizerRef = useRef(null);
+
+  const handleLastBoxResize = (e: any) => {
+    e.preventDefault();
+    document.addEventListener("mousemove", handleLastBoxMove);
+    document.addEventListener("mouseup", handleMLastBoxouseUp);
+  };
+
+  const handleLastBoxMove = (e: any) => {
+    const container = containerRef.current;
+    const resizer = resizerRef.current;
+    if (!container || !resizer) return;
+
+    const containerRect = container.getBoundingClientRect();
+
+    const newWidth1 =
+      ((e.clientX - containerRect.left) / containerRect.width) * 100;
+    const newWidth2 = 100 - newWidth1;
+
+    if (newWidth1 >= 10 && newWidth1 <= 90 && newWidth2 <= 25) {
+      setWidths([newWidth1, newWidth2]);
+    }
+  };
+
+  const handleMLastBoxouseUp = () => {
+    document.removeEventListener("mousemove", handleLastBoxMove);
+    document.removeEventListener("mouseup", handleMLastBoxouseUp);
+  };
+
   return (
-    <div
-      ref={containerRef}
-      className="container overflow-scroll no-scrollbar w-full max-w-full"
-    >
-      <LeverageDialog />
+    <div ref={containerRef} className="container  w-full max-w-full">
       <EnableTrading />
-      <div
-        ref={rowUpRef}
-        className="relative w-full border-b border-borderColor topPane md:flex-grow "
-        style={{
-          height: `${window.innerWidth < 768 ? "auto" : topHeight}%`,
-          zIndex: 1,
-        }}
-      >
+      <div className="w-full flex h-full">
         <div
-          className="grid h-full"
           style={{
-            gridTemplateColumns: colWidths.map((w) => `${w}fr`).join(" "),
+            width: window.innerWidth > 1168 ? `${widths[0]}%` : "100%",
           }}
         >
           <div
-            className="border-r border-borderColor overflow-x-hidden no-scrollbar"
-            ref={chartRef}
+            ref={rowUpRef}
+            className="relative w-full border-b border-borderColor topPane md:flex-grow "
+            style={{
+              height: `${window.innerWidth < 1168 ? "auto" : topHeight}%`,
+              zIndex: 1,
+            }}
           >
-            {!mobileActiveSection ? (
-              <>
-                <Favorites />
-                <TokenInfo asset={asset} />
-                <MobilePnL />
-                <MobileSectionSelector />
-                <TradingViewChart asset={asset} className={""} />
-              </>
-            ) : (
-              <>
-                <TokenInfo asset={asset} />
-                <MobilePnL />
-                <MobileSectionSelector />
-                <div
-                  className={`${
-                    mobileActiveSection === "Chart" || !mobileActiveSection
-                      ? "block"
-                      : "hidden"
-                  } bg-green`}
-                >
-                  <TradingViewChart asset={asset} className={""} />
-                </div>
-                <div
-                  className={`${
-                    mobileActiveSection !== "Chart" ? "block" : "hidden"
-                  }`}
-                >
-                  <Orderbook asset={asset} isMobile />
-                </div>
-              </>
-            )}
-          </div>
-          <div className="border-r border-borderColor hidden md:block h-full overflow-hidden">
-            <Orderbook asset={asset} />
-          </div>
-          <div className="hidden md:block h-full ">
-            <OpenTrade holding={usdc?.holding} />
-          </div>
-        </div>
-        {window.innerWidth >= 1024 &&
-          colWidths.slice(0, -1).map((_, index) => (
             <div
-              key={index}
-              className="absolute top-0 bottom-0 w-[10px] cursor-col-resize z-10"
+              className="grid h-full"
               style={{
-                left: `calc(${
-                  (colWidths.slice(0, index + 1).reduce((a, b) => a + b, 0) /
-                    colWidths.reduce((a, b) => a + b, 0)) *
-                  100
-                }% - 5px)`,
+                gridTemplateColumns: colWidths.map((w) => `${w}fr`).join(" "),
               }}
-              onMouseDown={(e) => handleMouseDown(index, e)}
-            />
-          ))}
-      </div>
-      <div className="resizerY hidden md:flex" onMouseDown={handleMouse} />
-      <div
-        className="grid w-full h-auto border-b border-borderColor bottomPane"
-        style={{
-          gridTemplateColumns:
-            window.innerWidth >= 1024
-              ? `${colWidths[0] + colWidths[1]}fr ${colWidths[2]}fr`
-              : "1fr",
-          height: `${window.innerWidth < 768 ? "auto" : `${100 - topHeight}%`}`,
-          zIndex: 0,
-        }}
-      >
-        <div className="border-r border-b border-borderColor overflow-x-hidden no-scrollbar">
-          <Position asset={asset} />
-        </div>
-        <div className="p-4 border-b border-borderColor hidden md:block">
-          <div className="pb-4 mb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-font-60 mb-[3px]">
-                  Total value (USDC)
-                </p>
-                <p className="text-base text-white font-medium">
-                  {getFormattedAmount(usdc?.holding)}
-                </p>
+            >
+              <div
+                className="border-r border-borderColor overflow-x-hidden no-scrollbar md:min-w-[400px] lg:min-w-[700px]"
+                ref={chartRef}
+              >
+                {!mobileActiveSection ? (
+                  <>
+                    <Favorites />
+                    <TokenInfo asset={asset} />
+                    <MobilePnL />
+                    <MobileSectionSelector />
+                    <TradingViewChart asset={asset} className={""} />
+                  </>
+                ) : (
+                  <>
+                    <TokenInfo asset={asset} />
+                    <MobilePnL />
+                    <MobileSectionSelector />
+                    <div
+                      className={`${
+                        mobileActiveSection === "Chart" || !mobileActiveSection
+                          ? "block"
+                          : "hidden"
+                      } bg-green`}
+                    >
+                      <TradingViewChart asset={asset} className={""} />
+                    </div>
+                    <div
+                      className={`${
+                        mobileActiveSection !== "Chart" ? "block" : "hidden"
+                      }`}
+                    >
+                      <Orderbook asset={asset} isMobile />
+                    </div>
+                  </>
+                )}
               </div>
-              <div>
-                <p className="text-xs text-font-60 mb-1">Unreal PnL (USDC)</p>
-                <p className="text-sm text-white font-medium text-end">
-                  0.00 (0.00%)
-                </p>
+              <div
+                className="hidden md:block h-full relative"
+                ref={orderbookRef}
+              >
+                <Orderbook asset={asset} />{" "}
+                {window.innerWidth >= 1268 &&
+                  colWidths.slice(0, -1).map((_, index) => (
+                    <div
+                      key={index}
+                      className="absolute top-0 bottom-0 w-[10px] resizer z-10"
+                      style={{
+                        left: "0%",
+                      }}
+                      onMouseDown={(e) => handleMouseDown(index, e)}
+                    />
+                  ))}
               </div>
             </div>
-            <div className="flex items-center justify-between mt-5">
-              <div>
-                <p className="text-xs text-font-60 mb-1">
-                  Unsettled PnL (USDC)
-                </p>
-                <p className="text-sm text-white font-medium">0.00</p>
-              </div>
-              <button className="flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white">
-                <span>Settle PnL</span>
-              </button>
+          </div>
+          <div className="resizerY hidden md:flex" onMouseDown={handleMouse} />
+          <div className=" w-full h-auto bottomPane">
+            <div className="overflow-x-hidden no-scrollbar">
+              <Position asset={asset} />
             </div>
           </div>
         </div>
+
+        <div
+          style={{ width: `${widths[1]}%` }}
+          className="hidden md:block h-full min-w-[265px] max-w-[500px]  border-l relative border-borderColor "
+        >
+          {window.innerWidth >= 1268 && (
+            <div
+              className="resizer hidden md:flex"
+              style={{ left: 0 }}
+              ref={resizerRef}
+              onMouseDown={(e) => handleLastBoxResize(e)}
+            />
+          )}
+          <OpenTrade holding={usdc?.holding} />
+        </div>
       </div>
-      <CreateOrder asset={asset} />
+
       <MobileOpenTrade asset={asset} holding={usdc?.holding} />
     </div>
   );

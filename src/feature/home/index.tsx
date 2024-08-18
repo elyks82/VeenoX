@@ -1,5 +1,6 @@
 "use client";
 import { motion, useAnimation, useInView } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
@@ -22,7 +23,12 @@ export const Home = () => {
       }}
       ref={ref}
     >
-      <section className="h-calc-full-header flex items-center w-screen-header ml-[10%]">
+      <section
+        className="h-calc-full-header flex items-center w-screen-header pl-[10%]"
+        style={{
+          backgroundImage: "radial-gradient(circle at top, #1b1d22 , #0f0f0f)",
+        }}
+      >
         <motion.img
           initial="initial"
           variants={{
@@ -162,6 +168,48 @@ export const Home = () => {
             </motion.div>
           </div>
         </div>
+      </section>
+      <section className="py-[10vh] flex items-center flex-col w-full bg-[rgba(15,15,15,1)]">
+        <div className="flex flex-col w-fit mb-10">
+          <motion.h2
+            // variants={{
+            //   hidden: {
+            //     opacity: 0,
+            //     y: 10,
+            //   },
+            //   visible: {
+            //     opacity: 1,
+            //     y: 0,
+            //   },
+            // }}
+            // initial="hidden"
+            // animate={mainControls}
+            // transition={{ duration: 0.3, delay: 0.3 }}
+            className="overflow-hidden block relative whitespace-nowrap
+  text-7xl font-bold  mb-2 w-auto  text-white text-center"
+          >
+            <span className="text-outlined text-black">Learn</span> Trading
+          </motion.h2>
+          <h2
+            className="block relative whitespace-nowrap
+      text-7xl font-bold text-white mb-2 w-auto text-center"
+          >
+            & Earn Program
+          </h2>
+          <p className="text-lg text-font-60 mt-5 max-w-[800px] text-center">
+            This program aim to help users to learn trading. There is a lack of
+            trading knowledge for our users. To solve that we will create a
+            &quot;quizz&quot; where people would have an explicative video to
+            watch and answer some question. If it&quot;s right, user will be
+            rewarded.
+          </p>
+        </div>
+        <Image
+          src="/layer/trade.webp"
+          alt={"learn to trade image"}
+          height={500}
+          width={700}
+        />
       </section>
     </div>
   );

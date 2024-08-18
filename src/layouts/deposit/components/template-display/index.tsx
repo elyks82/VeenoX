@@ -118,8 +118,8 @@ export const TemplateDisplay = ({
   setQuantity,
   children,
   depositFee,
-  dst,
-}: TemplateDisplayProps) => {
+}: // dst,
+TemplateDisplayProps) => {
   const { state } = useOrderlyAccount();
   const { isDeposit } = useGeneralContext();
   const { address, chainId, chain } = useAccount();
@@ -146,11 +146,10 @@ export const TemplateDisplay = ({
 
   const pageContent = getPageContent();
   const formattedDepositFee = utils.formatByUnits(
-    depositFee,
+    depositFee as never,
     chain?.nativeCurrency.decimals
   );
   console.log("formattedDepositFee", formattedDepositFee, chain);
-  // Supposons que le depositFee soit en wei (18 décimales)
   return (
     <>
       <div className="flex items-center w-full justify-between mb-2">

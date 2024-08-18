@@ -42,6 +42,10 @@ export const Orderbook = ({
       level:
         isMobileOpenTrade || isMobile
           ? 8
+          : (sectionRef?.current?.clientHeight as number) > 950
+          ? 18
+          : (sectionRef?.current?.clientHeight as number) > 900
+          ? 16
           : (sectionRef?.current?.clientHeight as number) > 800
           ? 14
           : 12,
@@ -78,7 +82,7 @@ export const Orderbook = ({
       ref={sectionRef}
       className={`w-full md:max-h-full ${
         isMobileOpenTrade ? "h-auto max-h-full" : "h-[450px] max-h-[450px]"
-      } md:h-full  overflow-y-hidden`}
+      } md:h-full  overflow-y-hidden md:min-w-[250px] `}
     >
       {isMobileOpenTrade || isMobile ? null : (
         <>
