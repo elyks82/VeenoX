@@ -1,4 +1,3 @@
-import { GraduateSlider } from "@/components/graduate-slider.tsx";
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
@@ -8,6 +7,7 @@ import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { useState } from "react";
 import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
+import { Leverage } from "./components/leverage";
 
 type KeyBooleanType = "reduce_only" | "tp_sl";
 type OpenTradeProps = { isMobile?: boolean; holding?: number };
@@ -105,12 +105,7 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
 
   return (
     <section className="h-full w-full">
-      {isMobile ? null : (
-        <div className="flex flex-col p-4 border-b border-borderColor">
-          <p className="text-xs text-font-60 mb-1">Max account leverage</p>
-          <GraduateSlider />
-        </div>
-      )}
+      {isMobile ? null : <Leverage />}
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
           <button

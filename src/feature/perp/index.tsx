@@ -11,7 +11,6 @@ import { MobileOpenTrade } from "./layouts/mobile-open-trade";
 import { MobilePnL } from "./layouts/mobile-pnl";
 import { MobileSectionSelector } from "./layouts/mobile-section-selector";
 import { OpenTrade } from "./layouts/open-trade";
-import { LeverageDialog } from "./layouts/open-trade/components/leverage";
 import { CreateOrder } from "./layouts/open-trade/hook";
 import { Orderbook } from "./layouts/orderbook";
 import { Position } from "./layouts/position";
@@ -127,10 +126,6 @@ export const Perp = ({ asset }: PerpProps) => {
       ref={containerRef}
       className="container overflow-scroll no-scrollbar w-full max-w-full"
     >
-<<<<<<< HEAD
-=======
-      <LeverageDialog />
->>>>>>> 0e515f125491deec1a5e9181f5e73b7b0b6ad7e0
       <EnableTrading />
       <div
         ref={rowUpRef}
@@ -252,10 +247,7 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
         </div>
       </div>
-<<<<<<< HEAD
-=======
       <CreateOrder asset={asset} />
->>>>>>> 0e515f125491deec1a5e9181f5e73b7b0b6ad7e0
       <MobileOpenTrade asset={asset} holding={usdc?.holding} />
     </div>
   );
