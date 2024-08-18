@@ -6,6 +6,10 @@
   --foreground-rgb: rgba(20, 20, 20, 1);
   --background-start-rgb: rgba(20, 20, 20, 1);
   --background-end-rgb: rgba(20, 20, 20, 1);
+  --toastify-color-info: #346edb;
+  --toastify-color-success: rgb(14 203 129);
+  --toastify-color-warning: #f1c40f;
+  --toastify-color-error: rgb(234 57 67);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -195,7 +199,6 @@ input[type="number"] {
 }
 
 .no-scrollbar {
-  overflow: auto;
   scrollbar-width: none;
 }
 

@@ -1,3 +1,4 @@
+import { triggerAlert } from "@/lib/toaster";
 import { getLeverageValue } from "@/utils/misc";
 import { useAccount } from "@orderly.network/hooks";
 import { FC, useEffect, useMemo, useState } from "react";
@@ -23,6 +24,7 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
   isMutating,
 }) => {
   console.log("maxLeverage", maxLeverage);
+
   const [leverage, setLeverage] = useState(() => maxLeverage ?? 0);
   const { state } = useAccount();
   const leverageValue = useMemo(() => {
@@ -31,7 +33,7 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
   }, [leverage, leverageLevers]);
 
   const getMaxLeverageToValue = () => {
-    switch (maxLeverage) {
+    switch (leverageValue) {
       case 1:
         return 1;
       case 2:
@@ -58,7 +60,6 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
         return 10;
     }
   };
-
   const formatMaxLeverage = getMaxLeverageToValue();
   const [values, setValues] = useState([formatMaxLeverage]);
   const [selectedMax, setSelectedMax] = useState(100);
@@ -86,9 +87,17 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
         }}
         onFinalChange={(value) => {
           const _value = leverageLevers[value[0]];
-          onSave?.({ leverage: _value }).catch(() => {
-            setLeverage(maxLeverage ?? 1);
-          });
+          try {
+            onSave?.({ leverage: _value }).catch(() => {
+              setLeverage(maxLeverage ?? 1);
+            });
+            triggerAlert(
+              "Success",
+              "Max leverage has been updated successfully"
+            );
+          } catch (err) {
+            triggerAlert("Error", "Error while trying to update max leverage");
+          }
         }}
         renderMark={({ props, index }) => {
           const leverage = getLeverageValue(index);
