@@ -7,7 +7,7 @@
   --background-start-rgb: rgba(20, 20, 20, 1);
   --background-end-rgb: rgba(20, 20, 20, 1);
   --toastify-color-info: #346edb;
-  --toastify-color-success: rgb(14 203 129);
+  --toastify-color-success: ;
   --toastify-color-warning: #f1c40f;
   --toastify-color-error: rgb(234 57 67);
 }
@@ -129,14 +129,15 @@ input[type="number"] {
   bottom: 0;
   width: 15px;
   cursor: col-resize;
-  background-color: transparent;
   z-index: 10;
 }
 
 .resizer:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: #836ef9;
 }
-
+.resizer:nth-child(2) {
+  left: calc(60% + 0px);
+}
 .resizer:nth-child(2) {
   left: calc(80% + 0px);
 }
@@ -175,7 +176,7 @@ input[type="number"] {
 }
 
 .resizerY {
-  background: #ccc;
+  background: red;
   height: 5px;
   cursor: row-resize;
   flex-shrink: 0;
