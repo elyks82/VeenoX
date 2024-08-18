@@ -1,4 +1,5 @@
 import { useGeneralContext } from "@/context";
+import { Drawer, DrawerContent } from "@/lib/shadcn/drawer";
 import { FuturesAssetProps } from "@/models";
 import { useEffect, useRef, useState } from "react";
 import { OpenTrade } from "../open-trade";
@@ -20,11 +21,22 @@ export const MobileOpenTrade = ({ asset, holding }: MobileOpenTradeProps) => {
   useEffect(() => {
     if (showMobileTradeCreator) {
       const clientHeight = tradeCreatorRef?.current?.clientHeight || 0;
-      setPosition(`calc(100% - ${clientHeight}px)`);
+      setPosition(`calc(100vh - ${clientHeight}px)`);
     }
   }, [showMobileTradeCreator, tradeInfo.type, tradeInfo.tp_sl]);
   return (
     <>
+      <Drawer open={showMobileTradeCreator}>
+        <DrawerContent close={() => setShowMobileTradeCreator(false)}>
+          <div
+            ref={tradeCreatorRef}
+            className={` h-fit w-full md:w-[350px] z-[100] left-0  transition-all duration-200 ease-in-out bg-secondary border-t border-borderColor shadow-2xl flex`}
+          >
+            <OpenTrade isMobile holding={holding} />
+            <Orderbook asset={asset} isMobileOpenTrade isMobile />
+          </div>
+        </DrawerContent>
+      </Drawer>
       <div
         onClick={() => setShowMobileTradeCreator(false)}
         className={`fixed top-0 h-screen w-full z-[100] left-0 ${
@@ -33,16 +45,7 @@ export const MobileOpenTrade = ({ asset, holding }: MobileOpenTradeProps) => {
             : "opacity-0 pointer-events-none"
         } transition-all duration-200 ease-in-out bg-secondary z-30`}
       />
-      <div
-        ref={tradeCreatorRef}
-        style={{
-          top: showMobileTradeCreator ? position : "100%",
-        }}
-        className={`fixed h-fit w-full md:w-[350px] z-[100] left-0  transition-all duration-200 ease-in-out bg-secondary border-t border-borderColor shadow-2xl flex`}
-      >
-        <OpenTrade isMobile holding={holding} />
-        <Orderbook asset={asset} isMobileOpenTrade isMobile />
-      </div>
+
       {showMobileTradeCreator ? null : <TriggerMobileTradeCreator />}
     </>
   );

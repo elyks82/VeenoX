@@ -319,11 +319,13 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
             </>
           ) : null}
         </div>
-        <div className="h-[100px] w-full" />
+        <div className={`${isMobile ? "hidden" : "flex"} h-[100px] w-full`} />
         <button
           onClick={handleButtonLongClick}
           className={`w-full mt-2.5 h-[32px] sm:h-[35px] ${buttonStatus?.color} 
-          mb-4 text-white rounded transition-all duration-200 ease-in-out text-xs sm:text-sm`}
+          ${
+            isMobile ? "mb-0" : "mb-4"
+          } text-white rounded transition-all duration-200 ease-in-out text-xs sm:text-sm`}
         >
           {buttonStatus?.title}
         </button>
