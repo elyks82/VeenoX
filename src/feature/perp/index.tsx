@@ -106,8 +106,8 @@ export const Perp = ({ asset }: PerpProps) => {
     const handleResize = () => {
       if (window.innerWidth <= 600) {
         setColWidths([1, 1]);
-      } else if (window.innerWidth < 1200) {
-        setColWidths([2, 1]);
+      } else if (window.innerWidth <= 1200) {
+        setColWidths([3, 1]);
       } else {
         setColWidths([8, 2]);
       }
@@ -126,7 +126,7 @@ export const Perp = ({ asset }: PerpProps) => {
     >
       <EnableTrading />
       <div className="w-full flex h-full">
-        <div className="w-full">
+        <div className="container-width">
           <div
             ref={rowUpRef}
             className="relative w-full border-b border-borderColor topPane md:flex-grow "

@@ -144,28 +144,44 @@ input[type="number"] {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 colonnes par défaut */
+  grid-template-columns: repeat(3, 1fr);
 }
 
-@media (max-width: 1200px) {
-  .grid {
-    grid-template-columns: repeat(
-      2,
-      1fr
-    ); /* 2 colonnes pour les écrans de moins de 1200px */
-  }
+.container-width {
+  width: 100%;
 }
 
-@media (max-width: 768px) {
+.chart {
+  height: calc(100% - 108px);
+}
+
+@media (max-width: 1168px) {
   .grid {
     display: flex;
     flex-direction: column;
   }
 
+  .container-width {
+    width: calc(100% - 300px);
+  }
+
+  .chart {
+    height: 450px;
+  }
+
   .grid > div {
     width: 100%;
-    border-right: none; /* Enlever la bordure droite pour chaque div */
-    border-bottom: 1px solid #333; /* Ajouter une bordure en bas pour séparer les divs */
+    border-right: none;
+    border-bottom: 1px solid #333;
+  }
+}
+
+@media (max-width: 768px) {
+  .container-width {
+    width: 100%;
+  }
+  .chart {
+    height: 450px;
   }
 }
 
