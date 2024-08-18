@@ -130,11 +130,11 @@ input[type="number"] {
   width: 15px;
   cursor: col-resize;
   z-index: 10;
-  background-color: #836ef9;
+  /* background-color: #836ef9; */
 }
 
 .resizer:hover {
-  background-color: #836ef9;
+  /* background-color: #836ef9; */
 }
 .resizer:nth-child(2) {
   left: calc(60% + 0px);
