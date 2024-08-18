@@ -200,7 +200,7 @@ export const Home = () => {
             This program aim to help users to learn trading. There is a lack of
             trading knowledge for our users. To solve that we will create a
             &quot;quizz&quot; where people would have an explicative video to
-            watch and answer some question. If it's right, user will be
+            watch and answer some question. If it&quot;s right, user will be
             rewarded.
           </p>
         </div>
