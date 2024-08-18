@@ -30,7 +30,37 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
     return index !== -1 ? index : 1;
   }, [leverage, leverageLevers]);
 
-  const [values, setValues] = useState([leverageValue]);
+  const getMaxLeverageToValue = () => {
+    switch (maxLeverage) {
+      case 1:
+        return 1;
+      case 2:
+        return 2;
+      case 3:
+        return 3;
+      case 4:
+        return 4;
+      case 5:
+        return 5;
+      case 10:
+        return 6;
+      case 15:
+        return 7;
+      case 20:
+        return 8;
+      case 30:
+        return 9;
+      case 40:
+        return 10;
+      case 50:
+        return 11;
+      default:
+        return 10;
+    }
+  };
+
+  const formatMaxLeverage = getMaxLeverageToValue();
+  const [values, setValues] = useState([formatMaxLeverage]);
   const [selectedMax, setSelectedMax] = useState(100);
   const [selectedMin, setSelectedMin] = useState(0);
   const [selectedStep, setSelectedStep] = useState(1);
@@ -41,7 +71,6 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
     );
     setValues(valuesCopy);
   }, [selectedMin, selectedMax, selectedStep]);
-
   return (
     <div className="mb-2.5 w-[97%] mx-auto">
       <Range
