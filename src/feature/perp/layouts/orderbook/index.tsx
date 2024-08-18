@@ -204,7 +204,7 @@ export const Orderbook = ({
                       })}
 
                       <div
-                        className="absolute left-0 h-full max-h-full bg-red-opacity-10 z-0 transition-all duration-150 ease-linear"
+                        className="absolute left-0 h-[90%] max-h-full bg-red-opacity-10 z-0 transition-all duration-150 ease-linear"
                         style={{ width: `${asksWidth[i]}%` }}
                       />
                     </tr>
@@ -263,7 +263,7 @@ export const Orderbook = ({
                       })}
 
                       <div
-                        className="absolute left-0 h-full bg-green-opacity-10 z-0 transition-all duration-150 ease-linear"
+                        className="absolute left-0 h-[90%] bg-green-opacity-10 z-0 transition-all duration-150 ease-linear"
                         style={{ width: `${bidsWidth[i]}%` }}
                       />
                     </tr>
