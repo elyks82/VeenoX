@@ -275,7 +275,7 @@ export const Perp = ({ asset }: PerpProps) => {
               onMouseDown={(e) => handleLastBoxResize(e)}
             />
           )}
-          <OpenTrade holding={usdc?.holding} />
+          <OpenTrade asset={asset} holding={usdc?.holding} />
         </div>
       </div>
 
