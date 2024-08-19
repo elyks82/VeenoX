@@ -3,15 +3,36 @@ import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
 import { getFormattedAmount } from "@/utils/misc";
-import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
+import {
+  useOrderEntry,
+  useAccount as useOrderlyAccount,
+} from "@orderly.network/hooks";
+import { OrderEntity, OrderSide, OrderType } from "@orderly.network/types";
 import { useState } from "react";
 import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
+import { match } from "ts-pattern";
 import { Leverage } from "./components/leverage";
 
 type KeyBooleanType = "reduce_only" | "tp_sl";
 type OpenTradeProps = { isMobile?: boolean; holding?: number };
 const marketType = ["Market", "Limit"];
+
+type Inputs = {
+  direction: "Buy" | "Sell";
+  type: "Market" | "Limit" | "StopLimit";
+  triggerPrice?: string;
+  price?: string;
+  quantity?: string;
+};
+
+const defaultValues: Inputs = {
+  direction: "Buy",
+  type: "Market",
+  triggerPrice: undefined,
+  price: undefined,
+  quantity: undefined,
+};
 
 export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
   const { tradeInfo, setTradeInfo } = useGeneralContext();
@@ -50,7 +71,7 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
 
   const getStyleFromType = () => {
     return tradeInfo.side === "Buy"
-      ? "left-[4px] bg-green"
+      ? "left-[3px] bg-green"
       : "left-calc-slide-long bg-red";
   };
   const style = getStyleFromType();
@@ -102,22 +123,81 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
       };
   };
   const buttonStatus = getButtonStatus();
+  const [values, setValues] = useState(defaultValues);
+  const {
+    freeCollateral,
+    markPrice,
+    maxQty,
+    estLiqPrice,
+    estLeverage,
+    onSubmit,
+    helper: { calculate, validator },
+  } = useOrderEntry(
+    {
+      symbol: "PERP_ETH_USDC",
+      side: OrderSide.BUY,
+      order_type: OrderType.MARKET,
+      order_quantity: getInput(values, "PERP_ETH_USDC"),
+    },
+    { watchOrderbook: true }
+  );
+
+  const isValid = async () => {
+    const errors = await getValidationErrors(
+      values,
+      "PERP_ETH_USDC",
+      validator
+    );
+    console.log("errors", errors);
+    return errors?.order_price != null ? errors.order_price.message : true;
+  };
+  isValid();
+  const submitForm = async () => {
+    // setLoading(true);
+
+    try {
+      await onSubmit(getInput(values, "PERP_ETH_USDC"));
+      console.log("Order success");
+    } catch (err) {
+      console.error(`Unhandled error in "submitForm":`, err);
+    } finally {
+      console.log("final");
+      // setLoading(false);
+      // reset(defaultValues);
+    }
+  };
+
+  console.log(
+    "values: ",
+    getInput(values, "PERP_ETH_USDC"),
+    maxQty,
+    freeCollateral,
+    estLiqPrice,
+    estLeverage
+  );
 
   return (
     <section className="h-full w-full">
+      <input
+        className="bg-red"
+        onChange={(e) => {
+          setValues((prev) => ({ ...prev, quantity: e.target.value }));
+        }}
+      />
+      <button onClick={() => submitForm()}>CLCKC</button>
       {isMobile ? null : <Leverage />}
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
           <button
             key={i}
-            className="w-1/3 h-full text-white text-xs sm:text-sm"
+            className="w-1/3 h-full text-white text-xs font-medium"
             onClick={() => handleTypeChange(type)}
           >
             {type}
           </button>
         ))}
         <button
-          className="w-1/3 h-full text-white text-xs sm:text-sm flex items-center justify-center"
+          className="w-1/3 h-full text-white text-xs font-medium flex items-center justify-center"
           onClick={() => setIsTooltipMarketTypeOpen((prev) => !prev)}
         >
           {tradeInfo.type !== "Market" && tradeInfo.type !== "Limit"
@@ -130,11 +210,11 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
           />
         </button>
         <Tooltip
-          className="right-1 w-1/2 sm:w-1/3 left-auto shadow-2xl border-borderColor translate-x-0 z-20 top-[90%] p-2.5"
+          className="right-1 w-[100px] left-auto shadow-2xl border-borderColor-DARK translate-x-0 z-20 top-[90%] p-2.5 py-1"
           isOpen={isTooltipMarketTypeOpen}
         >
           <button
-            className="w-full text-white text-sm pb-1 text-start"
+            className="w-full text-white text-xs pb-1 text-start"
             onClick={() => {
               handleTypeChange("Stop Limit");
               setIsTooltipMarketTypeOpen(false);
@@ -143,7 +223,7 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
             Stop Limit
           </button>
           <button
-            className="w-full text-white text-sm pt-1 text-start"
+            className="w-full text-white text-xs pt-1 text-start whitespace-nowrap"
             onClick={() => {
               handleTypeChange("Stop Market");
               setIsTooltipMarketTypeOpen(false);
@@ -161,21 +241,21 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
       <div className="flex flex-col w-full p-2 sm:p-4 h-calc-leverage-height">
         <div className="pb-0">
           <div className="flex items-center w-full">
-            <div className="flex items-center p-0.5 sm:p-1 relative w-full bg-terciary border border-borderColor-DARK rounded">
+            <div className="flex items-center p-0.5 sm:p-[3px] relative w-full bg-terciary border border-borderColor-DARK rounded">
               <button
-                className="w-1/2 h-[28px] sm:h-[34px] text-white rounded-l text-xs sm:text-sm z-10"
+                className="w-1/2 h-[28px] sm:h-[34px] text-white rounded-l text-xs sm:text-[13px] z-10"
                 onClick={() => handleSideChange("Buy")}
               >
                 Buy
               </button>
               <button
-                className="w-1/2 z-10 h-[28px] sm:h-[34px] text-white rounded-r text-xs sm:text-sm"
+                className="w-1/2 z-10 h-[28px] sm:h-[34px] text-white rounded-r text-xs sm:text-[13px]"
                 onClick={() => handleSideChange("Sell")}
               >
                 Sell
               </button>
               <div
-                className={`${style} w-1/2 h-[28px] sm:h-[34px] absolute z-0 rounded transition-all duration-300 ease-in-out`}
+                className={`${style} w-1/2 h-[28px] sm:h-[34px] absolute z-0 rounded-[3px] transition-all duration-300 ease-in-out`}
               />
             </div>
           </div>
@@ -364,3 +444,31 @@ export const OpenTrade = ({ isMobile = false, holding }: OpenTradeProps) => {
     </section>
   );
 };
+
+async function getValidationErrors(
+  data: Inputs,
+  symbol: string,
+  validator: ReturnType<typeof useOrderEntry>["helper"]["validator"]
+): Promise<
+  ReturnType<ReturnType<typeof useOrderEntry>["helper"]["validator"]>
+> {
+  return validator(getInput(data, symbol));
+}
+
+function getInput(data: Inputs, symbol: string): OrderEntity {
+  return {
+    symbol,
+    side: match(data.direction)
+      .with("Buy", () => OrderSide.BUY)
+      .with("Sell", () => OrderSide.SELL)
+      .exhaustive(),
+    order_type: match(data.type)
+      .with("Market", () => OrderType.MARKET)
+      .with("Limit", () => OrderType.LIMIT)
+      .with("StopLimit", () => OrderType.STOP_LIMIT)
+      .exhaustive(),
+    order_price: data.price,
+    order_quantity: data.quantity,
+    trigger_price: data.triggerPrice,
+  };
+}

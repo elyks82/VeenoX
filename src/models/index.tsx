@@ -1,4 +1,4 @@
-import { API } from "@orderly.network/types";
+import { API, OrderEntity } from "@orderly.network/types";
 
 export interface FuturesAssetFetchProps {
   success: boolean;
@@ -104,3 +104,32 @@ export type ContextTradeInfo = {
 };
 
 export type MobileActiveSectionType = "Chart" | "Orderbook" | "Trades" | null;
+
+export type FavoriteProps = {
+  [key: string]: {
+    addToHistory: () => void;
+    data: MarketTickerProps[];
+    favortieTabs: { name: string; id: number }[];
+    updateFavoriteTabs: () => void;
+    updateSymbolFavoriteState: () => void;
+  };
+};
+
+export interface OrderEntryReturn {
+  onSubmit: (values: OrderEntity) => Promise<any>;
+  maxQty: number;
+  freeCollateral: number;
+  markPrice: number;
+  estLiqPrice?: number | null;
+  estLeverage?: number | null;
+
+  symbolConfig: API.SymbolExt;
+  helper: {
+    calculate: (
+      values: Partial<OrderEntity>,
+      field: keyof OrderEntity,
+      value: any
+    ) => Partial<OrderEntity>;
+    validator: (values: any) => any;
+  };
+}

@@ -25,7 +25,11 @@ const config: Config = {
         primary: "#2b2f36",
         secondary: "#1B1D22",
         terciary: "#2b2f36e6",
-        base_color: "#836ef9",
+        base_color: "#2C3E50",
+        // 006D77
+        // 8C7853
+        // 34495E
+        // 2C3E50
         green: "rgb(14 203 129)",
 
         "green-opacity-10": "rgba(14, 203, 129,0.1)",
@@ -50,7 +54,7 @@ const config: Config = {
         "calc-full-header": "calc(100vh - 60px)",
       },
       inset: {
-        "calc-slide-long": "calc(50% - 4px)",
+        "calc-slide-long": "calc(50% - 3px)",
         "calc-mobile-position": "calc(100% - 468px);",
       },
       keyframes: {
