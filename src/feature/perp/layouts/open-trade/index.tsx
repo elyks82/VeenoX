@@ -62,15 +62,23 @@ export const OpenTrade = ({
   } = useOrderEntry(
     {
       symbol: asset.symbol,
-      side: values.direction,
+      side: values.direction === "Buy" ? "BUY" : "SELL",
       order_type: values.type,
       order_quantity: values.quantity,
     },
     { watchOrderbook: true }
   );
 
-  console.log("markPrice", freeCollateral);
-
+  const test = async () => {
+    const errors = await validator(getInput(values, asset.symbol));
+    const newValue = calculate(
+      getInput(values, asset.symbol),
+      "order_quantity",
+      values.quantity
+    );
+    console.log("newValue", newValue);
+  };
+  test();
   const isValid = async () => {
     const errors = await getValidationErrors(
       values,
@@ -163,14 +171,27 @@ export const OpenTrade = ({
     setValues((prev) => ({ ...prev, [name]: value === "" ? "" : value }));
   };
 
+  const convertToToken = (value: number) => {
+    const price = asset.mark_price;
+    return value / price;
+  };
   function calculateMaxPercentage(value: number) {
-    return (value / 100) * freeCollateral;
+    return (value / 100) * convertToToken(freeCollateral);
   }
   function percentageToValue(percentage: number) {
-    return (percentage / 100) * freeCollateral;
+    return (percentage / 100) * convertToToken(freeCollateral);
+  }
+  function toPercentage(value: number) {
+    const percentage = (value / convertToToken(freeCollateral)) * 100;
+    return percentage;
   }
 
   console.log("values: ", values);
+
+  const getSymbolForPair = () => {
+    const formatted = asset.symbol.split("_")[1];
+    return formatted;
+  };
 
   return (
     <section className="h-full w-full">
@@ -300,7 +321,7 @@ export const OpenTrade = ({
               type="number"
               value={getFormattedAmount(values.quantity).toString()}
             />
-            <p className="px-2 text-white text-sm">USD</p>
+            <p className="px-2 text-white text-sm">{getSymbolForPair()}</p>
           </div>
           <div className="mt-2 flex items-center">
             <Slider
@@ -310,29 +331,35 @@ export const OpenTrade = ({
               onValueChange={(value) => {
                 setValues((prev) => ({
                   ...prev,
-                  quantity: percentageToValue(value[0]).toString(),
+                  quantity: percentageToValue(value[0]),
                 }));
               }}
               isBuy={values.direction === "Buy"}
             />
-            <div className="w-[57px] ml-4 h-fit bg-terciary border border-borderColor-DARK rounded">
+            <div className="w-[57px] px-2 flex items-center justify-center ml-4 h-fit bg-terciary border border-borderColor-DARK rounded">
               <input
                 name="quantity"
-                className="w-[57px] pl-2 text-white text-sm h-[30px]"
-                placeholder={`${calculateMaxPercentage(freeCollateral)}%`}
+                className="w-[30px] text-white text-sm h-[30px]"
                 type="number"
+                value={
+                  Number(toPercentage(values.quantity)).toFixed(0).toString() ||
+                  0
+                }
               />
+              <p className="text-font-80">%</p>
             </div>
           </div>
           <div className="flex items-center justify-between mt-3">
             <p className="text-xs text-font-60">Est. Liq. price</p>
             <p className="text-xs text-white font-medium">
-              -- <span className="text-font-60">USDC</span>
+              {estLiqPrice || "--"} <span className="text-font-60">USDC</span>
             </p>
           </div>
           <div className="flex items-center justify-between mt-2">
             <p className="text-xs text-font-60">Account leverage</p>
-            <p className="text-xs text-white font-medium">0x</p>
+            <p className="text-xs text-white font-medium">
+              {estLeverage || "--"}x
+            </p>
           </div>
           <div className="flex items-center justify-between mt-2 border-b border-borderColor-DARK pb-4">
             <p className="text-xs text-font-60">Fees</p>
