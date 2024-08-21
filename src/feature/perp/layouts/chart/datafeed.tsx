@@ -84,6 +84,7 @@ export const Datafeed = (
         onResult(bars, { noData: false });
         if (firstDataRequest) {
           lastBarsCache.set(symbolInfo.name, mostRecentCandle);
+          console.log("lastBar", lastBarsCache.get(symbolInfo.name));
         }
       } else {
         onResult([], { noData: true });
@@ -120,7 +121,7 @@ export const Datafeed = (
               const price = data.close;
 
               console.log("currentTimeInMs", currentTimeInMs);
-              console.log("lastDailyBarCache", lastDailyBarCache);
+              console.log("lastDailyBarCache", lastDailyBarCache?.time);
               // console.log(
               //   "nextDailyBarTimenextDailyBarTime",
               //   currentTimeInMs >= nextDailyBarTime
@@ -166,13 +167,14 @@ export const Datafeed = (
                 }
               } else {
                 const bar: CustomBarProps = {
-                  time: currentTimeInMs,
+                  time: data.endTime,
                   open: data.open,
                   high: data.high,
                   low: data.low,
-                  close: price,
+                  close: data.close,
                   volume: data.volume,
                 };
+                console.log("I set machin");
                 lastDailyBarCache = bar;
                 lastBarsCache.set(symbolInfo.name, bar);
               }
@@ -188,9 +190,13 @@ export const Datafeed = (
     } catch (e) {
       console.log("e", e);
     }
+    sockets.set(asset.name + "-" + subscriberUID, socket);
   },
 
-  unsubscribeBars: () => {},
+  unsubscribeBars: (subscriberUID) => {
+    console.log("Unsubscribe", baseAsset.name + "-" + subscriberUID);
+    sockets.get(baseAsset.name + "-" + subscriberUID).close();
+  },
   getMarks: () => ({}),
   getTimeScaleMarks: () => ({}),
   getServerTime: () => ({}),

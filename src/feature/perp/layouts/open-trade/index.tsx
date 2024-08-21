@@ -1,18 +1,18 @@
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
-import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
 import { getFormattedAmount } from "@/utils/misc";
 import {
+  useMarkPricesStream,
   useOrderEntry,
+  useOrderStream,
   useAccount as useOrderlyAccount,
 } from "@orderly.network/hooks";
-import { OrderEntity, OrderSide, OrderType } from "@orderly.network/types";
+import { OrderEntity } from "@orderly.network/types";
 import { useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
-import { match } from "ts-pattern";
 import { Leverage } from "./components/leverage";
 
 type KeyBooleanType = "reduce_only" | "tp_sl";
@@ -49,6 +49,9 @@ export const OpenTrade = ({
   const { state } = useOrderlyAccount();
   const { setIsEnableTradingModalOpen, setIsWalletConnectorOpen } =
     useGeneralContext();
+  const { data: markPrices }: { data: Record<string, number> } =
+    useMarkPricesStream();
+  console.log("markPrices");
 
   const [values, setValues] = useState(defaultValues);
   const {
@@ -69,48 +72,30 @@ export const OpenTrade = ({
     { watchOrderbook: true }
   );
 
-  const test = async () => {
-    const errors = await validator(getInput(values, asset.symbol));
-    const newValue = calculate(
-      getInput(values, asset.symbol),
-      "order_quantity",
-      values.quantity
-    );
-    console.log("newValue", newValue);
-  };
-  test();
-  const isValid = async () => {
-    const errors = await getValidationErrors(
-      values,
-      "PERP_ETH_USDC",
-      validator
-    );
-    console.log("errors", errors);
-    return errors?.order_price != null ? errors.order_price.message : true;
+  const [orders, { cancelOrder }] = useOrderStream({ symbol: asset.symbol });
+
+  const onCancel = async (orderId: number) => {
+    try {
+      const res = await cancelOrder("<orderId>");
+      console.log("res", res);
+    } catch (e) {
+      console.log("HERRRE", e);
+    }
   };
 
   const submitForm = async () => {
     // setLoading(true);
-
     try {
-      console.log("Order de");
-      const test = await onSubmit(getInput(values, asset.symbol));
-      console.log("Order success", test);
+      const val = getInput(values, asset.symbol);
+      console.log("val", val);
+      const test = await onSubmit(val);
+      console.log("After onSubmit", test);
     } catch (err) {
       console.error(`Unhandled error in "submitForm":`, err);
+    } finally {
+      console.log("final");
+      setValues(defaultValues);
     }
-    // finally {
-    //   console.log("final");
-    //   // setLoading(false);
-    //   setValues(defaultValues);
-    // }
-  };
-
-  const handleSizeChange = (size: number) => {
-    setTradeInfo((prevState) => ({
-      ...prevState,
-      size,
-    }));
   };
 
   const getStyleFromType = () => {
@@ -127,11 +112,21 @@ export const OpenTrade = ({
   };
   const barPosition = getSectionBarPosition();
 
-  const handleButtonLongClick = () => {
+  const handleButtonLongClick = async () => {
     if (state.status === 0) setIsWalletConnectorOpen(true);
     else if (state.status === 2 || state.status === 4)
       setIsEnableTradingModalOpen(true);
-    else triggerAlert("Success", "Should active a long/short");
+    else {
+      const errors = await getValidationErrors(
+        values,
+        asset?.symbol,
+        validator
+      );
+      if (!Object.keys(errors)?.length) {
+        submitForm();
+      } else {
+      }
+    }
   };
 
   type ButtonStatusType = {
@@ -186,12 +181,15 @@ export const OpenTrade = ({
     return percentage;
   }
 
-  console.log("values: ", values);
-
   const getSymbolForPair = () => {
     const formatted = asset.symbol.split("_")[1];
     return formatted;
   };
+
+  // useEffect(() => {
+  //   if (values.type === "Market")
+  //     setValues((prev) => ({ ...prev, price: markPrices[asset.symbol] }));
+  // }, [values.type]);
 
   return (
     <section className="h-full w-full">
@@ -494,15 +492,8 @@ async function getValidationErrors(
 function getInput(data: Inputs, symbol: string): OrderEntity {
   return {
     symbol,
-    side: match(data.direction)
-      .with("Buy", () => OrderSide.BUY)
-      .with("Sell", () => OrderSide.SELL)
-      .exhaustive(),
-    order_type: match(data.type)
-      .with("Market", () => OrderType.MARKET)
-      .with("Limit", () => OrderType.LIMIT)
-      .with("StopLimit", () => OrderType.STOP_LIMIT)
-      .exhaustive(),
+    side: data.direction === "Buy" ? "BUY" : "SELL",
+    order_type: data.type.toUpperCase(),
     order_price: data.price,
     order_quantity: data.quantity,
     trigger_price: data.triggerPrice,

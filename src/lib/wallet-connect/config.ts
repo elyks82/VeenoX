@@ -1,6 +1,7 @@
 import { createConfig, http } from "wagmi";
 import {
   arbitrum,
+  arbitrumSepolia,
   base,
   bsc,
   mainnet,
@@ -17,6 +18,7 @@ const chains = [
   base,
   polygon,
   bsc,
+  arbitrumSepolia,
 ] as const;
 export const config = createConfig({
   chains,
@@ -28,5 +30,6 @@ export const config = createConfig({
     [base.id]: http(),
     [polygon.id]: http(),
     [bsc.id]: http(),
+    [arbitrumSepolia.id]: http(),
   },
 });
