@@ -58,7 +58,7 @@ export const Position = ({ asset }: PositionProps) => {
     {
       symbol: asset.symbol,
       side: "SELL" as any,
-      order_type: "MARKET",
+      order_type: "MARKET" as any,
       order_quantity: data.rows?.[0]?.position_qty,
     },
     { watchOrderbook: true }
@@ -76,7 +76,7 @@ export const Position = ({ asset }: PositionProps) => {
       reduce_only: true,
     };
     try {
-      await onSubmit(fake);
+      await onSubmit(fake as any);
       console.log("I CLOSED TRADE");
     } catch (e) {
       console.log("e", e);
