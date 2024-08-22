@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/lib/shadcn/tooltip";
-import { FuturesAssetProps } from "@/models";
+import { FavoriteProps, FuturesAssetProps } from "@/models";
 import {
   formatSymbol,
   get24hChange,
@@ -20,9 +20,10 @@ import { PairSelector } from "./tooltip";
 
 type TokenInfoProps = {
   asset: FuturesAssetProps;
+  params: FavoriteProps;
 };
 
-export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
+export const TokenInfo = ({ asset: assetBuffer, params }: TokenInfoProps) => {
   const marketInfo = useTickerStream(assetBuffer?.symbol);
 
   const [lastPriceInfo, setLastPriceInfo] = useState({
@@ -126,7 +127,7 @@ export const TokenInfo = ({ asset: assetBuffer }: TokenInfoProps) => {
             sideOffset={0}
             className="md:transform-x-[10px] w-[330px] md:w-[550px] bg-secondary border border-borderColor shadow-2xl "
           >
-            <PairSelector />
+            <PairSelector params={params as FavoriteProps as never} />
           </PopoverContent>
         </Popover>
         <div className="flex items-center overflow-x-scroll no-scrollbar min-w-[800px]">

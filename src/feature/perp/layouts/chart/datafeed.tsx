@@ -23,6 +23,7 @@ export const supportedResolutions = [
 
 const sockets = new Map<string, WS>();
 const lastBarsCache = new Map();
+const initialDataLoadedMap: Record<string, boolean> = {};
 
 export const Datafeed = (
   asset: FuturesAssetProps,
@@ -70,23 +71,21 @@ export const Datafeed = (
     const data = await fetchMarketHistory(params);
 
     if (data && data.s === "ok" && data.o) {
-      const bars = data.t.map((timestamp: number, index: number) => ({
-        time: timestamp * 1000,
-        open: data.o[index],
-        high: data.h[index],
-        low: data.l[index],
-        close: data.c[index],
-        volume: data.v[index],
-      }));
+      console.log("timestamp", data);
+      const bars = data.t.map((timestamp: number, index: number) => {
+        return {
+          time: timestamp * 1000,
+          open: data.o[index],
+          high: data.h[index],
+          low: data.l[index],
+          close: data.c[index],
+          volume: data.v[index],
+        };
+      });
 
-      if (bars.length) {
-        const mostRecentCandle = bars[bars.length - 1];
-        onResult(bars, { noData: false });
-        if (firstDataRequest) {
-          lastBarsCache.set(symbolInfo.name, mostRecentCandle);
-        }
-      } else {
-        onResult([], { noData: true });
+      onResult(bars, { noData: false });
+      if (firstDataRequest) {
+        lastBarsCache.set(symbolInfo.ticker, { ...bars[bars.length - 1] });
       }
     } else {
       onResult([], { noData: true });
@@ -96,17 +95,12 @@ export const Datafeed = (
   subscribeBars: (
     symbolInfo: BarsSymbolInfoProps,
     resolution: string,
-    onRealtimeCallback: (bar: CustomBarProps) => void
+    onRealtimeCallback: (bar: CustomBarProps) => void,
+    subscriberUID: any
   ) => {
     try {
-      setIsChartLoading(false);
       const timeframe = resolutionToTimeframe(resolution);
-      let lastDailyBarCache: CustomBarProps | null =
-        lastBarsCache.get(symbolInfo.name) || null;
-      let nextDailyBarTime: number | null = lastDailyBarCache
-        ? getNextBarTime(resolution, lastDailyBarCache.time)
-        : null;
-      let initialDataLoaded = false;
+
       const unsubscribe = ws.subscribe(
         {
           id: `${symbolInfo.ticker}@kline_${timeframe}`,
@@ -116,80 +110,61 @@ export const Datafeed = (
         {
           onMessage: (data: any) => {
             if (data) {
-              const currentTimeInMs = data.endTime;
-              const price = data.close;
+              const currentTimeInMs = Date.now();
+              const price = parseFloat(data.close);
+              let lastDailyBar: CustomBarProps = lastBarsCache.get(
+                symbolInfo.ticker
+              );
+              const nextDailyBarTime = getNextBarTime(
+                resolution,
+                lastDailyBar.time
+              );
+              let bar: CustomBarProps;
+              const initialDataLoaded =
+                initialDataLoadedMap[symbolInfo.ticker] || false;
 
-              console.log("currentTimeInMs", currentTimeInMs);
-              console.log("lastDailyBarCache", lastDailyBarCache);
-              // console.log(
-              //   "nextDailyBarTimenextDailyBarTime",
-              //   currentTimeInMs >= nextDailyBarTime
-              // );
-              if (lastDailyBarCache) {
-                if (currentTimeInMs >= nextDailyBarTime!) {
-                  console.log("Create  candle");
-                  const bar: CustomBarProps = {
-                    time: currentTimeInMs,
-                    open: price,
-                    high: price,
-                    low: price,
-                    close: price,
-                    volume: data.volume,
-                  };
-
-                  lastDailyBarCache = bar;
-                  lastBarsCache.set(symbolInfo.name, bar);
-                  onRealtimeCallback(bar);
-
-                  nextDailyBarTime = getNextBarTime(
-                    resolution,
-                    currentTimeInMs
-                  );
-                } else {
-                  console.log("Update  candle");
-                  const updatedBar: CustomBarProps = {
-                    ...lastDailyBarCache,
-                    high: Math.max(lastDailyBarCache.high, data.high),
-                    low: Math.min(lastDailyBarCache.low, data.low),
-                    close: price,
-                    volume: lastDailyBarCache.volume + data.volume,
-                  };
-
-                  lastDailyBarCache = updatedBar;
-                  lastBarsCache.set(symbolInfo.name, updatedBar);
-                  nextDailyBarTime = getNextBarTime(
-                    resolution,
-                    currentTimeInMs
-                  );
-
-                  onRealtimeCallback(updatedBar);
-                }
-              } else {
-                const bar: CustomBarProps = {
+              if (initialDataLoaded && data.endTime >= nextDailyBarTime) {
+                bar = {
                   time: currentTimeInMs,
-                  open: data.open,
-                  high: data.high,
-                  low: data.low,
+                  open: price,
+                  high: price,
+                  low: price,
                   close: price,
                   volume: data.volume,
                 };
-                lastDailyBarCache = bar;
-                lastBarsCache.set(symbolInfo.name, bar);
+                lastBarsCache.set(symbolInfo.ticker, bar);
+              } else {
+                bar = {
+                  ...lastDailyBar,
+                  high: Math.max(lastDailyBar.high, price),
+                  low: Math.min(lastDailyBar.low, price),
+                  close: price,
+                  volume: data.volume,
+                };
+                lastBarsCache.set(symbolInfo.ticker, bar);
               }
+
+              initialDataLoadedMap[symbolInfo.ticker] = true;
+
+              onRealtimeCallback(bar);
             }
           },
         }
       );
+      if (unsubscribe)
+        sockets.set(
+          symbolInfo.name + "-" + subscriberUID,
+          unsubscribe as never
+        );
 
       return () => {
         if (unsubscribe) unsubscribe();
         sockets.delete(`${symbolInfo.name}@kline_${timeframe}`);
       };
     } catch (e) {
-      console.log("e", e);
+      console.log("Erreur dans subscribeBars", e);
     }
   },
-
   unsubscribeBars: () => {},
   getMarks: () => ({}),
   getTimeScaleMarks: () => ({}),

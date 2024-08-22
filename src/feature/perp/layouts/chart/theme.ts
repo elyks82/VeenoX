@@ -1,16 +1,19 @@
 export const overrides = () => ({
-  "paneProperties.vertGridProperties.color": "rgba(255, 255, 255, 0.06)",
-  "paneProperties.horzGridProperties.color": "rgba(255, 255, 255, 0.06)",
   "symbolWatermarkProperties.transparency": 90,
-  "scalesProperties.textColor": "rgba(255,255,255,0.8)",
-  "mainSeriesProperties.candleStyle.wickUpColor": "#3ab484",
-  "mainSeriesProperties.candleStyle.width": "190px",
-  "mainSeriesProperties.candleStyle.wickDownColor": "#ea3943",
-  "mainSeriesProperties.candleStyle.upColor": "#3ab484",
-  "mainSeriesProperties.candleStyle.downColor": "#ea3943",
+
+  "mainSeriesProperties.candleStyle.wickUpColor": "#0ECB81",
+  "mainSeriesProperties.candleStyle.wickDownColor": "#EA3943",
+  "mainSeriesProperties.candleStyle.upColor": "#0ECB81",
+  "mainSeriesProperties.candleStyle.downColor": "#EA3943",
+  "mainSeriesProperties.candleStyle.borderDownColor": "#EA3943",
+  "mainSeriesProperties.candleStyle.borderUpColor": "#0ECB81",
+
+  "scalesProperties.textColor": "#FFFFFF",
+
   "paneProperties.background": "#1B1D22",
   "paneProperties.backgroundType": "solid",
-  "scalesProperties.backgroundColor": "#1B1D22",
+  "paneProperties.vertGridProperties.color": "rgba(140, 140, 140, 0.1)",
+  "paneProperties.horzGridProperties.color": "rgba(140, 140, 140, 0.1)",
   "paneProperties.legendProperties.showStudyArguments": true,
   "paneProperties.legendProperties.showStudyTitles": true,
   "paneProperties.legendProperties.showStudyValues": true,
@@ -19,12 +22,19 @@ export const overrides = () => ({
   "paneProperties.legendProperties.showLegend": true,
   "paneProperties.legendProperties.showBarChange": true,
   "paneProperties.legendProperties.showBackground": true,
+  "paneProperties.legendProperties.backgroundTransparency": 10,
+  "paneProperties.separatorColor": "#FFFFFF",
+
   "mainSeriesProperties.hollowCandleStyle.drawWick": true,
   "mainSeriesProperties.hollowCandleStyle.drawBorder": true,
   "mainSeriesProperties.candleStyle.drawBorder": true,
   "mainSeriesProperties.haStyle.drawWick": true,
   "mainSeriesProperties.haStyle.drawBorder": true,
-  "paneProperties.legendProperties.backgroundTransparency": 10,
+
+  "scalesProperties.backgroundColor": "#1B1D22",
   "scalesProperties.fontSize": 12,
+
+  "volumePane.volumeUpColor": "#FF0000",
+  "volumePane.volumeDownColor": "#00FF00",
   volumePaneSize: "small",
 });

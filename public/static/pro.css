@@ -15,6 +15,6 @@
 }
 
 .theme-dark {
-  --tv-color-platform-background: red;
-  --tv-color-pane-background: red;
+  --tv-color-platform-background: #1b1d22;
+  --tv-color-pane-background: #1b1d22;
 }

@@ -32,7 +32,7 @@ export const MobileOpenTrade = ({ asset, holding }: MobileOpenTradeProps) => {
             ref={tradeCreatorRef}
             className={` h-fit w-full md:w-[350px] z-[100] left-0  transition-all duration-200 ease-in-out bg-secondary border-t border-borderColor shadow-2xl flex`}
           >
-            <OpenTrade isMobile holding={holding} />
+            <OpenTrade asset={asset} isMobile holding={holding} />
             <Orderbook asset={asset} isMobileOpenTrade isMobile />
           </div>
         </DrawerContent>

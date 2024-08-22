@@ -1,33 +1,25 @@
 import { useGeneralContext } from "@/context";
-import { MarketTickerProps } from "@/models";
+import { FavoriteProps, MarketTickerProps } from "@/models";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
-import { useMarkets } from "@orderly.network/hooks";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaStar } from "react-icons/fa6";
 
-enum MarketsType {
-  FAVORITES = 0,
-  RECENT = 1,
-  ALL = 2,
-}
-
-export const PairSelector = () => {
+export const PairSelector = ({ params }: FavoriteProps) => {
+  const {
+    data,
+    addToHistory,
+    // favoriteTabs,
+    updateFavoriteTabs,
+    updateSymbolFavoriteState,
+  } = params;
   const router = useRouter();
   const sections: string[] = ["All Coins", "x10", "x20", "x50"];
   const [activeSection, setActiveSection] = useState(sections[0]);
   const [searchInput, setSearchInput] = useState("");
   const { isChartLoading, setIsChartLoading } = useGeneralContext();
   const pathname = usePathname();
-  const [
-    data,
-    {
-      addToHistory,
-      favoriteTabs,
-      updateFavoriteTabs,
-      updateSymbolFavoriteState,
-    },
-  ]: any = useMarkets(MarketsType.ALL);
 
   const getFilteredMarketData = () => {
     if (!data?.length) return [];
@@ -64,6 +56,8 @@ export const PairSelector = () => {
         });
   };
   const filteredMarketData = getFilteredMarketData();
+  console.log("params", params);
+  const handleAddToFavorite = () => {};
 
   return (
     <div className="w-full">
@@ -120,19 +114,24 @@ export const PairSelector = () => {
                     onClick={() => setIsChartLoading(true)}
                   >
                     <td className="py-1">
-                      <Link
-                        className={`hover:text-white ${
-                          isActivePair ? "text-base_color" : "text-white"
-                        } transition-all duration-75 ease-in-out`}
-                        href={`/perp/${token.symbol}`}
-                      >
-                        <div className="flex w-full items-center">
-                          {formatSymbol(token.symbol)}
-                          <span className="bg-base_color text-white hover:text-white rounded text-[11px] px-1 py-[1px] ml-2">
-                            x{token.leverage}
-                          </span>
-                        </div>
-                      </Link>
+                      <div className="w-full h-full flex items-center">
+                        <button className="mr-2" onClick={() => {}}>
+                          <FaStar className="text-xs " />{" "}
+                        </button>
+                        <Link
+                          className={`hover:text-white ${
+                            isActivePair ? "text-base_color" : "text-white"
+                          } transition-all duration-75 ease-in-out`}
+                          href={`/perp/${token.symbol}`}
+                        >
+                          <div className="flex w-full items-center">
+                            {formatSymbol(token.symbol)}
+                            <span className="bg-base_color text-white hover:text-white rounded text-[11px] px-1 py-[1px] ml-2">
+                              x{token.leverage}
+                            </span>
+                          </div>
+                        </Link>{" "}
+                      </div>
                     </td>
                     <td className="text-end">
                       <Link href={`/perp/${token.symbol}`}>

@@ -1,8 +1,12 @@
 "use client";
 import { useGeneralContext } from "@/context";
 import { EnableTrading } from "@/layouts/enable-trading";
-import { FuturesAssetProps } from "@/models";
-import { useHoldingStream, useWalletConnector } from "@orderly.network/hooks";
+import { FavoriteProps, FuturesAssetProps } from "@/models";
+import {
+  useHoldingStream,
+  useMarkets,
+  useWalletConnector,
+} from "@orderly.network/hooks";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { Favorites } from "./layouts/favorites";
@@ -21,6 +25,11 @@ const TradingViewChart = dynamic(() => import("./layouts/chart"), {
 type PerpProps = {
   asset: FuturesAssetProps;
 };
+enum MarketsType {
+  FAVORITES = 0,
+  RECENT = 1,
+  ALL = 2,
+}
 
 export const Perp = ({ asset }: PerpProps) => {
   const wallet = useWalletConnector();
@@ -32,6 +41,16 @@ export const Perp = ({ asset }: PerpProps) => {
   const rowUpRef = useRef<HTMLDivElement>(null);
   const { usdc } = useHoldingStream();
   const orderbookRef = useRef<HTMLDivElement>(null);
+
+  const [
+    data,
+    {
+      addToHistory,
+      favoriteTabs,
+      updateFavoriteTabs,
+      updateSymbolFavoriteState,
+    },
+  ]: any = useMarkets(MarketsType.ALL);
 
   const handleMouseDown = (index: number, e: any) => {
     if (window.innerWidth < 1268) return;
@@ -150,9 +169,18 @@ export const Perp = ({ asset }: PerpProps) => {
     document.removeEventListener("mouseup", handleMLastBoxouseUp);
   };
 
+  const params = {
+    addToHistory,
+    data,
+    favoriteTabs,
+    updateFavoriteTabs,
+    updateSymbolFavoriteState,
+  };
+
   return (
     <div ref={containerRef} className="container  w-full max-w-full">
       <EnableTrading />
+      {/* <AdvancedChart symbol={asset?.symbol} /> */}
       <div className="w-full flex h-full">
         <div
           style={{
@@ -179,15 +207,15 @@ export const Perp = ({ asset }: PerpProps) => {
               >
                 {!mobileActiveSection ? (
                   <>
-                    <Favorites />
-                    <TokenInfo asset={asset} />
+                    <Favorites props={params as FavoriteProps as never} />
+                    <TokenInfo params={params} asset={asset} />
                     <MobilePnL />
                     <MobileSectionSelector />
                     <TradingViewChart asset={asset} className={""} />
                   </>
                 ) : (
                   <>
-                    <TokenInfo asset={asset} />
+                    <TokenInfo params={params} asset={asset} />
                     <MobilePnL />
                     <MobileSectionSelector />
                     <div
@@ -248,7 +276,7 @@ export const Perp = ({ asset }: PerpProps) => {
               onMouseDown={(e) => handleLastBoxResize(e)}
             />
           )}
-          <OpenTrade holding={usdc?.holding} />
+          <OpenTrade asset={asset} holding={usdc?.holding} />
         </div>
       </div>
 

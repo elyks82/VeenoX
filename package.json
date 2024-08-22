@@ -39,6 +39,7 @@
     "rsuite": "^5.68.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
+    "ts-pattern": "^5.3.1",
     "vaul": "^0.9.1",
     "viem": "^2.19.4",
     "wagmi": "^2.12.5"

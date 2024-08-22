@@ -51,7 +51,8 @@ const TradingViewChart = ({
             .timeZone as Timezone,
           autosize: true,
           theme: "Dark",
-          loading_screen: { backgroundColor: "rgba(20, 20, 20, 1)" },
+          loading_screen: { backgroundColor: "#1B1D22" },
+          overrides: {},
           studies_overrides: {
             "volume.volume.color.0": "#ea3943",
             "volume.volume.color.1": "#0ECB81",
