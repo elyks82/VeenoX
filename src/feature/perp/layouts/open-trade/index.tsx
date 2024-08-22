@@ -4,7 +4,6 @@ import { Slider } from "@/lib/shadcn/slider";
 import { FuturesAssetProps } from "@/models";
 import { getFormattedAmount } from "@/utils/misc";
 import {
-  useMarkPricesStream,
   useOrderEntry,
   useOrderStream,
   useAccount as useOrderlyAccount,
@@ -49,9 +48,9 @@ export const OpenTrade = ({
   const { state } = useOrderlyAccount();
   const { setIsEnableTradingModalOpen, setIsWalletConnectorOpen } =
     useGeneralContext();
-  const { data: markPrices }: { data: Record<string, number> } =
-    useMarkPricesStream();
-  console.log("markPrices");
+  // const { data: markPrices }: { data: Record<string, number> } =
+  //   useMarkPricesStream();
+  // console.log("markPrices");
 
   const [values, setValues] = useState(defaultValues);
   const {
@@ -65,8 +64,8 @@ export const OpenTrade = ({
   } = useOrderEntry(
     {
       symbol: asset.symbol,
-      side: values.direction === "Buy" ? "BUY" : "SELL",
-      order_type: values.type,
+      side: values.direction === "Buy" ? "BUY" : ("SELL" as any),
+      order_type: values.type as any,
       order_quantity: values.quantity,
     },
     { watchOrderbook: true }
@@ -76,7 +75,7 @@ export const OpenTrade = ({
 
   const onCancel = async (orderId: number) => {
     try {
-      const res = await cancelOrder("<orderId>");
+      const res = await cancelOrder("" as any);
       console.log("res", res);
     } catch (e) {
       console.log("HERRRE", e);
@@ -193,13 +192,13 @@ export const OpenTrade = ({
 
   return (
     <section className="h-full w-full">
-      <input
+      {/* <input
         className="bg-red"
         onChange={(e) => {
           setValues((prev) => ({ ...prev, quantity: e.target.value }));
         }}
       />
-      <button onClick={() => submitForm()}>CLCKC</button>
+      <button onClick={() => submitForm()}>CLCKC</button> */}
       {isMobile ? null : <Leverage />}
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
@@ -329,7 +328,7 @@ export const OpenTrade = ({
               onValueChange={(value) => {
                 setValues((prev) => ({
                   ...prev,
-                  quantity: percentageToValue(value[0]),
+                  quantity: percentageToValue(value[0]) as never,
                 }));
               }}
               isBuy={values.direction === "Buy"}
@@ -340,8 +339,9 @@ export const OpenTrade = ({
                 className="w-[30px] text-white text-sm h-[30px]"
                 type="number"
                 value={
-                  Number(toPercentage(values.quantity)).toFixed(0).toString() ||
-                  0
+                  Number(toPercentage(values.quantity as never))
+                    .toFixed(0)
+                    .toString() || 0
                 }
               />
               <p className="text-font-80">%</p>
@@ -492,8 +492,8 @@ async function getValidationErrors(
 function getInput(data: Inputs, symbol: string): OrderEntity {
   return {
     symbol,
-    side: data.direction === "Buy" ? "BUY" : "SELL",
-    order_type: data.type.toUpperCase(),
+    side: data.direction === "Buy" ? "BUY" : ("SELL" as any),
+    order_type: data.type.toUpperCase() as any,
     order_price: data.price,
     order_quantity: data.quantity,
     trigger_price: data.triggerPrice,
