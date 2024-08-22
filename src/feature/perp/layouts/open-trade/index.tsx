@@ -1,14 +1,17 @@
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
+import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
-import { getFormattedAmount } from "@/utils/misc";
+import { formatQuantity, getFormattedAmount } from "@/utils/misc";
 import {
   useOrderEntry,
   useOrderStream,
   useAccount as useOrderlyAccount,
+  useSymbolPriceRange,
+  useSymbolsInfo,
 } from "@orderly.network/hooks";
-import { OrderEntity } from "@orderly.network/types";
+import { API, OrderEntity } from "@orderly.network/types";
 import { useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
@@ -28,6 +31,7 @@ type Inputs = {
   triggerPrice?: string;
   price?: string;
   quantity?: string;
+  reduce_only: boolean;
 };
 
 const defaultValues: Inputs = {
@@ -36,6 +40,7 @@ const defaultValues: Inputs = {
   triggerPrice: undefined,
   price: undefined,
   quantity: undefined,
+  reduce_only: false,
 };
 
 export const OpenTrade = ({
@@ -82,20 +87,66 @@ export const OpenTrade = ({
     }
   };
 
+  // const isAlgoOrder = values?.algo_order_id !== undefined;
+
+  const rangeInfo = useSymbolPriceRange(
+    asset.symbol,
+    values.direction === "Buy" ? "BUY" : "SELL",
+    undefined
+  );
+
+  const symbolInfo = useSymbolsInfo();
+
+  const symbols = Object.values(symbolInfo)
+    .filter((cur) => typeof cur !== "boolean")
+    .map((cur) => {
+      if (typeof cur === "boolean") return;
+      const symbol = cur();
+      return symbol;
+    });
+  const currentAsset = symbols.find((cur) => cur.symbol === asset?.symbol);
+
   const submitForm = async () => {
-    // setLoading(true);
-    try {
-      const val = getInput(values, asset.symbol);
-      console.log("val", val);
-      const test = await onSubmit(val);
-      console.log("After onSubmit", test);
-    } catch (err) {
-      console.error(`Unhandled error in "submitForm":`, err);
-    } finally {
-      console.log("final");
-      setValues(defaultValues);
+    if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) {
+      triggerAlert(
+        "Warning",
+        `Price can not be greater than ${rangeInfo.max} USDC.`
+      );
+      return;
+    }
+
+    if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) {
+      triggerAlert(
+        "Warning",
+        `Price can not be less than ${rangeInfo.min} USDC.`
+      );
+      return;
+    }
+    const errors = await getValidationErrors(
+      values,
+      asset.symbol,
+      validator,
+      currentAsset.base_tick
+    );
+    const isValid = !Object.keys(errors)?.length;
+    if (isValid) {
+      try {
+        const val = getInput(values, asset.symbol, currentAsset.base_tick);
+
+        console.log("newValue", val);
+        console.log("valvalvalvalval", val);
+        // const test = await onSubmit(val);
+        // console.log("After onSubmit", test);
+      } catch (err) {
+        console.error(`Unhandled error in "submitForm":`, err);
+      } finally {
+        console.log("final");
+        setValues(defaultValues);
+      }
     }
   };
+
+  const onCloseOrder = () => {};
 
   const getStyleFromType = () => {
     return values.direction === "Buy"
@@ -112,19 +163,13 @@ export const OpenTrade = ({
   const barPosition = getSectionBarPosition();
 
   const handleButtonLongClick = async () => {
+    console.log("I RUN");
     if (state.status === 0) setIsWalletConnectorOpen(true);
     else if (state.status === 2 || state.status === 4)
       setIsEnableTradingModalOpen(true);
     else {
-      const errors = await getValidationErrors(
-        values,
-        asset?.symbol,
-        validator
-      );
-      if (!Object.keys(errors)?.length) {
-        submitForm();
-      } else {
-      }
+      console.log("I CALL SUBMIT FUNCTION");
+      submitForm();
     }
   };
 
@@ -189,9 +234,10 @@ export const OpenTrade = ({
   //   if (values.type === "Market")
   //     setValues((prev) => ({ ...prev, price: markPrices[asset.symbol] }));
   // }, [values.type]);
-
+  const [open, setOpen] = useState(false);
+  const [symbol, setSymbol] = useState<API.Symbol>();
   return (
-    <section className="h-full w-full">
+    <section className="h-full w-full text-white">
       {/* <input
         className="bg-red"
         onChange={(e) => {
@@ -482,20 +528,26 @@ export const OpenTrade = ({
 async function getValidationErrors(
   data: Inputs,
   symbol: string,
-  validator: ReturnType<typeof useOrderEntry>["helper"]["validator"]
+  validator: ReturnType<typeof useOrderEntry>["helper"]["validator"],
+  base_tick: number
 ): Promise<
   ReturnType<ReturnType<typeof useOrderEntry>["helper"]["validator"]>
 > {
-  return validator(getInput(data, symbol));
+  return validator(getInput(data, symbol, base_tick));
 }
 
-function getInput(data: Inputs, symbol: string): OrderEntity {
+function getInput(
+  data: Inputs,
+  symbol: string,
+  base_tick: number
+): OrderEntity {
   return {
     symbol,
     side: data.direction === "Buy" ? "BUY" : ("SELL" as any),
     order_type: data.type.toUpperCase() as any,
     order_price: data.price,
-    order_quantity: data.quantity,
+    order_quantity: formatQuantity(Number(data.quantity), base_tick),
     trigger_price: data.triggerPrice,
+    reduce_only: data.reduce_only,
   };
 }

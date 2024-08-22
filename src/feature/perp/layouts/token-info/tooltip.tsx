@@ -56,7 +56,6 @@ export const PairSelector = ({ params }: FavoriteProps) => {
         });
   };
   const filteredMarketData = getFilteredMarketData();
-  console.log("params", params);
   const handleAddToFavorite = () => {};
 
   return (

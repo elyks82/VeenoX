@@ -52,11 +52,10 @@ const TradingViewChart = ({
           autosize: true,
           theme: "Dark",
           loading_screen: { backgroundColor: "#1B1D22" },
-          overrides: {},
+          overrides: overrides as any,
           studies_overrides: {
             "volume.volume.color.0": "#ea3943",
             "volume.volume.color.1": "#0ECB81",
-            volumePaneSize: "small",
           },
           ...widgetOptionsDefault,
         });
@@ -64,7 +63,7 @@ const TradingViewChart = ({
         setTvWidget(widgetInstance);
 
         widgetInstance.onChartReady(() => {
-          widgetInstance.applyOverrides(overrides() || {});
+          widgetInstance.applyOverrides((overrides as any) || {});
         });
       }
     );
@@ -79,22 +78,6 @@ const TradingViewChart = ({
       }
     };
   }, [asset?.symbol, custom_css_url, mobile]);
-
-  useEffect(() => {
-    if (tvWidget) {
-      const resizeObserver = new ResizeObserver(() => {
-        tvWidget.resize();
-      });
-
-      if (ref.current) {
-        resizeObserver.observe(ref.current);
-      }
-
-      return () => {
-        resizeObserver.disconnect();
-      };
-    }
-  }, [tvWidget]);
 
   return (
     <div className="relative w-full chart">

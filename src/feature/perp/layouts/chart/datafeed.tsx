@@ -71,7 +71,6 @@ export const Datafeed = (
     const data = await fetchMarketHistory(params);
 
     if (data && data.s === "ok" && data.o) {
-      console.log("timestamp", data);
       const bars = data.t.map((timestamp: number, index: number) => {
         return {
           time: timestamp * 1000,
@@ -162,7 +161,7 @@ export const Datafeed = (
         sockets.delete(`${symbolInfo.name}@kline_${timeframe}`);
       };
     } catch (e) {
-      console.log("Erreur dans subscribeBars", e);
+      // console.log("Erreur dans subscribeBars", e);
     }
   },
   unsubscribeBars: () => {},

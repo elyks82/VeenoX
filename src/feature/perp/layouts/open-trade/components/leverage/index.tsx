@@ -1,8 +1,8 @@
 "use client";
 import {
-  useAccount,
-  useLeverage,
-  useMarginRatio,
+    useAccount,
+    useLeverage,
+    useMarginRatio,
 } from "@orderly.network/hooks";
 import { useRef } from "react";
 import { LeverageEditor } from "./editor";
@@ -25,10 +25,8 @@ export const Leverage = () => {
     if (nextLeverage.current === maxLeverage) return;
     if (state.status > 2) {
       try {
-        const resp = await update({ leverage: nextLeverage.current });
-        console.log("resp", resp);
+       await update({ leverage: nextLeverage.current });
       } catch (e) {
-        console.log("e", e);
       }
     }
   };

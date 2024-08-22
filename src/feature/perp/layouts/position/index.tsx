@@ -1,4 +1,5 @@
 import { FuturesAssetProps } from "@/models";
+import { usePositionStream } from "@orderly.network/hooks";
 import { useEffect, useRef, useState } from "react";
 import { thead } from "./constants";
 
@@ -22,6 +23,7 @@ export const Position = ({ asset }: PositionProps) => {
     width: string;
     left: string;
   }>({ width: "20%", left: "0%" });
+  const [data, proxy, state] = usePositionStream();
 
   useEffect(() => {
     const updateUnderline = () => {
@@ -95,7 +97,18 @@ export const Position = ({ asset }: PositionProps) => {
               })}
             </tr>
           </thead>
+          <tbody>
+            <tr>
+              <td></td>
+            </tr>
+          </tbody>
         </table>
+        <div className="text-white font-medium p-5">
+          <p>Unreal: {data?.aggregated.unrealPnL}</p>
+          <p>NOTIONAL: {data?.aggregated.notional}</p>
+          <p>unrealPnlROI : {data?.aggregated.unrealPnlROI}</p>
+          <p>unsettledPnL: {data?.aggregated.unsettledPnL}</p>
+        </div>
       </div>
     </div>
   );

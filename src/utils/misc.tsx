@@ -391,3 +391,7 @@ export const connectorsToImage = {
   Keplr: "/logo/keplr.png",
   Backpack: "/logo/backpack-wallet.png",
 };
+
+export function formatQuantity(quantity: number, tickSize: number) {
+  return Math.floor(quantity / tickSize) * tickSize;
+}

@@ -23,8 +23,6 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
   onSubmit,
   isMutating,
 }) => {
-  console.log("maxLeverage", maxLeverage);
-
   const [leverage, setLeverage] = useState(() => maxLeverage ?? 0);
   const { state } = useAccount();
   const leverageValue = useMemo(() => {

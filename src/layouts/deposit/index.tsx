@@ -83,8 +83,6 @@ export const Deposit = () => {
   const { data: acc, error, isLoading } = useAccountInfo();
   const { switchChain } = useSwitchChain();
 
-  console.log("usdc", depositFee);
-
   const test = async () => {
     if (!address) return;
     await fetchBalance(address, dst.decimals);
@@ -139,12 +137,6 @@ export const Deposit = () => {
         }
         try {
           if (parseFloat(amount.toString()) <= availableWithdraw) {
-            console.log("", {
-              chainId: Number(chainId),
-              amount: amount.toString(),
-              token: "USDC",
-              allowCrossChainWithdraw: true,
-            });
             await withdraw({
               chainId: chainId as number,
               amount: availableWithdraw.toString(),
@@ -162,17 +154,12 @@ export const Deposit = () => {
               }, 1000);
             }, 3000);
           }
-        } catch (e) {
-          console.log("eeeeee", e);
-        }
+        } catch (e) {}
       }
     } else {
       switchChain({ chainId: 42161 }); // Default switch to Arbitrum
     }
   };
-
-  console.log("usdc", usdc, balance, dst);
-  console.log("state", state);
 
   const getButtonState = (): string => {
     if (isSupportedChain) {
