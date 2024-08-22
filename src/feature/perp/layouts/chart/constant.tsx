@@ -3,4 +3,4 @@ export const ENABLED_FEATURES = [
   // "dont_show_boolean_study_arguments",
 ];
 
-export const DISABLED_FEATURES = ["volume_force_overlay"];
+export const DISABLED_FEATURES = [];

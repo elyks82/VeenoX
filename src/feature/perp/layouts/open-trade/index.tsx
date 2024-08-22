@@ -135,8 +135,8 @@ export const OpenTrade = ({
 
         console.log("newValue", val);
         console.log("valvalvalvalval", val);
-        // const test = await onSubmit(val);
-        // console.log("After onSubmit", test);
+        const test = await onSubmit(val);
+        console.log("After onSubmit", test);
       } catch (err) {
         console.error(`Unhandled error in "submitForm":`, err);
       } finally {
@@ -145,7 +145,7 @@ export const OpenTrade = ({
       }
     }
   };
-
+  console.log("order", orders);
   const onCloseOrder = () => {};
 
   const getStyleFromType = () => {
