@@ -12,6 +12,7 @@ import {
   useOrderStream,
   usePositionStream,
 } from "@orderly.network/hooks";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { thead } from "./constants";
 
@@ -86,6 +87,7 @@ export const Position = ({ asset }: PositionProps) => {
   };
 
   console.log("stream", data, orders);
+  console.log("ActiveSection", activeSection);
 
   return (
     <div className="w-full">
@@ -133,8 +135,8 @@ export const Position = ({ asset }: PositionProps) => {
           </p>
         </div>
       </div>
-      <div className="overflow-x-scroll min-h-[300px] w-full no-scrollbar">
-        <table className="w-full">
+      <div className="overflow-x-scroll h-[300px] overflow-y-scroll w-full no-scrollbar">
+        <table className="w-full ">
           <thead>
             <tr>
               {thead[activeSection].map((title: string, i: number) => {
@@ -156,8 +158,29 @@ export const Position = ({ asset }: PositionProps) => {
               })}
             </tr>
           </thead>
-          <tbody className="text-white">
-            {(activeSection === 0 ? data?.rows : orders)?.map((order, i) => {
+          <tbody className="text-white relative">
+            {(activeSection === 0
+              ? (data?.rows?.length as number) > 0
+                ? data.rows
+                : Array.from({ length: 1 })
+              : orders
+            )?.map((order, i) => {
+              if (
+                (activeSection === 0 && !data?.rows?.length) ||
+                (activeSection > 0 && !orders?.length)
+              ) {
+                return (
+                  <div className="flex flex-col pb-7 justify-center text-xs text-white items-center absolute h-[300px] left-1/2">
+                    <Image
+                      src="/empty/no-result.svg"
+                      height={50}
+                      width={100}
+                      alt="Empty position image"
+                    />
+                    <p className="mt-2">No trade open</p>
+                  </div>
+                );
+              }
               return (
                 <tr key={i}>
                   {renderCommonCells(order)}
@@ -167,18 +190,6 @@ export const Position = ({ asset }: PositionProps) => {
             })}
           </tbody>
         </table>
-        <div className="text-white font-medium p-5">
-          <p>Unreal: {data?.aggregated.unrealPnL}</p>
-          <p>NOTIONAL: {data?.aggregated.notional}</p>
-          <p>unrealPnlROI : {data?.aggregated.unrealPnlROI}</p>
-          <p>unsettledPnL: {data?.aggregated.unsettledPnL}</p>
-          <button
-            className="mt-4 bg-red px-2 py-1 rounded"
-            onClick={closeTrade}
-          >
-            TOOF OFR
-          </button>
-        </div>
       </div>
     </div>
   );
