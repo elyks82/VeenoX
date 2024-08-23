@@ -1,3 +1,4 @@
+import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import {
@@ -67,8 +68,7 @@ export const Position = ({ asset }: PositionProps) => {
   );
 
   const closeTrade = async () => {
-    console.log("data.rows?.[0].position_qty", data.rows?.[0]);
-    const fake = {
+    const cancelOrder = {
       symbol: asset.symbol,
       side: "SELL",
       order_type: "MARKET",
@@ -78,8 +78,8 @@ export const Position = ({ asset }: PositionProps) => {
       reduce_only: true,
     };
     try {
-      await onSubmit(fake as any);
-      console.log("I CLOSED TRADE");
+      await onSubmit(cancelOrder as any);
+      triggerAlert("Success", "Trade is successfully closed");
     } catch (e) {
       console.log("e", e);
     }
@@ -158,12 +158,12 @@ export const Position = ({ asset }: PositionProps) => {
             </tr>
           </thead>
           <tbody className="text-white">
-            {orders?.map((order) => {
+            {(activeSection === 0 ? data?.rows : orders)?.map((order, i) => {
               return (
-                <td>
+                <tr key={i}>
                   {renderCommonCells(order)}
-                  {renderAdditionalCells(order, activeSection)}
-                </td>
+                  {renderAdditionalCells(order, activeSection, closeTrade)}
+                </tr>
               );
             })}
           </tbody>
@@ -202,29 +202,33 @@ const renderCommonCells = (trade) => (
         {formatSymbol(trade.symbol)}
       </div>
     </td>
-    <td className={tdStyle}>{trade.type}</td>
-    <td
-      className={cn(
-        tdStyle,
-        `${trade.side === "SELL" ? "text-red" : "text-green"}`
-      )}
-    >
-      {trade.side}
-    </td>
   </>
 );
 
-const renderAdditionalCells = (trade, section) => {
+const renderAdditionalCells = (trade, section, closeTrade) => {
   if (section === Sections.FILLED) {
     return (
       <>
+        <td className={tdStyle}>{trade.type}</td>
+        <td
+          className={cn(
+            tdStyle,
+            `${trade.side === "SELL" ? "text-red" : "text-green"}`
+          )}
+        >
+          {trade.side}
+        </td>
         <td className={tdStyle}>{trade.total_executed_quantity}</td>
         <td className={tdStyle}>{trade.average_executed_price}</td>
         <td className={tdStyle}>--</td>
-        <td className={tdStyle}>{trade.realized_pnl}</td>
+        <td className={tdStyle}>--</td>
+        <td className={tdStyle}>
+          {getFormattedAmount(trade.quantity * trade.average_executed_price)}
+        </td>
         <td className={tdStyle}>{trade.total_fee}</td>
         <td className={tdStyle}>{trade.status}</td>
         <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
+        <td className={tdStyle}>No</td>
         <td className={cn(tdStyle, "pr-5")}>
           {getFormattedDate(trade.created_time)}
         </td>
@@ -233,9 +237,108 @@ const renderAdditionalCells = (trade, section) => {
   } else if (section === Sections.PENDING) {
     return (
       <>
+        <td className={tdStyle}>{trade.type}</td>
+        <td
+          className={cn(
+            tdStyle,
+            `${trade.side === "SELL" ? "text-red" : "text-green"}`
+          )}
+        >
+          {trade.side}
+        </td>
         <td className={tdStyle}>--</td>
         <td className={tdStyle}>{trade.total_executed_quantity}</td>
         <td className={tdStyle}>{trade.average_executed_price}</td>
+        <td className={tdStyle}>--</td>
+        <td className={tdStyle}>
+          {getFormattedAmount(
+            trade.total_executed_quantity * trade.average_executed_price
+          )}
+        </td>
+        <td className={tdStyle}>No</td>
+        <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
+        <td className={cn(tdStyle, "pr-5")}>
+          {getFormattedDate(trade.created_time)}
+        </td>
+      </>
+    );
+  } else if (section === Sections.POSITION) {
+    return (
+      <>
+        <td className={tdStyle}>{trade.position_qty}</td>
+        <td className={tdStyle}>{trade.average_open_price}</td>
+        <td className={tdStyle}>{trade.mark_price}</td>
+        <td className={tdStyle}>{trade.est_liq_price}</td>
+        <td className={tdStyle}>{getFormattedAmount(trade.unrealized_pnl)}</td>
+        <td className={tdStyle}>
+          <div className="flex flex-col w-full h-full">
+            <p>TP: {trade.tp_trigger_price || "--"}</p>
+            <p>SL: {trade.sl_trigger_price || "--"}</p>
+          </div>
+        </td>
+        <td className={tdStyle}>{trade.cost_position}</td>
+        <td className={tdStyle}>{trade.mm}</td>
+        <td className={cn(tdStyle, "")}>{trade.settle_price}</td>
+        <td className={cn(tdStyle, "pr-5")}>
+          <button
+            onClick={closeTrade}
+            className="h-[30px] w-fit px-2 text-xs text-white bg-terciary border-borderColor-DARK rounded"
+          >
+            Close
+          </button>
+        </td>
+      </>
+    );
+  } else if (section === Sections.ORDER_HISTORY) {
+    return (
+      <>
+        <td className={tdStyle}>{trade.type}</td>
+        <td
+          className={cn(
+            tdStyle,
+            `${trade.side === "SELL" ? "text-red" : "text-green"}`
+          )}
+        >
+          {trade.side}
+        </td>
+        <td className={tdStyle}>{trade.total_executed_quantity}</td>
+        <td className={tdStyle}>
+          {getFormattedAmount(trade.average_executed_price)}
+        </td>
+
+        <td className={tdStyle}>--</td>
+        <td className={tdStyle}>--</td>
+        <td className={tdStyle}>
+          {getFormattedAmount(
+            trade.total_executed_quantity * trade.average_executed_price
+          )}
+        </td>
+        <td className={tdStyle}>{trade.total_fee}</td>
+        <td className={tdStyle}>{trade.status}</td>
+        <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
+        <td className={tdStyle}>No</td>
+        <td className={cn(tdStyle, "pr-5")}>
+          {getFormattedDate(trade.created_time)}
+        </td>
+      </>
+    );
+  } else if (section === Sections.TP_SL) {
+    return (
+      <>
+        <td
+          className={cn(
+            tdStyle,
+            `${trade.side === "SELL" ? "text-red" : "text-green"}`
+          )}
+        >
+          {trade.side}
+        </td>
+        <td className={tdStyle}>{trade.total_executed_quantity}</td>
+        <td className={tdStyle}>--</td>
+        <td className={tdStyle}>
+          {getFormattedAmount(trade.average_executed_price)}
+        </td>
+        <td className={tdStyle}>--</td>
         <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
         <td className={cn(tdStyle, "pr-5")}>
           {getFormattedDate(trade.created_time)}

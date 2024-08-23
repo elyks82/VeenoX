@@ -9,7 +9,8 @@ export const thead = {
     "TP / SL",
     "Est. total",
     "Margin",
-    "Price",
+    "Settle Price",
+    "Order",
   ],
   1: [
     "Instrument",
@@ -54,7 +55,6 @@ export const thead = {
     "Type",
     "Side",
     "Filled / Quantity",
-    "Order price",
     "Avg. price",
     "Trigger",
     "Realized PnL",
