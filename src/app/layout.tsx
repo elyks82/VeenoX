@@ -1,5 +1,6 @@
 import { Footer } from "@/layouts/footer";
 import { Header } from "@/layouts/header";
+import { OrderlyProvider } from "@/lib/orderly";
 import { config } from "@/lib/wallet-connect/config";
 import WagmiProvider from "@/lib/wallet-connect/provider";
 import { Providers } from "@/provider/wrapper";
@@ -36,12 +37,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <WagmiProvider initialState={initialState}>
-          <Providers>
-            <Header />
-            {children}
-            <SpeedInsights />
-            <Footer />
-          </Providers>
+          <OrderlyProvider>
+            <Providers>
+              <Header />
+              {children}
+              <SpeedInsights />
+              <Footer />
+            </Providers>{" "}
+          </OrderlyProvider>
         </WagmiProvider>
       </body>
     </html>

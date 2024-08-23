@@ -3,10 +3,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { State, WagmiProvider as WagmiCloneProvider } from "wagmi";
-import { OrderlyProvider } from "../orderly";
 import { config } from "./config";
 
 const queryClient = new QueryClient();
+const brokerID = "orderly";
 
 export default function WagmiProvider({
   children,
@@ -17,9 +17,7 @@ export default function WagmiProvider({
 }) {
   return (
     <WagmiCloneProvider config={config} initialState={initialState}>
-      <QueryClientProvider client={queryClient}>
-        <OrderlyProvider>{children}</OrderlyProvider>
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiCloneProvider>
   );
 }

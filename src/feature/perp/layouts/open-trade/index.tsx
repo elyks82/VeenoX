@@ -27,7 +27,7 @@ const marketType = ["Market", "Limit"];
 
 type Inputs = {
   direction: "Buy" | "Sell";
-  type: "Market" | "Limit" | "StopLimit";
+  type: "MARKET" | "LIMIT" | "STOPLIMIT";
   triggerPrice?: string;
   price?: string;
   quantity?: string;
@@ -35,8 +35,8 @@ type Inputs = {
 };
 
 const defaultValues: Inputs = {
-  direction: "Buy",
-  type: "Market",
+  direction: "BUY",
+  type: "MARKET",
   triggerPrice: undefined,
   price: undefined,
   quantity: undefined,
@@ -77,7 +77,7 @@ export const OpenTrade = ({
   );
 
   const [orders, { cancelOrder }] = useOrderStream({ symbol: asset.symbol });
-
+  console.log("estLiqPrice", estLiqPrice, estLiqPrice);
   const onCancel = async (orderId: number) => {
     try {
       const res = await cancelOrder("" as any);
@@ -156,8 +156,8 @@ export const OpenTrade = ({
   const style = getStyleFromType();
 
   const getSectionBarPosition = () => {
-    if (values.type === "Market") return "left-0";
-    else if (values.type === "Limit") return "left-1/3";
+    if (values.type === "MARKET") return "left-0";
+    else if (values.type === "LIMIT") return "left-1/3";
     else return "left-2/3";
   };
   const barPosition = getSectionBarPosition();
@@ -251,7 +251,7 @@ export const OpenTrade = ({
           <button
             key={i}
             className="w-1/3 h-full text-white text-xs font-medium"
-            onClick={() => handleValueChange("type", type)}
+            onClick={() => handleValueChange("type", type.toUpperCase())}
           >
             {type}
           </button>
@@ -260,7 +260,7 @@ export const OpenTrade = ({
           className="w-1/3 h-full text-white text-xs font-medium flex items-center justify-center"
           onClick={() => setIsTooltipMarketTypeOpen((prev) => !prev)}
         >
-          {values.type !== "Market" && values.type !== "Limit"
+          {values.type !== "MARKET" && values.type !== "LIMIT"
             ? values.type
             : "Pro"}
           <IoChevronDown
@@ -326,7 +326,7 @@ export const OpenTrade = ({
             </p>
           </div>
 
-          {values.type === "StopLimit" ? (
+          {values.type === "STOPLIMIT" ? (
             <div className="flex items-center h-[35px] bg-terciary justify-between w-full border border-borderColor-DARK rounded mt-3">
               <input
                 name="size"
@@ -340,7 +340,7 @@ export const OpenTrade = ({
               <p className="px-2 text-white text-sm">USD</p>
             </div>
           ) : null}
-          {values.type !== "Market" ? (
+          {values.type !== "MARKET" ? (
             <div className="flex items-center h-[35px] bg-terciary justify-between w-full border border-borderColor-DARK rounded mt-2">
               <input
                 name="size"
@@ -396,7 +396,8 @@ export const OpenTrade = ({
           <div className="flex items-center justify-between mt-3">
             <p className="text-xs text-font-60">Est. Liq. price</p>
             <p className="text-xs text-white font-medium">
-              {estLiqPrice || "--"} <span className="text-font-60">USDC</span>
+              {getFormattedAmount(Number(estLiqPrice)) || "--"}{" "}
+              <span className="text-font-60">USDC</span>
             </p>
           </div>
           <div className="flex items-center justify-between mt-2">

@@ -19,12 +19,14 @@ type PositionProps = {
 };
 
 enum Sections {
-  POSITION,
-  PENDING,
-  TP_SL,
-  FILLED,
-  ORDER_HISTORY,
+  POSITION = 0,
+  PENDING = 1,
+  TP_SL = 2,
+  FILLED = 3,
+  ORDER_HISTORY = 4,
 }
+
+const tdStyle = `text-xs px-2.5 py-4 text-font-80 whitespace-nowrap font-normal border-y border-borderColor text-end`;
 
 export const Position = ({ asset }: PositionProps) => {
   const [activeSection, setActiveSection] = useState(Sections.POSITION);
@@ -84,96 +86,6 @@ export const Position = ({ asset }: PositionProps) => {
   };
 
   console.log("stream", data, orders);
-
-  const getDataFromActiveSection = (trade: any) => {
-    const tdStyle = `text-xs px-2.5 py-4 text-font-80 whitespace-nowrap font-normal border-y border-borderColor text-end`;
-    if (activeSection === Sections.FILLED)
-      return (
-        <tr>
-          <td className={cn(tdStyle, "text-start pl-5")}>
-            <div className="h-full w-full flex items-center">
-              <img
-                className="w-4 h-4 rounded-full mr-2"
-                height={16}
-                width={16}
-                alt={`${trade.symbol} logo`}
-                src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
-                  trade.symbol,
-                  true
-                )}.png`}
-              />
-              {formatSymbol(trade.symbol)}
-            </div>
-          </td>
-          <td className={tdStyle}>{trade.type}</td>
-          <td
-            className={cn(
-              tdStyle,
-              `${trade.side === "SELL" ? "text-red" : "text-green"}`
-            )}
-          >
-            {trade.side}
-          </td>
-          <td className={tdStyle}>{trade.total_executed_quantity}</td>
-          <td className={tdStyle}>{trade.type}</td>
-          <td className={tdStyle}>{trade.average_executed_price}</td>
-          <td className={tdStyle}>--</td>
-          <td className={tdStyle}>{trade.realized_pnl}</td>
-          <td className={tdStyle}>
-            {trade.total_executed_quantity * trade.average_executed_price}
-          </td>
-          <td className={tdStyle}>{trade.total_fee}</td>
-          <td className={tdStyle}>{trade.status}</td>
-          <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
-          <td className={tdStyle}>No</td>
-          <td className={cn(tdStyle, "pr-5")}>
-            {getFormattedDate(trade.created_time)}
-          </td>
-        </tr>
-      );
-    if (activeSection === Sections.PENDING)
-      return (
-        <tr>
-          <td className={cn(tdStyle, "text-start pl-5")}>
-            <div className="h-full w-full flex items-center">
-              <img
-                className="w-4 h-4 rounded-full mr-2"
-                height={16}
-                width={16}
-                alt={`${trade.symbol} logo`}
-                src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
-                  trade.symbol,
-                  true
-                )}.png`}
-              />
-              {formatSymbol(trade.symbol)}
-            </div>
-          </td>
-          <td className={tdStyle}>{trade.type}</td>
-          <td
-            className={cn(
-              tdStyle,
-              `${trade.side === "SELL" ? "text-red" : "text-green"}`
-            )}
-          >
-            {trade.side}
-          </td>
-
-          <td className={tdStyle}>{trade.type}</td>
-          <td className={tdStyle}>--</td>
-          <td className={tdStyle}>{trade.total_executed_quantity}</td>
-          <td className={tdStyle}>{trade.average_executed_price}</td>
-          <td className={tdStyle}>
-            {trade.total_executed_quantity * trade.average_executed_price}
-          </td>
-          <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
-          <td className={tdStyle}>No</td>
-          <td className={cn(tdStyle, "pr-5")}>
-            {getFormattedDate(trade.created_time)}
-          </td>
-        </tr>
-      );
-  };
 
   return (
     <div className="w-full">
@@ -247,7 +159,12 @@ export const Position = ({ asset }: PositionProps) => {
           </thead>
           <tbody className="text-white">
             {orders?.map((order) => {
-              return getDataFromActiveSection(order);
+              return (
+                <td>
+                  {renderCommonCells(order)}
+                  {renderAdditionalCells(order, activeSection)}
+                </td>
+              );
             })}
           </tbody>
         </table>
@@ -266,4 +183,65 @@ export const Position = ({ asset }: PositionProps) => {
       </div>
     </div>
   );
+};
+
+const renderCommonCells = (trade) => (
+  <>
+    <td className={cn(tdStyle, "text-start pl-5")}>
+      <div className="h-full w-full flex items-center">
+        <img
+          className="w-4 h-4 rounded-full mr-2"
+          height={16}
+          width={16}
+          alt={`${trade.symbol} logo`}
+          src={`https://oss.orderly.network/static/symbol_logo/${formatSymbol(
+            trade.symbol,
+            true
+          )}.png`}
+        />
+        {formatSymbol(trade.symbol)}
+      </div>
+    </td>
+    <td className={tdStyle}>{trade.type}</td>
+    <td
+      className={cn(
+        tdStyle,
+        `${trade.side === "SELL" ? "text-red" : "text-green"}`
+      )}
+    >
+      {trade.side}
+    </td>
+  </>
+);
+
+const renderAdditionalCells = (trade, section) => {
+  if (section === Sections.FILLED) {
+    return (
+      <>
+        <td className={tdStyle}>{trade.total_executed_quantity}</td>
+        <td className={tdStyle}>{trade.average_executed_price}</td>
+        <td className={tdStyle}>--</td>
+        <td className={tdStyle}>{trade.realized_pnl}</td>
+        <td className={tdStyle}>{trade.total_fee}</td>
+        <td className={tdStyle}>{trade.status}</td>
+        <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
+        <td className={cn(tdStyle, "pr-5")}>
+          {getFormattedDate(trade.created_time)}
+        </td>
+      </>
+    );
+  } else if (section === Sections.PENDING) {
+    return (
+      <>
+        <td className={tdStyle}>--</td>
+        <td className={tdStyle}>{trade.total_executed_quantity}</td>
+        <td className={tdStyle}>{trade.average_executed_price}</td>
+        <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
+        <td className={cn(tdStyle, "pr-5")}>
+          {getFormattedDate(trade.created_time)}
+        </td>
+      </>
+    );
+  }
+  return null;
 };
