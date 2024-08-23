@@ -1,14 +1,18 @@
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
+import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
-import { getFormattedAmount } from "@/utils/misc";
+import { formatQuantity, getFormattedAmount } from "@/utils/misc";
 import {
+  useCollateral,
   useOrderEntry,
-  useOrderStream,
   useAccount as useOrderlyAccount,
+  usePositionStream,
+  useSymbolPriceRange,
+  useSymbolsInfo,
 } from "@orderly.network/hooks";
-import { OrderEntity } from "@orderly.network/types";
+import { API, OrderEntity } from "@orderly.network/types";
 import { useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
@@ -24,18 +28,20 @@ const marketType = ["Market", "Limit"];
 
 type Inputs = {
   direction: "Buy" | "Sell";
-  type: "Market" | "Limit" | "StopLimit";
+  type: "MARKET" | "LIMIT" | "STOPLIMIT";
   triggerPrice?: string;
   price?: string;
   quantity?: string;
+  reduce_only: boolean;
 };
 
 const defaultValues: Inputs = {
-  direction: "Buy",
-  type: "Market",
+  direction: "BUY" as any,
+  type: "MARKET",
   triggerPrice: undefined,
   price: undefined,
   quantity: undefined,
+  reduce_only: false,
 };
 
 export const OpenTrade = ({
@@ -48,10 +54,28 @@ export const OpenTrade = ({
   const { state } = useOrderlyAccount();
   const { setIsEnableTradingModalOpen, setIsWalletConnectorOpen } =
     useGeneralContext();
+  const {
+    totalCollateral,
+    freeCollateral: freeCollat,
+    totalValue,
+    availableBalance,
+    unsettledPnL,
+    positions,
+    accountInfo,
+  } = useCollateral({
+    dp: 2,
+  });
+
+  console.log("totalValue", totalValue);
+  console.log("availableBalance", availableBalance);
+  console.log("freeCollat", freeCollat);
+  console.log("totalCollateral", totalCollateral);
+  console.log("unsettledPnL", unsettledPnL);
+  console.log("positions", positions);
+  console.log("accountInfo", accountInfo);
   // const { data: markPrices }: { data: Record<string, number> } =
   //   useMarkPricesStream();
   // console.log("markPrices");
-
   const [values, setValues] = useState(defaultValues);
   const {
     freeCollateral,
@@ -71,29 +95,60 @@ export const OpenTrade = ({
     { watchOrderbook: true }
   );
 
-  const [orders, { cancelOrder }] = useOrderStream({ symbol: asset.symbol });
+  console.log("estLiqPrice", estLiqPrice, estLiqPrice);
 
-  const onCancel = async (orderId: number) => {
-    try {
-      const res = await cancelOrder("" as any);
-      console.log("res", res);
-    } catch (e) {
-      console.log("HERRRE", e);
-    }
-  };
+  // const isAlgoOrder = values?.algo_order_id !== undefined;
+
+  const rangeInfo = useSymbolPriceRange(
+    asset.symbol,
+    values.direction === "Buy" ? "BUY" : "SELL",
+    undefined
+  );
+
+  const symbolInfo = useSymbolsInfo();
+
+  const symbols = Object.values(symbolInfo)
+    .filter((cur) => typeof cur !== "boolean")
+    .map((cur) => {
+      if (typeof cur === "boolean") return;
+      const symbol = cur();
+      return symbol;
+    });
+  const currentAsset = symbols.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
-    // setLoading(true);
-    try {
-      const val = getInput(values, asset.symbol);
-      console.log("val", val);
-      const test = await onSubmit(val);
-      console.log("After onSubmit", test);
-    } catch (err) {
-      console.error(`Unhandled error in "submitForm":`, err);
-    } finally {
-      console.log("final");
-      setValues(defaultValues);
+    if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) {
+      triggerAlert(
+        "Warning",
+        `Price can not be greater than ${rangeInfo.max} USDC.`
+      );
+      return;
+    }
+
+    if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) {
+      triggerAlert(
+        "Warning",
+        `Price can not be less than ${rangeInfo.min} USDC.`
+      );
+      return;
+    }
+    const errors = await getValidationErrors(
+      values,
+      asset.symbol,
+      validator,
+      currentAsset.base_tick
+    );
+    const isValid = !Object.keys(errors)?.length;
+    if (isValid) {
+      try {
+        const val = getInput(values, asset.symbol, currentAsset.base_tick);
+        await onSubmit(val);
+        triggerAlert("Success", "Order has been executed.");
+      } catch (err) {
+        triggerAlert("Error", "Error during executing the order.");
+      } finally {
+        setValues(defaultValues);
+      }
     }
   };
 
@@ -105,26 +160,20 @@ export const OpenTrade = ({
   const style = getStyleFromType();
 
   const getSectionBarPosition = () => {
-    if (values.type === "Market") return "left-0";
-    else if (values.type === "Limit") return "left-1/3";
+    if (values.type === "MARKET") return "left-0";
+    else if (values.type === "LIMIT") return "left-1/3";
     else return "left-2/3";
   };
   const barPosition = getSectionBarPosition();
 
   const handleButtonLongClick = async () => {
+    console.log("I RUN");
     if (state.status === 0) setIsWalletConnectorOpen(true);
     else if (state.status === 2 || state.status === 4)
       setIsEnableTradingModalOpen(true);
     else {
-      const errors = await getValidationErrors(
-        values,
-        asset?.symbol,
-        validator
-      );
-      if (!Object.keys(errors)?.length) {
-        submitForm();
-      } else {
-      }
+      console.log("I CALL SUBMIT FUNCTION");
+      submitForm();
     }
   };
 
@@ -185,13 +234,16 @@ export const OpenTrade = ({
     return formatted;
   };
 
+  const [data, proxy] = usePositionStream();
+
   // useEffect(() => {
   //   if (values.type === "Market")
   //     setValues((prev) => ({ ...prev, price: markPrices[asset.symbol] }));
   // }, [values.type]);
-
+  const [open, setOpen] = useState(false);
+  const [symbol, setSymbol] = useState<API.Symbol>();
   return (
-    <section className="h-full w-full">
+    <section className="h-full w-full text-white">
       {/* <input
         className="bg-red"
         onChange={(e) => {
@@ -205,7 +257,7 @@ export const OpenTrade = ({
           <button
             key={i}
             className="w-1/3 h-full text-white text-xs font-medium"
-            onClick={() => handleValueChange("type", type)}
+            onClick={() => handleValueChange("type", type.toUpperCase())}
           >
             {type}
           </button>
@@ -214,7 +266,7 @@ export const OpenTrade = ({
           className="w-1/3 h-full text-white text-xs font-medium flex items-center justify-center"
           onClick={() => setIsTooltipMarketTypeOpen((prev) => !prev)}
         >
-          {values.type !== "Market" && values.type !== "Limit"
+          {values.type !== "MARKET" && values.type !== "LIMIT"
             ? values.type
             : "Pro"}
           <IoChevronDown
@@ -276,11 +328,11 @@ export const OpenTrade = ({
           <div className="flex items-center w-full justify-between mt-4">
             <p className="text-xs text-font-60">Available to Trade</p>
             <p className="text-xs text-white font-medium">
-              {getFormattedAmount(holding)} USDC
+              {getFormattedAmount(availableBalance)} USDC
             </p>
           </div>
 
-          {values.type === "StopLimit" ? (
+          {values.type === "STOPLIMIT" ? (
             <div className="flex items-center h-[35px] bg-terciary justify-between w-full border border-borderColor-DARK rounded mt-3">
               <input
                 name="size"
@@ -294,7 +346,7 @@ export const OpenTrade = ({
               <p className="px-2 text-white text-sm">USD</p>
             </div>
           ) : null}
-          {values.type !== "Market" ? (
+          {values.type !== "MARKET" ? (
             <div className="flex items-center h-[35px] bg-terciary justify-between w-full border border-borderColor-DARK rounded mt-2">
               <input
                 name="size"
@@ -350,7 +402,8 @@ export const OpenTrade = ({
           <div className="flex items-center justify-between mt-3">
             <p className="text-xs text-font-60">Est. Liq. price</p>
             <p className="text-xs text-white font-medium">
-              {estLiqPrice || "--"} <span className="text-font-60">USDC</span>
+              {getFormattedAmount(Number(estLiqPrice)) || "--"}{" "}
+              <span className="text-font-60">USDC</span>
             </p>
           </div>
           <div className="flex items-center justify-between mt-2">
@@ -450,14 +503,13 @@ export const OpenTrade = ({
                 <p className="text-xs text-font-60 mb-[3px]">
                   Total value (USDC)
                 </p>
-                <p className="text-base text-white font-medium">
-                  {getFormattedAmount(holding)}
-                </p>
+                <p className="text-base text-white font-medium">{totalValue}</p>
               </div>
               <div>
                 <p className="text-xs text-font-60 mb-1">Unreal PnL (USDC)</p>
                 <p className="text-sm text-white font-medium text-end">
-                  0.00 (0.00%)
+                  {data?.aggregated.unrealPnL} ({data?.aggregated.unrealPnLROI}
+                  %)
                 </p>
               </div>
             </div>
@@ -466,7 +518,17 @@ export const OpenTrade = ({
                 <p className="text-xs text-font-60 mb-1">
                   Unsettled PnL (USDC)
                 </p>
-                <p className="text-sm text-white font-medium">0.00</p>
+                <p
+                  className={`text-sm font-medium ${
+                    unsettledPnL > 0
+                      ? "text-green"
+                      : unsettledPnL < 0
+                      ? "text-red"
+                      : "text-white"
+                  }`}
+                >
+                  {unsettledPnL}{" "}
+                </p>
               </div>
               <button className="flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white">
                 <span>Settle PnL</span>
@@ -482,20 +544,26 @@ export const OpenTrade = ({
 async function getValidationErrors(
   data: Inputs,
   symbol: string,
-  validator: ReturnType<typeof useOrderEntry>["helper"]["validator"]
+  validator: ReturnType<typeof useOrderEntry>["helper"]["validator"],
+  base_tick: number
 ): Promise<
   ReturnType<ReturnType<typeof useOrderEntry>["helper"]["validator"]>
 > {
-  return validator(getInput(data, symbol));
+  return validator(getInput(data, symbol, base_tick));
 }
 
-function getInput(data: Inputs, symbol: string): OrderEntity {
+function getInput(
+  data: Inputs,
+  symbol: string,
+  base_tick: number
+): OrderEntity {
   return {
     symbol,
     side: data.direction === "Buy" ? "BUY" : ("SELL" as any),
     order_type: data.type.toUpperCase() as any,
     order_price: data.price,
-    order_quantity: data.quantity,
+    order_quantity: formatQuantity(Number(data.quantity), base_tick),
     trigger_price: data.triggerPrice,
+    reduce_only: data.reduce_only,
   };
 }

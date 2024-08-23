@@ -1,14 +1,10 @@
-export const overrides = () => ({
-  "symbolWatermarkProperties.transparency": 90,
-
+export const overrides = {
   "mainSeriesProperties.candleStyle.wickUpColor": "#0ECB81",
   "mainSeriesProperties.candleStyle.wickDownColor": "#EA3943",
   "mainSeriesProperties.candleStyle.upColor": "#0ECB81",
   "mainSeriesProperties.candleStyle.downColor": "#EA3943",
   "mainSeriesProperties.candleStyle.borderDownColor": "#EA3943",
   "mainSeriesProperties.candleStyle.borderUpColor": "#0ECB81",
-
-  "scalesProperties.textColor": "#FFFFFF",
 
   "paneProperties.background": "#1B1D22",
   "paneProperties.backgroundType": "solid",
@@ -33,8 +29,17 @@ export const overrides = () => ({
 
   "scalesProperties.backgroundColor": "#1B1D22",
   "scalesProperties.fontSize": 12,
+  "scalesProperties.textColor": "#FFFFFF",
 
-  "volumePane.volumeUpColor": "#FF0000",
-  "volumePane.volumeDownColor": "#00FF00",
   volumePaneSize: "small",
-});
+  "mainSeriesProperties.priceLineVisible": true,
+  "mainSeriesProperties.crossHairMarkerVisible": true,
+
+  "scalesProperties.scaleMargins": {
+    // Ajustez les marges de l'échelle
+    top: 0.1,
+    bottom: 0.1,
+    right: 100,
+  },
+  "paneProperties.padding": 100,
+};

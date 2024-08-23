@@ -18,3 +18,19 @@
   --tv-color-platform-background: #1b1d22;
   --tv-color-pane-background: #1b1d22;
 }
+
+#tv_chart_container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  background: red;
+}
+
+.chart-legend,
+.chart-right-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50px;
+  background: green;
+}

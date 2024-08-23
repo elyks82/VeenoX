@@ -6,6 +6,7 @@ import { State, WagmiProvider as WagmiCloneProvider } from "wagmi";
 import { config } from "./config";
 
 const queryClient = new QueryClient();
+const brokerID = "orderly";
 
 export default function WagmiProvider({
   children,

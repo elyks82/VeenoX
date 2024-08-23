@@ -43,7 +43,7 @@ export default function RootLayout({
               {children}
               <SpeedInsights />
               <Footer />
-            </Providers>
+            </Providers>{" "}
           </OrderlyProvider>
         </WagmiProvider>
       </body>

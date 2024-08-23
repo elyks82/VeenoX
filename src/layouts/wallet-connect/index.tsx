@@ -91,9 +91,7 @@ export const ConnectWallet = () => {
             },
           });
           setActiveConnector(null);
-        } catch (e) {
-          console.log("error", e);
-        }
+        } catch (e) {}
       };
       setAccount();
     }
