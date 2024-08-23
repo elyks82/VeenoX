@@ -170,7 +170,10 @@ export const Position = ({ asset }: PositionProps) => {
                 (activeSection > 0 && !orders?.length)
               ) {
                 return (
-                  <div className="flex flex-col pb-7 justify-center text-xs text-white items-center absolute h-[300px] left-1/2">
+                  <div
+                    key={i}
+                    className="flex flex-col pb-7 justify-center text-xs text-white items-center absolute h-[300px] left-1/2"
+                  >
                     <Image
                       src="/empty/no-result.svg"
                       height={50}
