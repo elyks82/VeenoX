@@ -195,7 +195,7 @@ export const Position = ({ asset }: PositionProps) => {
   );
 };
 
-const renderCommonCells = (trade) => (
+const renderCommonCells = (trade: any) => (
   <>
     <td className={cn(tdStyle, "text-start pl-5")}>
       <div className="h-full w-full flex items-center">
@@ -216,7 +216,7 @@ const renderCommonCells = (trade) => (
 );
 
 const renderAdditionalCells = (
-  trade,
+  trade: any,
   section: Sections,
   closeTrade: Function
 ) => {
@@ -295,7 +295,7 @@ const renderAdditionalCells = (
         <td className={cn(tdStyle, "")}>{trade.settle_price}</td>
         <td className={cn(tdStyle, "pr-5")}>
           <button
-            onClick={closeTrade}
+            onClick={closeTrade as any}
             className="h-[30px] w-fit px-2 text-xs text-white bg-terciary border-borderColor-DARK rounded"
           >
             Close

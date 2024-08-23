@@ -36,7 +36,7 @@ type Inputs = {
 };
 
 const defaultValues: Inputs = {
-  direction: "BUY",
+  direction: "BUY" as any,
   type: "MARKET",
   triggerPrice: undefined,
   price: undefined,
