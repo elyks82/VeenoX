@@ -104,7 +104,7 @@ export const Position = ({ asset }: PositionProps) => {
   console.log("stream", data, orders);
   console.log("ActiveSection", activeSection);
 
-  const filterSide = (entry) => {
+  const filterSide = (entry: any) => {
     if (activeSection === 1)
       return entry?.total_executed_quantity !== entry?.quantity;
     return true;
