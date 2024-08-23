@@ -110,6 +110,13 @@ export const Position = ({ asset }: PositionProps) => {
         </div>
       </div>
       <div className="p-2.5 flex items-center gap-5">
+        {/* <p>unsettledPnL: {data?.aggregated.unsettledPnL}</p> */}
+        <div>
+          <p className="text-xs text-font-60 mb-[3px]">Notional</p>
+          <p className="text-base text-white font-medium">
+            {getFormattedAmount(data?.aggregated.notional)}
+          </p>
+        </div>
         <div>
           <p className="text-xs text-font-60 mb-[3px]">Unreal. PnL</p>
           <p
@@ -123,14 +130,6 @@ export const Position = ({ asset }: PositionProps) => {
           >
             {getFormattedAmount(data?.aggregated.unrealPnL)} (
             {getTokenPercentage(data?.aggregated.unrealPnlROI)}%)
-          </p>
-        </div>
-
-        {/* <p>unsettledPnL: {data?.aggregated.unsettledPnL}</p> */}
-        <div>
-          <p className="text-xs text-font-60 mb-[3px]">Notional</p>
-          <p className="text-base text-white font-medium">
-            {getFormattedAmount(data?.aggregated.notional)}
           </p>
         </div>
       </div>
@@ -205,7 +204,11 @@ const renderCommonCells = (trade) => (
   </>
 );
 
-const renderAdditionalCells = (trade, section, closeTrade) => {
+const renderAdditionalCells = (
+  trade,
+  section: Sections,
+  closeTrade: Function
+) => {
   if (section === Sections.FILLED) {
     return (
       <>

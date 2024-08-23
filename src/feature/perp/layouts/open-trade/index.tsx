@@ -5,9 +5,10 @@ import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
 import { formatQuantity, getFormattedAmount } from "@/utils/misc";
 import {
+  useCollateral,
   useOrderEntry,
-  useOrderStream,
   useAccount as useOrderlyAccount,
+  usePositionStream,
   useSymbolPriceRange,
   useSymbolsInfo,
 } from "@orderly.network/hooks";
@@ -53,10 +54,28 @@ export const OpenTrade = ({
   const { state } = useOrderlyAccount();
   const { setIsEnableTradingModalOpen, setIsWalletConnectorOpen } =
     useGeneralContext();
+  const {
+    totalCollateral,
+    freeCollateral: freeCollat,
+    totalValue,
+    availableBalance,
+    unsettledPnL,
+    positions,
+    accountInfo,
+  } = useCollateral({
+    dp: 2,
+  });
+
+  console.log("totalValue", totalValue);
+  console.log("availableBalance", availableBalance);
+  console.log("freeCollat", freeCollat);
+  console.log("totalCollateral", totalCollateral);
+  console.log("unsettledPnL", unsettledPnL);
+  console.log("positions", positions);
+  console.log("accountInfo", accountInfo);
   // const { data: markPrices }: { data: Record<string, number> } =
   //   useMarkPricesStream();
   // console.log("markPrices");
-
   const [values, setValues] = useState(defaultValues);
   const {
     freeCollateral,
@@ -76,16 +95,7 @@ export const OpenTrade = ({
     { watchOrderbook: true }
   );
 
-  const [orders, { cancelOrder }] = useOrderStream({ symbol: asset.symbol });
   console.log("estLiqPrice", estLiqPrice, estLiqPrice);
-  const onCancel = async (orderId: number) => {
-    try {
-      const res = await cancelOrder("" as any);
-      console.log("res", res);
-    } catch (e) {
-      console.log("HERRRE", e);
-    }
-  };
 
   // const isAlgoOrder = values?.algo_order_id !== undefined;
 
@@ -132,21 +142,15 @@ export const OpenTrade = ({
     if (isValid) {
       try {
         const val = getInput(values, asset.symbol, currentAsset.base_tick);
-
-        console.log("newValue", val);
-        console.log("valvalvalvalval", val);
-        const test = await onSubmit(val);
-        console.log("After onSubmit", test);
+        await onSubmit(val);
+        triggerAlert("Success", "Order has been executed.");
       } catch (err) {
-        console.error(`Unhandled error in "submitForm":`, err);
+        triggerAlert("Error", "Error during executing the order.");
       } finally {
-        console.log("final");
         setValues(defaultValues);
       }
     }
   };
-  console.log("order", orders);
-  const onCloseOrder = () => {};
 
   const getStyleFromType = () => {
     return values.direction === "Buy"
@@ -229,6 +233,8 @@ export const OpenTrade = ({
     const formatted = asset.symbol.split("_")[1];
     return formatted;
   };
+
+  const [data, proxy] = usePositionStream();
 
   // useEffect(() => {
   //   if (values.type === "Market")
@@ -322,7 +328,7 @@ export const OpenTrade = ({
           <div className="flex items-center w-full justify-between mt-4">
             <p className="text-xs text-font-60">Available to Trade</p>
             <p className="text-xs text-white font-medium">
-              {getFormattedAmount(holding)} USDC
+              {getFormattedAmount(availableBalance)} USDC
             </p>
           </div>
 
@@ -497,14 +503,13 @@ export const OpenTrade = ({
                 <p className="text-xs text-font-60 mb-[3px]">
                   Total value (USDC)
                 </p>
-                <p className="text-base text-white font-medium">
-                  {getFormattedAmount(holding)}
-                </p>
+                <p className="text-base text-white font-medium">{totalValue}</p>
               </div>
               <div>
                 <p className="text-xs text-font-60 mb-1">Unreal PnL (USDC)</p>
                 <p className="text-sm text-white font-medium text-end">
-                  0.00 (0.00%)
+                  {data?.aggregated.unrealPnL} ({data?.aggregated.unrealPnLROI}
+                  %)
                 </p>
               </div>
             </div>
@@ -513,7 +518,17 @@ export const OpenTrade = ({
                 <p className="text-xs text-font-60 mb-1">
                   Unsettled PnL (USDC)
                 </p>
-                <p className="text-sm text-white font-medium">0.00</p>
+                <p
+                  className={`text-sm font-medium ${
+                    unsettledPnL > 0
+                      ? "text-green"
+                      : unsettledPnL < 0
+                      ? "text-red"
+                      : "text-white"
+                  }`}
+                >
+                  {unsettledPnL}{" "}
+                </p>
               </div>
               <button className="flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white">
                 <span>Settle PnL</span>
