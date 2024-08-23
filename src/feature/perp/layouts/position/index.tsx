@@ -8,6 +8,7 @@ import {
   getTokenPercentage,
 } from "@/utils/misc";
 import {
+  useCollateral,
   useOrderEntry,
   useOrderStream,
   usePositionStream,
@@ -40,7 +41,18 @@ export const Position = ({ asset }: PositionProps) => {
   }>({ width: "20%", left: "0%" });
   const [data, proxy, state] = usePositionStream();
   const [orders, { cancelOrder }] = useOrderStream({ symbol: asset.symbol });
-
+  const {
+    totalCollateral,
+    freeCollateral: freeCollat,
+    totalValue,
+    availableBalance,
+    unsettledPnL,
+    positions,
+    accountInfo,
+  } = useCollateral({
+    dp: 2,
+  });
+  console.log("positions", positions);
   useEffect(() => {
     const updateUnderline = () => {
       const button = buttonRefs.current[activeSection];
@@ -61,20 +73,23 @@ export const Position = ({ asset }: PositionProps) => {
   const { onSubmit } = useOrderEntry(
     {
       symbol: asset.symbol,
-      side: "SELL" as any,
+      side:
+        (data?.rows?.[0]?.position_qty as number) >= 0
+          ? "SELL"
+          : ("BUY" as any),
       order_type: "MARKET" as any,
       order_quantity: data.rows?.[0]?.position_qty,
     },
     { watchOrderbook: true }
   );
 
-  const closeTrade = async () => {
+  const closeTrade = async (i: number) => {
     const cancelOrder = {
       symbol: asset.symbol,
-      side: "SELL",
+      side: (data?.rows?.[0]?.position_qty as number) >= 0 ? "SELL" : "BUY",
       order_type: "MARKET",
       order_price: undefined,
-      order_quantity: data.rows?.[0].position_qty,
+      order_quantity: Math.abs(data.rows?.[0].position_qty as number),
       trigger_price: undefined,
       reduce_only: true,
     };
@@ -187,7 +202,7 @@ export const Position = ({ asset }: PositionProps) => {
               return (
                 <tr key={i}>
                   {renderCommonCells(order)}
-                  {renderAdditionalCells(order, activeSection, closeTrade)}
+                  {renderAdditionalCells(order, activeSection, closeTrade, i)}
                 </tr>
               );
             })}
@@ -221,7 +236,8 @@ const renderCommonCells = (trade: any) => (
 const renderAdditionalCells = (
   trade: any,
   section: Sections,
-  closeTrade: Function
+  closeTrade: Function,
+  i: number
 ) => {
   if (section === Sections.FILLED) {
     return (
@@ -298,7 +314,7 @@ const renderAdditionalCells = (
         <td className={cn(tdStyle, "")}>{trade.settle_price}</td>
         <td className={cn(tdStyle, "pr-5")}>
           <button
-            onClick={closeTrade as any}
+            onClick={() => closeTrade(i)}
             className="h-[30px] w-fit px-2 text-xs text-white bg-terciary border-borderColor-DARK rounded"
           >
             Close
