@@ -12,7 +12,7 @@ import {
   useSymbolPriceRange,
   useSymbolsInfo,
 } from "@orderly.network/hooks";
-import { API, OrderEntity } from "@orderly.network/types";
+import { API, OrderEntity, OrderSide } from "@orderly.network/types";
 import { useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
@@ -27,7 +27,7 @@ type OpenTradeProps = {
 const marketType = ["Market", "Limit"];
 
 type Inputs = {
-  direction: "Buy" | "Sell";
+  direction: "BUY" | "SELL";
   type: "MARKET" | "LIMIT" | "STOPLIMIT";
   triggerPrice?: string;
   price?: string;
@@ -88,7 +88,7 @@ export const OpenTrade = ({
   } = useOrderEntry(
     {
       symbol: asset.symbol,
-      side: values.direction === "Buy" ? "BUY" : ("SELL" as any),
+      side: values.direction as OrderSide,
       order_type: values.type as any,
       order_quantity: values.quantity,
     },
@@ -101,7 +101,7 @@ export const OpenTrade = ({
 
   const rangeInfo = useSymbolPriceRange(
     asset.symbol,
-    values.direction === "Buy" ? "BUY" : "SELL",
+    values.direction,
     undefined
   );
 
@@ -138,6 +138,7 @@ export const OpenTrade = ({
       validator,
       currentAsset.base_tick
     );
+    if (errors) triggerAlert("Error", errors?.total?.message);
     const isValid = !Object.keys(errors)?.length;
     if (isValid) {
       try {
@@ -153,7 +154,7 @@ export const OpenTrade = ({
   };
 
   const getStyleFromType = () => {
-    return values.direction === "Buy"
+    return values.direction === "BUY"
       ? "left-[3px] bg-green"
       : "left-calc-slide-long bg-red";
   };
@@ -194,7 +195,7 @@ export const OpenTrade = ({
         color: "bg-base_color",
       };
     else if (state.status > 4) {
-      if (values.direction === "Buy")
+      if (values.direction === "BUY")
         return {
           title: "Buy / Long",
           color: "bg-green",
@@ -242,6 +243,7 @@ export const OpenTrade = ({
   // }, [values.type]);
   const [open, setOpen] = useState(false);
   const [symbol, setSymbol] = useState<API.Symbol>();
+  console.log(values);
   return (
     <section className="h-full w-full text-white">
       {/* <input
@@ -310,13 +312,13 @@ export const OpenTrade = ({
             <div className="flex items-center p-0.5 sm:p-[3px] relative w-full bg-terciary border border-borderColor-DARK rounded">
               <button
                 className="w-1/2 h-[28px] sm:h-[34px] text-white rounded-l text-xs sm:text-[13px] z-10"
-                onClick={() => handleValueChange("direction", "Buy")}
+                onClick={() => handleValueChange("direction", "BUY")}
               >
                 Buy
               </button>
               <button
                 className="w-1/2 z-10 h-[28px] sm:h-[34px] text-white rounded-r text-xs sm:text-[13px]"
-                onClick={() => handleValueChange("direction", "Sell")}
+                onClick={() => handleValueChange("direction", "SELL")}
               >
                 Sell
               </button>
@@ -383,7 +385,7 @@ export const OpenTrade = ({
                   quantity: percentageToValue(value[0]) as never,
                 }));
               }}
-              isBuy={values.direction === "Buy"}
+              isBuy={values.direction === "BUY"}
             />
             <div className="w-[57px] px-2 flex items-center justify-center ml-4 h-fit bg-terciary border border-borderColor-DARK rounded">
               <input
@@ -559,9 +561,9 @@ function getInput(
 ): OrderEntity {
   return {
     symbol,
-    side: data.direction === "Buy" ? "BUY" : ("SELL" as any),
+    side: data.direction as OrderSide,
     order_type: data.type.toUpperCase() as any,
-    order_price: data.price,
+    order_price: Number(data.price),
     order_quantity: formatQuantity(Number(data.quantity), base_tick),
     trigger_price: data.triggerPrice,
     reduce_only: data.reduce_only,
