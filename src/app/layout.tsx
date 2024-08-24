@@ -1,20 +1,20 @@
 import { Footer } from "@/layouts/footer";
 import { Header } from "@/layouts/header";
-import { OrderlyProvider } from "@/lib/orderly";
 import { config } from "@/lib/wallet-connect/config";
 import WagmiProvider from "@/lib/wallet-connect/provider";
 import { Providers } from "@/provider/wrapper";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
 import { headers } from "next/headers";
 import "react-toastify/dist/ReactToastify.css";
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
 
-// const OrderlyContainer = dynamic(() => import("./common/OrderlyProvider"), {
-//   ssr: false,
-// });
+const OrderlyProvider = dynamic(() => import("../lib/orderly/"), {
+  ssr: false,
+});
 
 const inter = Inter({
   variable: "--font-inter",
