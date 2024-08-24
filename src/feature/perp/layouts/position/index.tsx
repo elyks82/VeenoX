@@ -52,7 +52,6 @@ export const Position = ({ asset }: PositionProps) => {
   } = useCollateral({
     dp: 2,
   });
-  console.log("positions", positions);
   useEffect(() => {
     const updateUnderline = () => {
       const button = buttonRefs.current[activeSection];
@@ -83,7 +82,7 @@ export const Position = ({ asset }: PositionProps) => {
     { watchOrderbook: true }
   );
 
-  const closeTrade = async (i: number) => {
+  const closeTrade = async () => {
     const cancelOrder = {
       symbol: asset.symbol,
       side: (data?.rows?.[0]?.position_qty as number) >= 0 ? "SELL" : "BUY",
@@ -95,17 +94,23 @@ export const Position = ({ asset }: PositionProps) => {
     };
     try {
       await onSubmit(cancelOrder as any);
-      triggerAlert("Success", "Trade is successfully closed");
+      triggerAlert("Success", "Position is successfully closed");
     } catch (e) {
       console.log("e", e);
     }
   };
 
-  console.log("stream", data, orders);
+  const closePendingOrder = async (id: number) => {
+    await cancelOrder(id, asset?.symbol);
+    triggerAlert("Success", "Pending order successfully closed");
+  };
 
   const filterSide = (entry: any) => {
     if (activeSection === 1)
-      return entry?.total_executed_quantity !== entry?.quantity;
+      return (
+        entry?.total_executed_quantity !== entry?.quantity &&
+        entry.status !== "CANCELLED"
+      );
     return true;
   };
 
@@ -183,7 +188,9 @@ export const Position = ({ asset }: PositionProps) => {
               ? (data?.rows?.length as number) > 0
                 ? data.rows
                 : Array.from({ length: 1 })
-              : orders?.filter(filterSide)
+              : orders
+                  ?.filter(filterSide)
+                  ?.sort((a, b) => b.updated_time - a.updated_time)
             )?.map((order, i) => {
               if (
                 (activeSection === 0 && !data?.rows?.length) ||
@@ -208,7 +215,13 @@ export const Position = ({ asset }: PositionProps) => {
               return (
                 <tr key={i}>
                   {renderCommonCells(order)}
-                  {renderAdditionalCells(order, activeSection, closeTrade, i)}
+                  {renderAdditionalCells(
+                    order,
+                    activeSection,
+                    closeTrade,
+                    i,
+                    closePendingOrder
+                  )}
                 </tr>
               );
             })}
@@ -243,7 +256,8 @@ const renderAdditionalCells = (
   trade: any,
   section: Sections,
   closeTrade: Function,
-  i: number
+  i: number,
+  closePendingOrder: Function
 ) => {
   if (section === Sections.FILLED) {
     return (
@@ -318,6 +332,14 @@ const renderAdditionalCells = (
         <td className={tdStyle}>{trade?.reduce_only ? "Yes" : "No"}</td>
         <td className={cn(tdStyle, "pr-5")}>
           {getFormattedDate(trade?.created_time)}
+        </td>
+        <td className={cn(tdStyle, "pr-5")}>
+          <button
+            onClick={() => closePendingOrder(trade.order_id)}
+            className="h-[30px] w-fit px-2 text-xs text-white bg-terciary border-borderColor-DARK rounded"
+          >
+            Close
+          </button>
         </td>
       </>
     );

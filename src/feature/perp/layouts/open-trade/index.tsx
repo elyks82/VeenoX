@@ -35,6 +35,11 @@ type Inputs = {
   reduce_only: boolean;
 };
 
+type ButtonStatusType = {
+  title: string;
+  color: string;
+};
+
 const defaultValues: Inputs = {
   direction: "BUY" as any,
   type: "MARKET",
@@ -77,7 +82,11 @@ export const OpenTrade = ({
   //   useMarkPricesStream();
   // console.log("markPrices");
   const [values, setValues] = useState(defaultValues);
-  const [inputErrors, setInputErrors] = useState([false, false, false]);
+  const [inputErrors, setInputErrors] = useState({
+    input_quantity: false,
+    input_price_max: false,
+    input_price_min: false,
+  });
   const {
     freeCollateral,
     markPrice,
@@ -96,7 +105,7 @@ export const OpenTrade = ({
     { watchOrderbook: true }
   );
 
-  console.log("estLiqPrice", estLiqPrice, maxQty);
+  console.log("estLiqPrice", estLiqPrice, maxQty, markPrice);
 
   // const isAlgoOrder = values?.algo_order_id !== undefined;
 
@@ -118,21 +127,9 @@ export const OpenTrade = ({
   const currentAsset = symbols.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
-    if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) {
-      triggerAlert(
-        "Warning",
-        `Price can not be greater than ${rangeInfo.max} USDC.`
-      );
-      return;
-    }
+    if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
+    if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
 
-    if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) {
-      triggerAlert(
-        "Warning",
-        `Price can not be less than ${rangeInfo.min} USDC.`
-      );
-      return;
-    }
     const errors = await getValidationErrors(
       values,
       asset.symbol,
@@ -174,13 +171,23 @@ export const OpenTrade = ({
     else if (state.status === 2 || state.status === 4)
       setIsEnableTradingModalOpen(true);
     else {
+      if (values.type === "LIMIT") {
+        if (Number(values.price) > (rangeInfo?.max as number)) {
+          setInputErrors((prev) => ({
+            ...prev,
+            input_price_max: true,
+          }));
+          return;
+        } else if (Number(values.price) < (rangeInfo?.min as number)) {
+          setInputErrors((prev) => ({
+            ...prev,
+            input_price_min: true,
+          }));
+          return;
+        }
+      }
       submitForm();
     }
-  };
-
-  type ButtonStatusType = {
-    title: string;
-    color: string;
   };
 
   const getButtonStatus = (): ButtonStatusType => {
@@ -242,6 +249,14 @@ export const OpenTrade = ({
   const [open, setOpen] = useState(false);
   const [symbol, setSymbol] = useState<API.Symbol>();
   const [sliderValue, setSliderValue] = useState(0);
+
+  const handleInputErrors = (boolean: boolean, name: string) => {
+    setInputErrors((prev) => ({
+      ...prev,
+      [name]: boolean,
+    }));
+  };
+
   return (
     <section className="h-full w-full text-white">
       {isMobile ? null : <Leverage />}
@@ -340,20 +355,52 @@ export const OpenTrade = ({
             </div>
           ) : null}
           {values.type !== "MARKET" ? (
-            <div className="flex items-center h-[35px] bg-terciary justify-between w-full border border-borderColor-DARK rounded mt-2">
-              <input
-                name="size"
-                className="w-full pl-2 text-white text-sm h-full"
-                placeholder="Price"
-                type="number"
-                onChange={(e) => handleValueChange("price", e.target.value)}
-              />
-              <p className="px-2 text-white text-sm">USD</p>
-            </div>
+            <>
+              <div
+                className={`flex items-center h-[35px] bg-terciary justify-between w-full border ${
+                  inputErrors.input_price_max || inputErrors.input_price_min
+                    ? "border border-red"
+                    : "border-borderColor-DARK"
+                } rounded mt-2 transition-all duration-100 ease-in-out`}
+              >
+                <input
+                  name="size"
+                  className="w-full pl-2 text-white text-sm h-full"
+                  placeholder="Price"
+                  type="number"
+                  onChange={(e) => {
+                    handleInputErrors(false, "input_price_max");
+                    handleInputErrors(false, "input_price_min");
+                    handleValueChange("price", e.target.value);
+                  }}
+                />
+
+                <p className="px-2 text-white text-sm">USD</p>
+              </div>
+              <p
+                className={`text-red w-full text-xs mt-1 mb-1.5 pointer-events-none ${
+                  inputErrors.input_price_max || inputErrors.input_price_min
+                    ? "opacity-100 static"
+                    : "opacity-0 absolute"
+                } transition-all duration-100 ease-in-out`}
+              >
+                {(Number(values.price) as number) >
+                (rangeInfo?.max as number) ? (
+                  <>
+                    Price can&apos;t exceed {getFormattedAmount(rangeInfo?.max)}
+                  </>
+                ) : (
+                  <>
+                    Price can&apos;t be lower than{" "}
+                    {getFormattedAmount(rangeInfo?.min)}
+                  </>
+                )}
+              </p>
+            </>
           ) : null}
           <div
             className={`flex items-center h-[35px] bg-terciary justify-between ${
-              inputErrors?.includes(true)
+              inputErrors.input_quantity
                 ? "border border-red"
                 : "border-borderColor-DARK"
             } w-full border  rounded mt-2`}
@@ -364,16 +411,16 @@ export const OpenTrade = ({
               placeholder="Quantity"
               onChange={(e) => {
                 if (e.target.value === "") {
-                  setInputErrors([false, false, false]);
+                  handleInputErrors(false, "input_quantity");
                   handleValueChange("quantity", "");
                 } else if (
                   Number(e.target.value) > convertToToken(freeCollateral)
                 ) {
                   handleValueChange("quantity", e.target.value);
-                  setInputErrors([true, false, false]);
+                  handleInputErrors(true, "input_quantity");
                 } else {
                   handleValueChange("quantity", e.target.value);
-                  setInputErrors([false, false, false]);
+                  handleInputErrors(false, "input_quantity");
                 }
               }}
               type="number"
@@ -384,7 +431,7 @@ export const OpenTrade = ({
           </div>
           <p
             className={`text-red w-full text-xs mt-1 mb-1.5 pointer-events-none ${
-              inputErrors.includes(true)
+              inputErrors.input_quantity
                 ? "opacity-100 static"
                 : "opacity-0 absolute"
             }`}
@@ -400,7 +447,7 @@ export const OpenTrade = ({
               step={1}
               onValueChange={(value) => {
                 setSliderValue(value[0]);
-                setInputErrors([false, false, false]);
+                handleInputErrors(false, "input_quantity");
                 setValues((prev) => ({
                   ...prev,
                   quantity: percentageToValue(value[0]) as never,
