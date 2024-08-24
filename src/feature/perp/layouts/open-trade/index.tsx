@@ -388,10 +388,7 @@ export const OpenTrade = ({
                 (rangeInfo?.max as number) ? (
                   <>Price can&apos;t exceed {rangeInfo?.max}</>
                 ) : (
-                  <>
-                    Price can&apos;t be lower than
-                    {rangeInfo?.min}
-                  </>
+                  <>Price can&apos;t be lower than {rangeInfo?.min}</>
                 )}
               </p>
             </>
