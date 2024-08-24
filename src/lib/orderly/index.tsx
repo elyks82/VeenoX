@@ -3,7 +3,11 @@ import { OrderlyConfigProvider } from "@orderly.network/hooks";
 
 const brokerId = "orderly";
 
-export default function OrderlyProvider({ children }) {
+type OrderlyProviderProps = {
+  children: React.ReactNode;
+};
+
+export default function OrderlyProvider({ children }: OrderlyProviderProps) {
   return (
     <OrderlyConfigProvider brokerId={brokerId} networkId="mainnet">
       {children}
