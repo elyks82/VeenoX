@@ -23,6 +23,11 @@ export const Home = () => {
       }}
       ref={ref}
     >
+      <div className="w-full h-[40px] border-b border-borderColor flex items-center justify-center">
+        <p className="text-white text-sm">
+          You are on a Preview version, The current design is temporary.
+        </p>
+      </div>
       <div className="h-fit pt-[10%] pb-[10%] relative flex items-center w-[90%] max-w-[1350px] mx-auto">
         <div className="h-full w-full mx-auto flex items-center z-10">
           <div className="w-full flex items-center">
