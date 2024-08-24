@@ -105,7 +105,7 @@ export const OpenTrade = ({
     { watchOrderbook: true }
   );
 
-  console.log("estLiqPrice", estLiqPrice, maxQty);
+  console.log("estLiqPrice", estLiqPrice, maxQty, markPrice);
 
   // const isAlgoOrder = values?.algo_order_id !== undefined;
 
@@ -361,7 +361,7 @@ export const OpenTrade = ({
                   inputErrors.input_price_max || inputErrors.input_price_min
                     ? "border border-red"
                     : "border-borderColor-DARK"
-                } rounded mt-2 transition-all duration-150 ease-in-out`}
+                } rounded mt-2 transition-all duration-100 ease-in-out`}
               >
                 <input
                   name="size"
@@ -382,13 +382,18 @@ export const OpenTrade = ({
                   inputErrors.input_price_max || inputErrors.input_price_min
                     ? "opacity-100 static"
                     : "opacity-0 absolute"
-                } transition-all duration-150 ease-in-out`}
+                } transition-all duration-100 ease-in-out`}
               >
                 {(Number(values.price) as number) >
                 (rangeInfo?.max as number) ? (
-                  <>Price can&apos;t exceed {rangeInfo?.max}</>
+                  <>
+                    Price can&apos;t exceed {getFormattedAmount(rangeInfo?.max)}
+                  </>
                 ) : (
-                  <>Price can&apos;t be lower than {rangeInfo?.min}</>
+                  <>
+                    Price can&apos;t be lower than{" "}
+                    {getFormattedAmount(rangeInfo?.min)}
+                  </>
                 )}
               </p>
             </>
