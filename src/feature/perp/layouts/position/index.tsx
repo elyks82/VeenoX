@@ -102,7 +102,6 @@ export const Position = ({ asset }: PositionProps) => {
   };
 
   console.log("stream", data, orders);
-  console.log("ActiveSection", activeSection);
 
   const filterSide = (entry: any) => {
     if (activeSection === 1)
