@@ -159,10 +159,12 @@ export const Home = () => {
                   duration: 0.3,
                   delay: 1.5,
                 }}
-                className="mt-[50px] rounded px-5 py-3 text-white text-lg mr-auto cursor-pointer bg-base_color"
+                className="mt-[50px] rounded  text-white text-lg mr-auto cursor-pointer bg-base_color"
               >
                 <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
-                  Access preview
+                  <div className="flex items-center justify-center w-full h-full px-5 py-3">
+                    Access preview{" "}
+                  </div>
                 </Link>
               </motion.button>
             </motion.div>

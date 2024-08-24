@@ -77,6 +77,7 @@ export const OpenTrade = ({
   //   useMarkPricesStream();
   // console.log("markPrices");
   const [values, setValues] = useState(defaultValues);
+  const [inputErrors, setInputErrors] = useState([false, false, false]);
   const {
     freeCollateral,
     markPrice,
@@ -95,7 +96,7 @@ export const OpenTrade = ({
     { watchOrderbook: true }
   );
 
-  console.log("estLiqPrice", estLiqPrice, estLiqPrice);
+  console.log("estLiqPrice", estLiqPrice, maxQty);
 
   // const isAlgoOrder = values?.algo_order_id !== undefined;
 
@@ -173,7 +174,6 @@ export const OpenTrade = ({
     else if (state.status === 2 || state.status === 4)
       setIsEnableTradingModalOpen(true);
     else {
-      console.log("I CALL SUBMIT FUNCTION");
       submitForm();
     }
   };
@@ -211,17 +211,11 @@ export const OpenTrade = ({
       };
   };
   const buttonStatus = getButtonStatus();
-  const handleValueChange = (name: string, value: string) => {
-    setValues((prev) => ({ ...prev, [name]: value === "" ? "" : value }));
-  };
 
   const convertToToken = (value: number) => {
     const price = asset.mark_price;
     return value / price;
   };
-  function calculateMaxPercentage(value: number) {
-    return (value / 100) * convertToToken(freeCollateral);
-  }
   function percentageToValue(percentage: number) {
     return (percentage / 100) * convertToToken(freeCollateral);
   }
@@ -234,6 +228,10 @@ export const OpenTrade = ({
     const formatted = asset.symbol.split("_")[1];
     return formatted;
   };
+  const handleValueChange = (name: string, value: string) => {
+    setSliderValue(toPercentage(Number(value)));
+    setValues((prev) => ({ ...prev, [name]: value === "" ? "" : value }));
+  };
 
   const [data, proxy] = usePositionStream();
 
@@ -243,16 +241,9 @@ export const OpenTrade = ({
   // }, [values.type]);
   const [open, setOpen] = useState(false);
   const [symbol, setSymbol] = useState<API.Symbol>();
-  console.log(values);
+  const [sliderValue, setSliderValue] = useState(0);
   return (
     <section className="h-full w-full text-white">
-      {/* <input
-        className="bg-red"
-        onChange={(e) => {
-          setValues((prev) => ({ ...prev, quantity: e.target.value }));
-        }}
-      />
-      <button onClick={() => submitForm()}>CLCKC</button> */}
       {isMobile ? null : <Leverage />}
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
@@ -360,26 +351,56 @@ export const OpenTrade = ({
               <p className="px-2 text-white text-sm">USD</p>
             </div>
           ) : null}
-          <div className="flex items-center h-[35px] bg-terciary justify-between w-full border border-borderColor-DARK rounded mt-2">
+          <div
+            className={`flex items-center h-[35px] bg-terciary justify-between ${
+              inputErrors?.includes(true)
+                ? "border border-red"
+                : "border-borderColor-DARK"
+            } w-full border  rounded mt-2`}
+          >
             <input
               name="quantity"
-              className="w-full pl-2 text-white text-sm h-full"
+              className={`w-full pl-2 text-white text-sm h-full`}
               placeholder="Quantity"
               onChange={(e) => {
-                if (e.target.value === "") handleValueChange("quantity", "");
-                else handleValueChange("quantity", e.target.value);
+                if (e.target.value === "") {
+                  setInputErrors([false, false, false]);
+                  handleValueChange("quantity", "");
+                } else if (
+                  Number(e.target.value) > convertToToken(freeCollateral)
+                ) {
+                  handleValueChange("quantity", e.target.value);
+                  setInputErrors([true, false, false]);
+                } else {
+                  handleValueChange("quantity", e.target.value);
+                  setInputErrors([false, false, false]);
+                }
               }}
               type="number"
               value={getFormattedAmount(values.quantity).toString()}
             />
+
             <p className="px-2 text-white text-sm">{getSymbolForPair()}</p>
           </div>
+          <p
+            className={`text-red w-full text-xs mt-1 mb-1.5 pointer-events-none ${
+              inputErrors.includes(true)
+                ? "opacity-100 static"
+                : "opacity-0 absolute"
+            }`}
+          >
+            Quantity can&apos;t exceed{" "}
+            {getFormattedAmount(convertToToken(freeCollateral))}{" "}
+            {getSymbolForPair()}
+          </p>
           <div className="mt-2 flex items-center">
             <Slider
-              defaultValue={[calculateMaxPercentage(freeCollateral)]}
+              value={[sliderValue]}
               max={100}
               step={1}
               onValueChange={(value) => {
+                setSliderValue(value[0]);
+                setInputErrors([false, false, false]);
                 setValues((prev) => ({
                   ...prev,
                   quantity: percentageToValue(value[0]) as never,

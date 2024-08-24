@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";
 import { TfiWallet } from "react-icons/tfi";
-import { useAccount, useConnect, useConnections } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { getActiveStep } from "./constant";
 
 export enum AccountStatusEnum {
@@ -29,14 +29,14 @@ export enum AccountStatusEnum {
 export const ConnectWallet = () => {
   const [isCopied, setIsCopied] = useState(false);
   const { account } = useOrderlyAccount();
-  const { address, isDisconnected, isConnecting, chainId } = useAccount();
+  const { address, isDisconnected, isConnecting, chainId, connector } =
+    useAccount();
   const [isActive, setIsActive] = useState(0);
   const { connect, connectors, isPending, isError, isSuccess, data } =
     useConnect();
   const { isWalletConnectorOpen, setIsWalletConnectorOpen } =
     useGeneralContext();
   const [activeConnector, setActiveConnector] = useState<string | null>(null);
-  const connections = useConnections();
 
   //  useEffect(() => {
   //    if () return;
@@ -56,25 +56,23 @@ export const ConnectWallet = () => {
 
   const getAccount = async () => {
     if (!address) return;
-    const connectorName = connections?.[0]?.connector?.name;
-    const findSame = connectors.find((entry) => entry.name === connectorName);
     try {
-      const provider = await findSame?.getProvider();
+      const provider = await connector?.getProvider();
       await account.setAddress(address, {
         provider,
         chain: {
           id: chainId as number,
         },
         wallet: {
-          name: findSame?.name as string,
+          name: connector?.name as string,
         },
       });
     } catch (error) {}
   };
 
   useEffect(() => {
-    if (address) getAccount();
-  }, [address]);
+    getAccount();
+  }, [address, account]);
 
   useEffect(() => {
     if (isSuccess && address) {
