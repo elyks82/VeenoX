@@ -52,7 +52,6 @@ export const Position = ({ asset }: PositionProps) => {
   } = useCollateral({
     dp: 2,
   });
-  console.log("positions", positions);
   useEffect(() => {
     const updateUnderline = () => {
       const button = buttonRefs.current[activeSection];
@@ -83,7 +82,7 @@ export const Position = ({ asset }: PositionProps) => {
     { watchOrderbook: true }
   );
 
-  const closeTrade = async (i: number) => {
+  const closeTrade = async () => {
     const cancelOrder = {
       symbol: asset.symbol,
       side: (data?.rows?.[0]?.position_qty as number) >= 0 ? "SELL" : "BUY",
@@ -102,11 +101,9 @@ export const Position = ({ asset }: PositionProps) => {
   };
 
   const closePendingOrder = async (id: number) => {
-    const res = await cancelOrder(id, asset?.symbol);
+    await cancelOrder(id, asset?.symbol);
     triggerAlert("Success", "Pending order successfully closed");
   };
-
-  console.log("stream", data, orders);
 
   const filterSide = (entry: any) => {
     if (activeSection === 1)

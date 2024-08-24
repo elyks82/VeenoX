@@ -17,18 +17,13 @@ export const Home = () => {
 
   return (
     <div
-      className="flex flex-col w-screen-header"
+      className="flex flex-col"
       style={{
         backgroundImage: "radial-gradient(circle at top, #1b1d22 , #0f0f0f)",
       }}
       ref={ref}
     >
-      <section
-        className="h-calc-full-header flex items-center w-screen-header pl-[10%]"
-        style={{
-          backgroundImage: "radial-gradient(circle at top, #1b1d22 , #0f0f0f)",
-        }}
-      >
+      <section className="h-fit pt-[15%] pb-[10%] relative flex items-center w-screen-header pl-[10%]">
         <motion.img
           initial="initial"
           variants={{
@@ -170,8 +165,9 @@ export const Home = () => {
             </motion.div>
           </div>
         </div>
-      </section>
-      <section className="py-[10vh] flex items-center flex-col w-full bg-[rgba(15,15,15,1)]">
+      </section>{" "}
+      z
+      <section className="py-[10vh] flex items-center flex-col w-full ">
         <div className="flex flex-col w-fit mb-10">
           <motion.h2
             // variants={{
@@ -199,11 +195,10 @@ export const Home = () => {
             & Earn Program
           </h2>
           <p className="text-lg text-font-60 mt-5 max-w-[800px] text-center">
-            This program aim to help users to learn trading. There is a lack of
-            trading knowledge for our users. To solve that we will create a
-            &quot;quizz&quot; where people would have an explicative video to
-            watch and answer some question. If it&quot;s right, user will be
-            rewarded.
+            Learn trading and earn program aim to teach people how to trade,
+            helping them to avoid irreversible loss. This program contain videos
+            made by a proffessional trader explaining each patern. Users will
+            have to try itself get rewarded for it.
           </p>
         </div>
         <Image
