@@ -96,7 +96,7 @@ export const OpenTrade = ({
     { watchOrderbook: true }
   );
 
-  console.log("estLiqPrice", estLiqPrice, estLiqPrice, maxQty);
+  console.log("estLiqPrice", estLiqPrice, maxQty);
 
   // const isAlgoOrder = values?.algo_order_id !== undefined;
 
@@ -216,9 +216,6 @@ export const OpenTrade = ({
     const price = asset.mark_price;
     return value / price;
   };
-  function calculateMaxPercentage(value: number) {
-    return (value / 100) * convertToToken(freeCollateral);
-  }
   function percentageToValue(percentage: number) {
     return (percentage / 100) * convertToToken(freeCollateral);
   }
