@@ -25,7 +25,7 @@ const config: Config = {
         primary: "#2b2f36",
         secondary: "#1B1D22",
         terciary: "#2b2f36e6",
-        base_color: "#2C3E50",
+        base_color: "#836EF9",
         // 006D77
         // 8C7853
         // 34495E

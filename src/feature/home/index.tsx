@@ -167,8 +167,8 @@ export const Home = () => {
         </div>
       </section>{" "}
       z
-      <section className="py-[10vh] flex items-center flex-col w-full ">
-        <div className="flex flex-col w-fit mb-10">
+      <section className="py-[10vh] flex items-center justify-center w-full ">
+        <div className="flex flex-col w-fit">
           <motion.h2
             // variants={{
             //   hidden: {
@@ -184,17 +184,17 @@ export const Home = () => {
             // animate={mainControls}
             // transition={{ duration: 0.3, delay: 0.3 }}
             className="overflow-hidden block relative whitespace-nowrap
-  text-7xl font-bold  mb-2 w-auto  text-white text-center"
+  text-7xl font-bold  mb-2 w-auto  text-white text-start"
           >
             <span className="text-outlined text-black">Learn</span> Trading
           </motion.h2>
           <h2
             className="block relative whitespace-nowrap
-      text-7xl font-bold text-white mb-2 w-auto text-center"
+      text-7xl font-bold text-white mb-2 w-auto text-start"
           >
             & Earn Program
           </h2>
-          <p className="text-lg text-font-60 mt-5 max-w-[800px] text-center">
+          <p className="text-lg text-font-60 mt-5 max-w-[800px] text-start">
             Learn trading and earn program aim to teach people how to trade,
             helping them to avoid irreversible loss. This program contain videos
             made by a proffessional trader explaining each patern. Users will
@@ -206,6 +206,64 @@ export const Home = () => {
           alt={"learn to trade image"}
           height={500}
           width={700}
+        />
+      </section>
+      <section className="py-[10vh] flex items-center justify-center w-full ">
+        <img
+          src="https://s3.eu-central-1.amazonaws.com/tangem.cms/k_61_419d178016.png"
+          alt={"learn to trade image"}
+          height={400}
+          width={600}
+        />
+        <div className="flex w-fit  ml-[5%]">
+          <div className="">
+            <h2
+              className="overflow-hidden block relative whitespace-nowrap
+  text-7xl font-bold  mb-2 w-auto  text-white text-end"
+            >
+              <span className="text-outlined text-black text-end">
+                Lowest fees
+              </span>{" "}
+              <br />
+              across the market
+            </h2>
+
+            <p className="text-lg text-font-60 mt-5 max-w-[800px] text-end">
+              Our platform offers the lowest trading fees among all perpetual
+              decentralized exchanges (DEXs) in the crypto space. By
+              prioritizing cost efficiency, we empower traders to maximize their
+              profits while enjoying a seamless and secure trading experience.
+              With our industry-leading low fees, users can trade with
+              confidence, knowing they’re getting the best value available.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section className="py-[10vh] flex items-center justify-center w-full ">
+        <div className="flex w-fit mb-10  mr-[5%]">
+          <div className="">
+            <h2
+              className="overflow-hidden block relative whitespace-nowrap
+  text-7xl font-bold  mb-2 w-auto  text-white"
+            >
+              <span className="text-outlined text-black">Swap</span> on Monad
+            </h2>
+
+            <p className="text-lg text-font-60 mt-5 max-w-[800px]">
+              Users will have the capability to seamlessly swap any assets
+              available on the Monad chain. This functionality ensures
+              flexibility and convenience, enabling users to exchange a wide
+              variety of digital assets within the ecosystem, enhancing their
+              overall experience and providing greater control over their
+              transactions.
+            </p>
+          </div>
+        </div>
+        <img
+          src="https://www.ballet.com/static/banner_swap-1bb72278fb0ce04e8b09119769c9c491.png"
+          alt={"learn to trade image"}
+          height={400}
+          width={600}
         />
       </section>
     </div>
