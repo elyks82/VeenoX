@@ -1,9 +1,9 @@
+import { useGeneralContext } from "@/context";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/lib/shadcn/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { triggerAlert } from "@/lib/toaster";
@@ -13,10 +13,10 @@ import { IoChevronDown } from "react-icons/io5";
 import { Oval } from "react-loader-spinner";
 
 export const TPSLModal = ({ order }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [activePnlOrOffset, setActivePnlOrOffset] = useState("$");
   const [error, setError] = useState([""]);
   const [loading, setLoading] = useState(false);
+  const { setIsTPSLOpen, isTPSLOpen } = useGeneralContext();
   const [algoOrder, { setValue, submit, errors }] = useTPSLOrder({
     ...order,
   });
@@ -34,12 +34,11 @@ export const TPSLModal = ({ order }) => {
       setLoading(false);
       return;
     } else setError([""]);
-    console.log("yo", errors);
 
     try {
       await submit();
       triggerAlert("Success", `Your TP/SL has been placed`);
-      setIsOpen(false);
+      setIsTPSLOpen(false);
       setLoading(false);
     } catch (error) {
       console.error("Erreur lors de la soumission de l'ordre:", error);
@@ -53,10 +52,10 @@ export const TPSLModal = ({ order }) => {
     try {
       await cancelAllTPSLOrders();
       triggerAlert("Success", "TP/SL has been reset");
-      setIsOpen(false);
+      setIsTPSLOpen(false);
     } catch (e) {
       triggerAlert("Error", "An error happened during cancel tp/sl order");
-      setIsOpen(false);
+      setIsTPSLOpen(false);
     }
   };
 
@@ -64,27 +63,10 @@ export const TPSLModal = ({ order }) => {
     if (error) setError([""]);
     setValue(field, value);
   };
-  console.log("error", error, error?.includes("tp"));
-  //   console.log("algoOrder", Object.entries(errors));
   return (
-    <Dialog open={isOpen}>
-      <DialogTrigger
-      // onClick={() => {
-      //   if (state.status >= 2) setOpen(true);
-      //   else setIsWalletConnectorOpen(true);
-      // }}
-      >
-        <button
-          onClick={() => setIsOpen(true)}
-          className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
-            h-[30px] sm:h-[35px] px-2.5 rounded sm:rounded-md mr-2.5 flex items-center
-        "
-        >
-          Deposit
-        </button>
-      </DialogTrigger>
+    <Dialog open={isTPSLOpen}>
       <DialogContent
-        close={() => setIsOpen(false)}
+        close={() => setIsTPSLOpen(false)}
         className="max-w-[440px] w-[90%] h-auto max-h-auto flex flex-col gap-0"
       >
         <DialogHeader>

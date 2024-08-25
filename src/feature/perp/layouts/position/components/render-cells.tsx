@@ -1,3 +1,4 @@
+import { useGeneralContext } from "@/context";
 import { cn } from "@/utils/cn";
 import {
   formatSymbol,
@@ -8,7 +9,7 @@ import { usePoster } from "@orderly.network/hooks";
 import { useState } from "react";
 import { TPSLModal } from "./tp-sl-modal";
 
-const tdStyle = `text-xs px-2.5 py-4 text-font-80 whitespace-nowrap font-normal border-y border-borderColor text-end`;
+const tdStyle = `text-xs px-2.5 py-4 text-white whitespace-nowrap font-normal border-y border-borderColor text-end`;
 enum Sections {
   POSITION = 0,
   PENDING = 1,
@@ -89,6 +90,7 @@ const renderAdditionalCells = (
   i: number,
   closePendingOrder: Function
 ) => {
+  const { setIsTPSLOpen } = useGeneralContext();
   if (section === Sections.FILLED) {
     return (
       <>
@@ -176,27 +178,71 @@ const renderAdditionalCells = (
   } else if (section === Sections.POSITION) {
     return (
       <>
-        <td className={tdStyle}>{trade.position_qty}</td>
+        <td
+          className={cn(
+            tdStyle,
+            `${
+              trade?.position_qty > 0
+                ? "text-green"
+                : trade?.position_qty < 0
+                ? "text-red"
+                : "text-white"
+            } font-medium`
+          )}
+        >
+          {trade.position_qty}
+        </td>
         <td className={tdStyle}>{trade.average_open_price}</td>
         <td className={tdStyle}>{trade.mark_price}</td>
         <td className={tdStyle}>{trade.est_liq_price}</td>
-        <td className={tdStyle}>{getFormattedAmount(trade.unrealized_pnl)}</td>
+        <td
+          className={cn(
+            tdStyle,
+            `${
+              trade?.unrealized_pnl > 0
+                ? "text-green"
+                : trade?.unrealized_pnl < 0
+                ? "text-red"
+                : "text-white"
+            } font-medium`
+          )}
+        >
+          {getFormattedAmount(trade.unrealized_pnl)}
+        </td>
         <td className={tdStyle}>
-          <div className="flex flex-col w-full h-full">
-            <p>TP: {trade.tp_trigger_price || "--"}</p>
-            <p>SL: {trade.sl_trigger_price || "--"}</p>
+          <div className="flex flex-col w-full h-full font-medium  text-white">
+            <p>
+              <span className="text-green">TP:</span>{" "}
+              {trade.tp_trigger_price || "--"}
+            </p>
+            <p>
+              <span className="text-red">SL:</span>{" "}
+              {trade.sl_trigger_price || "--"}
+            </p>
           </div>
         </td>
         <td className={tdStyle}>{trade.cost_position}</td>
-        <td className={tdStyle}>{trade.mm}</td>
-        <td className={cn(tdStyle, "")}>{trade.settle_price}</td>
+        <td className={tdStyle}>{getFormattedAmount(trade.mm)}</td>
+        <td className={cn(tdStyle, "")}>
+          {getFormattedAmount(trade.settle_price)}
+        </td>
         <td className={cn(tdStyle, "pr-5")}>
-          <button
-            onClick={() => closeTrade(i)}
-            className="h-[30px] w-fit px-2 text-xs text-white bg-terciary border-borderColor-DARK rounded"
-          >
-            Close
-          </button>
+          <div className="w-full h-full justify-end items-center flex">
+            <button
+              onClick={() => setIsTPSLOpen(true)}
+              className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
+            h-[30px] px-2.5 rounded flex items-center
+        "
+            >
+              TP/SL
+            </button>
+            <button
+              onClick={() => closeTrade(i)}
+              className="h-[30px] w-fit px-2.5 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
+            >
+              Close
+            </button>
+          </div>
         </td>
       </>
     );
