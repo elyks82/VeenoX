@@ -203,10 +203,12 @@ export const Home = () => {
               & Earn Program
             </h2>
             <p className="text-lg text-font-60 mt-5 max-w-[600px] text-start">
-              Learn trading and earn program aim to teach people how to trade,
-              helping them to avoid irreversible loss. This program contain
-              videos made by a proffessional trader explaining each patern.
-              Users will have to try itself get rewarded for it.
+              The "Learn Trading and Earn" program addresses the lack of trading
+              knowledge by teaching individuals how to trade effectively and
+              avoid irreversible losses. The program includes instructional
+              videos created by a professional trader that explain each pattern
+              in detail. Participants can practice trading and earn rewards for
+              their efforts.
             </p>
           </div>
           <Image
