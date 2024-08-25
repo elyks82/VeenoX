@@ -37,7 +37,6 @@ export const TPSLModal = ({ order }) => {
     console.log("yo", errors);
 
     try {
-      //   await cancelAllTPSLOrders();
       await submit();
       triggerAlert("Success", `Your TP/SL has been placed`);
       setIsOpen(false);
@@ -50,7 +49,18 @@ export const TPSLModal = ({ order }) => {
     }
   };
 
-  const handleChange = (field, value) => {
+  const handleRemoveTPSL = async (): Promise<void> => {
+    try {
+      await cancelAllTPSLOrders();
+      triggerAlert("Success", "TP/SL has been reset");
+      setIsOpen(false);
+    } catch (e) {
+      triggerAlert("Error", "An error happened during cancel tp/sl order");
+      setIsOpen(false);
+    }
+  };
+
+  const handleChange = (field: string, value: string): void => {
     if (error) setError([""]);
     setValue(field, value);
   };
@@ -225,29 +235,36 @@ export const TPSLModal = ({ order }) => {
         ) : null}
 
         {/* Ajoutez d'autres champs pour TP, SL, etc. */}
-
-        <button
-          className="bg-base_color rounded flex items-center justify-center h-[40px] text-sm text-white mt-5"
-          onClick={handleSubmit}
-        >
-          {loading && (
-            <Oval
-              visible={true}
-              height="18"
-              width="18"
-              color="#FFF"
-              secondaryColor="rgba(255,255,255,0.6)"
-              ariaLabel="oval-loading"
-              strokeWidth={6}
-              strokeWidthSecondary={6}
-              wrapperStyle={{
-                marginRight: "8px",
-              }}
-              wrapperClass=""
-            />
-          )}
-          Create TP & SL Order
-        </button>
+        <div className="flex items-center w-full gap-2.5 mt-5">
+          <button
+            className="bg-base_color w-full rounded flex items-center justify-center h-[40px] text-sm text-white"
+            onClick={handleSubmit}
+          >
+            {loading && (
+              <Oval
+                visible={true}
+                height="18"
+                width="18"
+                color="#FFF"
+                secondaryColor="rgba(255,255,255,0.6)"
+                ariaLabel="oval-loading"
+                strokeWidth={6}
+                strokeWidthSecondary={6}
+                wrapperStyle={{
+                  marginRight: "8px",
+                }}
+                wrapperClass=""
+              />
+            )}
+            Create TP & SL Order
+          </button>
+          <button
+            className="border-base_color w-full border rounded flex items-center justify-center h-[40px] text-sm text-white"
+            onClick={handleRemoveTPSL}
+          >
+            Cancel TP/SL
+          </button>
+        </div>
       </DialogContent>
     </Dialog>
   );
