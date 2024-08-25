@@ -33,6 +33,8 @@ type Inputs = {
   price?: string;
   quantity?: string;
   reduce_only: boolean;
+  tp_trigger_price?: string;
+  sl_trigger_price?: string;
 };
 
 type ButtonStatusType = {
@@ -47,6 +49,8 @@ const defaultValues: Inputs = {
   price: undefined,
   quantity: undefined,
   reduce_only: false,
+  tp_trigger_price: undefined,
+  sl_trigger_price: undefined,
 };
 
 export const OpenTrade = ({
@@ -497,7 +501,7 @@ export const OpenTrade = ({
               ) : null}
             </div>
           </button> */}
-          {/* <button
+          <button
             className="text-xs text-white mt-2 flex items-center justify-between w-full"
             onClick={() => handleBooleanChange("tp_sl")}
           >
@@ -509,7 +513,7 @@ export const OpenTrade = ({
             </div>
           </button>
 
-          {values.tp_sl ? (
+          {values?.tp_sl ? (
             <>
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center h-[35px] bg-terciary w-2/3 border border-borderColor-DARK rounded mt-3">
@@ -554,7 +558,7 @@ export const OpenTrade = ({
                 </div>
               </div>
             </>
-          ) : null} */}
+          ) : null}
         </div>
         <div className={`${isMobile ? "hidden" : "flex"} h-[100px] w-full`} />
         <button
@@ -635,5 +639,7 @@ function getInput(
     order_quantity: formatQuantity(Number(data.quantity), base_tick),
     trigger_price: data.triggerPrice,
     reduce_only: data.reduce_only,
+    tp_trigger_price: data.tp_trigger_price,
+    sl_trigger_price: data.sl_trigger_price,
   };
 }
