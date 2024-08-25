@@ -7,7 +7,7 @@ import {
 } from "@/lib/shadcn/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { triggerAlert } from "@/lib/toaster";
-import { useTPSLOrder } from "@orderly.network/hooks";
+import { useOrderStream, useTPSLOrder } from "@orderly.network/hooks";
 import { useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import { Oval } from "react-loader-spinner";
@@ -16,11 +16,14 @@ export const TPSLModal = ({ order }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activePnlOrOffset, setActivePnlOrOffset] = useState("$");
   const [error, setError] = useState([""]);
-  const [ComputedAlgoOrder, { setValue, submit, errors }] = useTPSLOrder({
+  const [loading, setLoading] = useState(false);
+  const [algoOrder, { setValue, submit, errors }] = useTPSLOrder({
     ...order,
   });
+  const [_, { cancelAllTPSLOrders }] = useOrderStream(order);
 
   const handleSubmit = async () => {
+    setLoading(true);
     if (errors) {
       for (let i = 0; i < Object.entries(errors)?.length; i++) {
         setError((prev) => [
@@ -28,14 +31,22 @@ export const TPSLModal = ({ order }) => {
           Object.entries(errors)?.[i]?.[1]?.message,
         ]);
       }
+      setLoading(false);
       return;
     } else setError([""]);
     console.log("yo", errors);
+
     try {
+      //   await cancelAllTPSLOrders();
       await submit();
       triggerAlert("Success", `Your TP/SL has been placed`);
+      setIsOpen(false);
+      setLoading(false);
     } catch (error) {
       console.error("Erreur lors de la soumission de l'ordre:", error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,7 +55,7 @@ export const TPSLModal = ({ order }) => {
     setValue(field, value);
   };
   console.log("error", error, error?.includes("tp"));
-  //   console.log("ComputedAlgoOrder", Object.entries(errors));
+  //   console.log("algoOrder", Object.entries(errors));
   return (
     <Dialog open={isOpen}>
       <DialogTrigger
@@ -87,7 +98,7 @@ export const TPSLModal = ({ order }) => {
               type="number"
               className="h-full w-full"
               placeholder="TP Price"
-              value={ComputedAlgoOrder.tp_trigger_price}
+              value={algoOrder.tp_trigger_price}
               onChange={(e) => handleChange("tp_trigger_price", e.target.value)}
             />
           </div>
@@ -95,19 +106,17 @@ export const TPSLModal = ({ order }) => {
             <input
               type="number"
               className={`h-full w-full ${
-                Number(ComputedAlgoOrder.tp_pnl) > 0
+                Number(algoOrder.tp_pnl) > 0
                   ? "text-green"
-                  : Number(ComputedAlgoOrder.tp_pnl) < 0
+                  : Number(algoOrder.tp_pnl) < 0
                   ? "text-red"
                   : "text-font-80"
               }`}
               placeholder="Gain"
               value={
                 activePnlOrOffset === "$"
-                  ? ComputedAlgoOrder.tp_pnl
-                  : (
-                      Number(ComputedAlgoOrder.tp_offset_percentage) * 100
-                    ).toFixed(2)
+                  ? algoOrder.tp_pnl
+                  : (Number(algoOrder.tp_offset_percentage) * 100).toFixed(2)
               }
               onChange={(e) =>
                 handleChange(
@@ -155,7 +164,7 @@ export const TPSLModal = ({ order }) => {
               type="number"
               className="h-full w-full"
               placeholder="SL Price"
-              value={ComputedAlgoOrder.sl_trigger_price}
+              value={algoOrder.sl_trigger_price}
               onChange={(e) => handleChange("sl_trigger_price", e.target.value)}
             />
           </div>
@@ -163,19 +172,17 @@ export const TPSLModal = ({ order }) => {
             <input
               type="number"
               className={`h-full w-full ${
-                Number(ComputedAlgoOrder.sl_pnl) > 0
+                Number(algoOrder.sl_pnl) > 0
                   ? "text-green"
-                  : Number(ComputedAlgoOrder.sl_pnl) < 0
+                  : Number(algoOrder.sl_pnl) < 0
                   ? "text-red"
                   : "text-font-80"
               }`}
               placeholder="Loss"
               value={
                 activePnlOrOffset === "$"
-                  ? ComputedAlgoOrder.sl_pnl
-                  : (
-                      Number(ComputedAlgoOrder.sl_offset_percentage) * 100
-                    ).toFixed(2)
+                  ? algoOrder.sl_pnl
+                  : (Number(algoOrder.sl_offset_percentage) * 100).toFixed(2)
               }
               onChange={(e) =>
                 handleChange(
@@ -223,21 +230,23 @@ export const TPSLModal = ({ order }) => {
           className="bg-base_color rounded flex items-center justify-center h-[40px] text-sm text-white mt-5"
           onClick={handleSubmit}
         >
-          <Oval
-            visible={true}
-            height="18"
-            width="18"
-            color="#FFF"
-            secondaryColor="rgba(255,255,255,0.6)"
-            ariaLabel="oval-loading"
-            strokeWidth={6}
-            strokeWidthSecondary={6}
-            wrapperStyle={{
-              marginRight: "8px",
-            }}
-            wrapperClass=""
-          />
-          Soumettre l'ordre TP
+          {loading && (
+            <Oval
+              visible={true}
+              height="18"
+              width="18"
+              color="#FFF"
+              secondaryColor="rgba(255,255,255,0.6)"
+              ariaLabel="oval-loading"
+              strokeWidth={6}
+              strokeWidthSecondary={6}
+              wrapperStyle={{
+                marginRight: "8px",
+              }}
+              wrapperClass=""
+            />
+          )}
+          Create TP & SL Order
         </button>
       </DialogContent>
     </Dialog>
