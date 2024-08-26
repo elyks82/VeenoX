@@ -132,12 +132,6 @@ export const Position = ({ asset }: PositionProps) => {
       <div className="p-2.5 flex items-center gap-5">
         {/* <p>unsettledPnL: {data?.aggregated.unsettledPnL}</p> */}
         <div>
-          <p className="text-xs text-font-60 mb-[3px]">Notional</p>
-          <p className="text-base text-white font-medium">
-            {getFormattedAmount(data?.aggregated.notional)}
-          </p>
-        </div>
-        <div>
           <p className="text-xs text-font-60 mb-[3px]">Unreal. PnL</p>
           <p
             className={`text-base  font-medium ${
@@ -150,6 +144,12 @@ export const Position = ({ asset }: PositionProps) => {
           >
             {getFormattedAmount(data?.aggregated.unrealPnL)} (
             {getTokenPercentage(data?.aggregated.unrealPnlROI)}%)
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-font-60 mb-[3px]">Notional</p>
+          <p className="text-base text-white font-medium">
+            {getFormattedAmount(data?.aggregated.notional)}
           </p>
         </div>
       </div>

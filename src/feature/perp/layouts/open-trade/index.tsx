@@ -4,7 +4,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
-import { formatQuantity, formatSymbol, getFormattedAmount } from "@/utils/misc";
+import {
+  formatQuantity,
+  formatSymbol,
+  getFormattedAmount,
+  getTokenPercentage,
+} from "@/utils/misc";
 import {
   useCollateral,
   useOrderEntry,
@@ -627,15 +632,16 @@ export const OpenTrade = ({
           <div className="pb-4 mb-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-font-60 mb-[3px]">
-                  Total value (USDC)
-                </p>
-                <p className="text-base text-white font-medium">{totalValue}</p>
+                <p className="text-xs text-font-60 mb-[3px]">Total value ($)</p>
+                <p className="text-sm text-white font-medium">{totalValue}</p>
               </div>
               <div>
-                <p className="text-xs text-font-60 mb-1">Unreal PnL (USDC)</p>
+                <p className="text-xs text-font-60 mb-[3px] text-end">
+                  Unreal PnL ($)
+                </p>
                 <p className="text-sm text-white font-medium text-end">
-                  {data?.aggregated.unrealPnL} ({data?.aggregated.unrealPnLROI}
+                  {getFormattedAmount(data?.aggregated.unrealPnL)} (
+                  {getTokenPercentage(data?.aggregated.unrealPnlROI)}
                   %)
                 </p>
               </div>
