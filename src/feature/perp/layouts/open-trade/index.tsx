@@ -20,11 +20,10 @@ import {
 } from "@orderly.network/hooks";
 import { API, OrderEntity, OrderSide } from "@orderly.network/types";
 import { useState } from "react";
-import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
+import { IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
 import { Leverage } from "./components/leverage";
 
-type KeyBooleanType = "reduce_only" | "tp_sl";
 type OpenTradeProps = {
   isMobile?: boolean;
   holding?: number;
@@ -138,6 +137,7 @@ export const OpenTrade = ({
       validator,
       currentAsset.base_tick
     );
+    console.log("error", errors);
     if (errors) triggerAlert("Error", errors?.total?.message);
     const isValid = !Object.keys(errors)?.length;
     if (isValid) {
@@ -146,6 +146,7 @@ export const OpenTrade = ({
         await onSubmit(val);
         triggerAlert("Success", "Order has been executed.");
       } catch (err) {
+        console.log("err", err);
         triggerAlert("Error", "Error during executing the order.");
       } finally {
         setValues(defaultValues);
@@ -257,8 +258,6 @@ export const OpenTrade = ({
       [name]: boolean,
     }));
   };
-
-  console.log("valuesvaluesvalues", values);
 
   return (
     <section className="h-full w-full text-white">
@@ -553,10 +552,18 @@ export const OpenTrade = ({
             }}
           >
             <p>Reduce only</p>
-            <div className="w-[15px] h-[15px] rounded border border-borderColor-DARK bg-terciary">
-              {values.reduce_only ? (
-                <IoCheckmarkOutline className="text-blue-400" />
-              ) : null}
+            <div
+              className={`w-[15px] p-0.5 h-[15px] rounded border ${
+                values.reduce_only
+                  ? "border-base_color"
+                  : "border-[rgba(255,255,255,0.3)]"
+              } transition-all duration-100 ease-in-out`}
+            >
+              <div
+                className={`w-full h-full rounded-[1px] bg-base_color ${
+                  values.reduce_only ? "opacity-100" : "opacity-0"
+                } transition-all duration-100 ease-in-out`}
+              />
             </div>
           </button>
           {/* <button

@@ -1,8 +1,9 @@
 "use client";
+import { triggerAlert } from "@/lib/toaster";
 import {
-    useAccount,
-    useLeverage,
-    useMarginRatio,
+  useAccount,
+  useLeverage,
+  useMarginRatio,
 } from "@orderly.network/hooks";
 import { useRef } from "react";
 import { LeverageEditor } from "./editor";
@@ -21,14 +22,16 @@ export const Leverage = () => {
     });
   };
 
-  const onSubmit = async () => {
+  const onSubmit = () => {
     if (nextLeverage.current === maxLeverage) return;
-    if (state.status > 2) {
-      try {
-       await update({ leverage: nextLeverage.current });
-      } catch (e) {
+    update({ leverage: nextLeverage.current }).then(
+      () => {
+        triggerAlert("Success", "Max leverage has been updated successfully");
+      },
+      () => {
+        triggerAlert("Error", "Error whild updating max leverage");
       }
-    }
+    );
   };
 
   return (
@@ -39,9 +42,10 @@ export const Leverage = () => {
           maxLeverage={maxLeverage}
           leverageLevers={leverageLevers}
           onSave={onSave}
-          isMutating={isMutating}
-          onSubmit={() => onSubmit()}
         />
+        <button onClick={onSubmit}>
+          {isMutating ? "Loading" : `current: ${currentLeverage}`}
+        </button>
       </div>
       {/* <Button
         onClick={() => {

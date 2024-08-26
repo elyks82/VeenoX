@@ -12,19 +12,16 @@ interface LeverageEditorProps {
   onSave?: (value: { leverage: number }) => Promise<void>;
   maxLeverage?: number;
   leverageLevers: number[];
-  isMutating: boolean;
-  onSubmit: () => void;
 }
 
 export const LeverageEditor: FC<LeverageEditorProps> = ({
   maxLeverage,
   leverageLevers,
   onSave,
-  onSubmit,
-  isMutating,
 }) => {
   const [leverage, setLeverage] = useState(() => maxLeverage ?? 0);
   const { state } = useAccount();
+
   const leverageValue = useMemo(() => {
     const index = leverageLevers.findIndex((item) => item === leverage);
     return index !== -1 ? index : 1;
@@ -63,7 +60,7 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
   const [selectedMax, setSelectedMax] = useState(100);
   const [selectedMin, setSelectedMin] = useState(0);
   const [selectedStep, setSelectedStep] = useState(1);
-
+  console.log("YO");
   useEffect(() => {
     const valuesCopy = values.map((value) =>
       checkValuesAgainstBoundaries(value, selectedMin, selectedMax)
@@ -89,10 +86,6 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
             onSave?.({ leverage: _value }).catch(() => {
               setLeverage(maxLeverage ?? 1);
             });
-            triggerAlert(
-              "Success",
-              "Max leverage has been updated successfully"
-            );
           } catch (err) {
             triggerAlert("Error", "Error while trying to update max leverage");
           }

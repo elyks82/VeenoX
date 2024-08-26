@@ -266,7 +266,7 @@ export const Perp = ({ asset }: PerpProps) => {
 
         <div
           style={{ width: `${widths[1]}%` }}
-          className="hidden md:block h-full min-w-[265px] max-w-[500px]  border-l relative border-borderColor "
+          className="hidden md:block h-full min-w-[300px] max-w-[500px]  border-l relative border-borderColor "
         >
           {window.innerWidth >= 1268 && (
             <div
