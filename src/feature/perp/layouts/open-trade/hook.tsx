@@ -9,6 +9,5 @@ type CreateOrder = {
 export const CreateOrder = ({ asset }: CreateOrder) => {
   const maxQty: number = useMaxQty(asset?.symbol, OrderSide.BUY);
 
-  console.log("maxQtu", maxQty);
   return <>IEDIEIDE</>;
 };

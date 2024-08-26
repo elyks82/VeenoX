@@ -1,9 +1,10 @@
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
+import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
-import { formatQuantity, getFormattedAmount } from "@/utils/misc";
+import { formatQuantity, formatSymbol, getFormattedAmount } from "@/utils/misc";
 import {
   useCollateral,
   useOrderEntry,
@@ -14,7 +15,7 @@ import {
 } from "@orderly.network/hooks";
 import { API, OrderEntity, OrderSide } from "@orderly.network/types";
 import { useState } from "react";
-import { IoChevronDown } from "react-icons/io5";
+import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
 import { Leverage } from "./components/leverage";
 
@@ -33,6 +34,8 @@ type Inputs = {
   price?: string;
   quantity?: string;
   reduce_only: boolean;
+  tp_trigger_price?: string;
+  sl_trigger_price?: string;
 };
 
 type ButtonStatusType = {
@@ -47,6 +50,8 @@ const defaultValues: Inputs = {
   price: undefined,
   quantity: undefined,
   reduce_only: false,
+  tp_trigger_price: undefined,
+  sl_trigger_price: undefined,
 };
 
 export const OpenTrade = ({
@@ -71,16 +76,10 @@ export const OpenTrade = ({
     dp: 2,
   });
 
-  console.log("totalValue", totalValue);
-  console.log("availableBalance", availableBalance);
-  console.log("freeCollat", freeCollat);
-  console.log("totalCollateral", totalCollateral);
-  console.log("unsettledPnL", unsettledPnL);
-  console.log("positions", positions);
-  console.log("accountInfo", accountInfo);
   // const { data: markPrices }: { data: Record<string, number> } =
   //   useMarkPricesStream();
   // console.log("markPrices");
+  const [isTokenQuantity, setIsTokenQuantity] = useState(false);
   const [values, setValues] = useState(defaultValues);
   const [inputErrors, setInputErrors] = useState({
     input_quantity: false,
@@ -105,8 +104,6 @@ export const OpenTrade = ({
     { watchOrderbook: true }
   );
 
-  console.log("estLiqPrice", estLiqPrice, maxQty, markPrice);
-
   // const isAlgoOrder = values?.algo_order_id !== undefined;
 
   const rangeInfo = useSymbolPriceRange(
@@ -124,7 +121,7 @@ export const OpenTrade = ({
       const symbol = cur();
       return symbol;
     });
-  const currentAsset = symbols.find((cur) => cur.symbol === asset?.symbol);
+  const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
@@ -166,7 +163,6 @@ export const OpenTrade = ({
   const barPosition = getSectionBarPosition();
 
   const handleButtonLongClick = async () => {
-    console.log("I RUN");
     if (state.status === 0) setIsWalletConnectorOpen(true);
     else if (state.status === 2 || state.status === 4)
       setIsEnableTradingModalOpen(true);
@@ -256,6 +252,8 @@ export const OpenTrade = ({
       [name]: boolean,
     }));
   };
+
+  console.log("valuesvaluesvalues", values);
 
   return (
     <section className="h-full w-full text-white">
@@ -419,15 +417,68 @@ export const OpenTrade = ({
                   handleValueChange("quantity", e.target.value);
                   handleInputErrors(true, "input_quantity");
                 } else {
-                  handleValueChange("quantity", e.target.value);
+                  if (isTokenQuantity)
+                    handleValueChange("quantity", e.target.value);
+                  else {
+                    const quantityUSD = getFormattedAmount(
+                      (values.quantity as never) *
+                        (values.type === "LIMIT"
+                          ? (values.price as never)
+                          : markPrice)
+                    ).toString();
+                    handleValueChange("quantity", quantityUSD);
+                  }
                   handleInputErrors(false, "input_quantity");
                 }
               }}
               type="number"
-              value={getFormattedAmount(values.quantity).toString()}
+              value={
+                isTokenQuantity
+                  ? getFormattedAmount(values.quantity).toString()
+                  : getFormattedAmount(
+                      (values.quantity as never) *
+                        (values.type === "LIMIT"
+                          ? (values.price as never)
+                          : markPrice)
+                    ).toString()
+              }
             />
-
-            <p className="px-2 text-white text-sm">{getSymbolForPair()}</p>
+            <Popover>
+              <PopoverTrigger className="h-full min-w-fit">
+                <button
+                  className="rounded text-[12px] flex items-center
+             justify-center min-w-[50px] pl-1 text-white font-medium h-[24px] ml-1 w-fit pr-2"
+                >
+                  <p className="px-2 text-white text-sm">
+                    {isTokenQuantity ? getSymbolForPair() : "USDC"}
+                  </p>
+                  <IoChevronDown className="text-white text-xs " />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                sideOffset={0}
+                className="flex flex-col p-1.5 z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
+              >
+                <button
+                  onClick={() => setIsTokenQuantity((prev) => !prev)}
+                  className={`h-[22px] ${
+                    isTokenQuantity ? "text-base_color font-bold" : "text-white"
+                  } w-fit px-1 text-xs`}
+                >
+                  {formatSymbol(asset?.symbol, true)}
+                </button>
+                <button
+                  onClick={() => setIsTokenQuantity((prev) => !prev)}
+                  className={`h-[22px] ${
+                    !isTokenQuantity
+                      ? "text-base_color font-bold"
+                      : "text-white"
+                  } w-fit px-1 text-xs`}
+                >
+                  USDC
+                </button>
+              </PopoverContent>
+            </Popover>
           </div>
           <p
             className={`text-red w-full text-xs mt-1 mb-1.5 pointer-events-none ${
@@ -469,6 +520,7 @@ export const OpenTrade = ({
               <p className="text-font-80">%</p>
             </div>
           </div>
+
           <div className="flex items-center justify-between mt-3">
             <p className="text-xs text-font-60">Est. Liq. price</p>
             <p className="text-xs text-white font-medium">
@@ -486,9 +538,14 @@ export const OpenTrade = ({
             <p className="text-xs text-font-60">Fees</p>
             <p className="text-xs text-white font-medium">0.00% / 0.03%</p>
           </div>
-          {/* <button
+          <button
             className="text-xs text-white mt-4 flex items-center justify-between w-full"
-            onClick={() => handleBooleanChange("reduce_only")}
+            onClick={() => {
+              setValues((prev) => ({
+                ...prev,
+                reduce_only: !prev.reduce_only,
+              }));
+            }}
           >
             <p>Reduce only</p>
             <div className="w-[15px] h-[15px] rounded border border-borderColor-DARK bg-terciary">
@@ -496,7 +553,7 @@ export const OpenTrade = ({
                 <IoCheckmarkOutline className="text-blue-400" />
               ) : null}
             </div>
-          </button> */}
+          </button>
           {/* <button
             className="text-xs text-white mt-2 flex items-center justify-between w-full"
             onClick={() => handleBooleanChange("tp_sl")}
@@ -507,9 +564,9 @@ export const OpenTrade = ({
                 <IoCheckmarkOutline className="text-blue-400" />
               ) : null}
             </div>
-          </button>
+          </button> */}
 
-          {values.tp_sl ? (
+          {/* {values?.tp_sl ? (
             <>
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center h-[35px] bg-terciary w-2/3 border border-borderColor-DARK rounded mt-3">

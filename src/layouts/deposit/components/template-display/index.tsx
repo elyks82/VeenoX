@@ -149,7 +149,6 @@ TemplateDisplayProps) => {
     depositFee as never,
     chain?.nativeCurrency.decimals
   );
-  console.log("formattedDepositFee", formattedDepositFee, chain);
   return (
     <>
       <div className="flex items-center w-full justify-between mb-2">

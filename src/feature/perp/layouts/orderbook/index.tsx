@@ -1,4 +1,5 @@
 import { useGeneralContext } from "@/context";
+import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { FuturesAssetProps, TradeExtension } from "@/models";
 import { cn } from "@/utils/cn";
 import {
@@ -11,6 +12,7 @@ import {
   useOrderbookStream,
 } from "@orderly.network/hooks";
 import { useRef, useState } from "react";
+import { IoChevronDown } from "react-icons/io5";
 import { TradeSection } from "./trade-section";
 
 enum OrderbookSection {
@@ -33,6 +35,7 @@ export const Orderbook = ({
 }: OrderbookProps) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { mobileActiveSection, setMobileActiveSection } = useGeneralContext();
+  const [activeOrderbookSymbol, setActiveOrderbookSymbol] = useState("USD");
   const [activeSection, setActiveSection] = useState(
     OrderbookSection.ORDERBOOK
   );
@@ -109,11 +112,11 @@ export const Orderbook = ({
           </div>
         </>
       )}
-      {/* <div className="flex items-center py-1.5">
+      <div className="flex items-center justify-between py-1.5">
         <Popover>
           <PopoverTrigger className="h-full min-w-fit">
             <button
-              className="border-base_color border rounded text-[12px] flex items-center
+              className="rounded text-[12px] flex items-center
              justify-center min-w-[50px] pl-1 text-white font-medium h-[24px] ml-1 w-fit"
             >
               {depth}
@@ -122,23 +125,58 @@ export const Orderbook = ({
           </PopoverTrigger>
           <PopoverContent
             sideOffset={0}
-            className="flex flex-col p-2 z-[102] w-fit whitespace-nowrap bg-primary border border-borderColor shadow-xl"
+            className="flex flex-col p-1.5 z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
           >
-            {allDepths?.map((entry) => (
+            {allDepths?.map((entry, i) => (
               <button
+                key={i}
                 onClick={() => {
                   if (onDepthChange) onDepthChange(entry);
                 }}
                 className={`h-[22px] ${
                   depth === entry ? "text-base_color font-bold" : "text-white"
-                } w-fit px-2 text-xs`}
+                } w-fit px-1 text-xs`}
               >
                 {entry}
               </button>
             ))}
           </PopoverContent>
-        </Popover>{" "}
-      </div> */}
+        </Popover>
+        <Popover>
+          <PopoverTrigger className="h-full min-w-fit mr-2">
+            <button
+              className="rounded text-[12px] flex items-center
+             justify-center min-w-[50px] pl-1 text-white font-medium h-[24px] ml-1 w-fit"
+            >
+              {activeOrderbookSymbol}
+              <IoChevronDown className="text-white text-xs min-w-[18px] ml-[1px]" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            sideOffset={0}
+            className="flex flex-col p-1.5 z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
+          >
+            {[asset.symbol, "USD"]?.map((entry, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  if (entry === asset.symbol)
+                    setActiveOrderbookSymbol(formatSymbol(entry, true));
+                  else setActiveOrderbookSymbol(entry);
+                }}
+                className={`h-[22px] ${
+                  activeOrderbookSymbol === entry ||
+                  activeOrderbookSymbol === formatSymbol(entry, true)
+                    ? "text-base_color font-bold"
+                    : "text-white"
+                } w-fit px-1 text-xs`}
+              >
+                {entry === asset.symbol ? formatSymbol(entry, true) : entry}
+              </button>
+            ))}
+          </PopoverContent>
+        </Popover>
+      </div>
       {(activeSection === OrderbookSection.ORDERBOOK &&
         (mobileActiveSection === "Orderbook" || !mobileActiveSection)) ||
       isMobileOpenTrade ? (
@@ -153,7 +191,7 @@ export const Orderbook = ({
               <img src="/loader/loader.gif" className="w-[150px]" />
             </div>
           ) : (
-            <table className="w-full h-full">
+            <table className="w-full h-calc-full-market">
               <thead>
                 <tr className="text-font-60 text-xs">
                   <th className="pl-2.5 text-start py-1 font-normal">Price</th>
@@ -161,34 +199,43 @@ export const Orderbook = ({
                     <th className="text-end font-normal">Size</th>
                   )}
                   <th className="pr-2.5 text-end font-normal">
-                    Total {formatSymbol(asset?.symbol).split("-")[0]}
+                    Total{" "}
+                    {activeOrderbookSymbol === "USD"
+                      ? "USD"
+                      : formatSymbol(asset?.symbol).split("-")[0]}
                   </th>
-                  {isMobileOpenTrade ? null : (
-                    <th className="pr-2.5 text-end font-normal">Total $</th>
-                  )}
                 </tr>
               </thead>
               <tbody>
-                {(data?.asks || []).map((ask: number[], i: number) => {
+                {(data?.asks || [])?.map((ask: number[], i: number) => {
                   return (
                     <tr key={i} className="text-font-80 text-xs relative">
                       {Array.from({ length: 4 }).map((_, j) => {
                         const className = getStyleFromDevice(j, "");
+
                         const value =
                           j === 0 ? ask[j] : getFormattedAmount(ask[j]);
+
+                        if (activeOrderbookSymbol === "USD" && j === 2)
+                          return null;
+                        if (
+                          activeOrderbookSymbol ===
+                            formatSymbol(asset.symbol, true) &&
+                          j === 3
+                        )
+                          return null;
                         if (isMobileOpenTrade && (j === 0 || j === 2))
-                          if (isMobileOpenTrade && (j === 0 || j === 2))
-                            return (
-                              <td
-                                key={j + className}
-                                className={cn(
-                                  className,
-                                  j === 0 ? "text-red" : ""
-                                )}
-                              >
-                                {value}
-                              </td>
-                            );
+                          return (
+                            <td
+                              key={j + className}
+                              className={cn(
+                                className,
+                                j === 0 ? "text-red" : ""
+                              )}
+                            >
+                              {value}
+                            </td>
+                          );
                         if (!isMobileOpenTrade)
                           return (
                             <td
@@ -236,6 +283,14 @@ export const Orderbook = ({
                         const className = getStyleFromDevice(j, "");
                         const value =
                           j === 0 ? bid[j] : getFormattedAmount(bid[j]);
+                        if (activeOrderbookSymbol === "USD" && j === 2)
+                          return null;
+                        if (
+                          activeOrderbookSymbol ===
+                            formatSymbol(asset.symbol, true) &&
+                          j === 3
+                        )
+                          return null;
                         if (isMobileOpenTrade && (j === 0 || j === 2))
                           return (
                             <td
