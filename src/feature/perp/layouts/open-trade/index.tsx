@@ -259,6 +259,18 @@ export const OpenTrade = ({
     }));
   };
 
+  console.log(
+    isTokenQuantity
+      ? getFormattedAmount(values.quantity).toString()
+      : getFormattedAmount(
+          (Number(values.quantity) as number) *
+            (values.type === "LIMIT" ? Number(values.price) : markPrice)
+        ).toString()
+  );
+
+  const disableSlider =
+    !isTokenQuantity && values.type === "LIMIT" && !values.price;
+
   return (
     <section className="h-full w-full text-white">
       {isMobile ? null : <Leverage />}
@@ -421,17 +433,8 @@ export const OpenTrade = ({
                   handleValueChange("quantity", e.target.value);
                   handleInputErrors(true, "input_quantity");
                 } else {
-                  if (isTokenQuantity)
-                    handleValueChange("quantity", e.target.value);
-                  else {
-                    const quantityUSD = getFormattedAmount(
-                      (values.quantity as never) *
-                        (values.type === "LIMIT"
-                          ? (values.price as never)
-                          : markPrice)
-                    ).toString();
-                    handleValueChange("quantity", quantityUSD);
-                  }
+                  handleValueChange("quantity", e.target.value);
+
                   handleInputErrors(false, "input_quantity");
                 }
               }}
@@ -440,10 +443,7 @@ export const OpenTrade = ({
                 isTokenQuantity
                   ? getFormattedAmount(values.quantity).toString()
                   : getFormattedAmount(
-                      (values.quantity as never) *
-                        (values.type === "LIMIT"
-                          ? (values.price as never)
-                          : markPrice)
+                      (Number(values.quantity) as number) * markPrice
                     ).toString()
               }
             />
@@ -491,9 +491,11 @@ export const OpenTrade = ({
                 : "opacity-0 absolute"
             }`}
           >
-            Quantity can&apos;t exceed{" "}
-            {getFormattedAmount(convertToToken(freeCollateral))}{" "}
-            {getSymbolForPair()}
+            Quantity can't exceed{" "}
+            {isTokenQuantity
+              ? getFormattedAmount(convertToToken(freeCollateral))
+              : getFormattedAmount(freeCollateral)}{" "}
+            {isTokenQuantity ? getSymbolForPair() : "USDC"}
           </p>
           <div className="mt-2 flex items-center">
             <Slider
@@ -503,10 +505,8 @@ export const OpenTrade = ({
               onValueChange={(value) => {
                 setSliderValue(value[0]);
                 handleInputErrors(false, "input_quantity");
-                setValues((prev) => ({
-                  ...prev,
-                  quantity: percentageToValue(value[0]) as never,
-                }));
+                const newValue = percentageToValue(value[0]).toString();
+                handleValueChange("quantity", newValue);
               }}
               isBuy={values.direction === "BUY"}
             />
