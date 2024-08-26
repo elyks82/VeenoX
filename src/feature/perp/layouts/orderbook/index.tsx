@@ -199,11 +199,11 @@ export const Orderbook = ({
                     <th className="text-end font-normal">Size</th>
                   )}
                   <th className="pr-2.5 text-end font-normal">
-                    Total{" "}
-                    {activeOrderbookSymbol === "USD"
-                      ? "USD"
-                      : formatSymbol(asset?.symbol).split("-")[0]}
+                    Total {formatSymbol(asset?.symbol).split("-")[0]}
                   </th>
+                  {isMobileOpenTrade ? null : (
+                    <th className="pr-2.5 text-end font-normal">Total $</th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -212,18 +212,8 @@ export const Orderbook = ({
                     <tr key={i} className="text-font-80 text-xs relative">
                       {Array.from({ length: 4 }).map((_, j) => {
                         const className = getStyleFromDevice(j, "");
-
                         const value =
                           j === 0 ? ask[j] : getFormattedAmount(ask[j]);
-
-                        if (activeOrderbookSymbol === "USD" && j === 2)
-                          return null;
-                        if (
-                          activeOrderbookSymbol ===
-                            formatSymbol(asset.symbol, true) &&
-                          j === 3
-                        )
-                          return null;
                         if (isMobileOpenTrade && (j === 0 || j === 2))
                           return (
                             <td
@@ -283,14 +273,6 @@ export const Orderbook = ({
                         const className = getStyleFromDevice(j, "");
                         const value =
                           j === 0 ? bid[j] : getFormattedAmount(bid[j]);
-                        if (activeOrderbookSymbol === "USD" && j === 2)
-                          return null;
-                        if (
-                          activeOrderbookSymbol ===
-                            formatSymbol(asset.symbol, true) &&
-                          j === 3
-                        )
-                          return null;
                         if (isMobileOpenTrade && (j === 0 || j === 2))
                           return (
                             <td
