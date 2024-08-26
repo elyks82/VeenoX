@@ -6,7 +6,7 @@ import {
   getFormattedDate,
 } from "@/utils/misc";
 import { usePoster } from "@orderly.network/hooks";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { TPSLModal } from "./tp-sl-modal";
 
 const tdStyle = `text-xs px-2.5 py-4 text-white whitespace-nowrap font-normal border-y border-borderColor text-end`;
@@ -24,7 +24,8 @@ export const RenderCells = ({
   closeTrade,
   i,
   closePendingOrder,
-}) => {
+}: any) => {
+  const { setIsTPSLOpen } = useGeneralContext();
   const { ref, toDataURL, toBlob, download, copy } = usePoster({
     backgroundColor: "#0b8c70",
     backgroundImg: "/logo/veeno.png",
@@ -40,7 +41,7 @@ export const RenderCells = ({
   const [imagePreview, setImagePreview] = useState(null);
   const handlePreview = () => {
     const imageUrl = toDataURL();
-    setImagePreview(imageUrl);
+    setImagePreview(imageUrl as never);
   };
 
   return (
@@ -56,7 +57,8 @@ export const RenderCells = ({
         activeSection,
         closeTrade,
         i,
-        closePendingOrder
+        closePendingOrder,
+        setIsTPSLOpen
       )}
       <TPSLModal order={order} />
     </>
@@ -88,9 +90,9 @@ const renderAdditionalCells = (
   section: Sections,
   closeTrade: Function,
   i: number,
-  closePendingOrder: Function
+  closePendingOrder: Function,
+  setIsTPSLOpen: Dispatch<SetStateAction<boolean>>
 ) => {
-  const { setIsTPSLOpen } = useGeneralContext();
   if (section === Sections.FILLED) {
     return (
       <>
