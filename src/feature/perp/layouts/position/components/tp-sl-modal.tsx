@@ -16,7 +16,6 @@ export const TPSLModal = ({ order }: any) => {
   const [activePnlOrOffset, setActivePnlOrOffset] = useState("$");
   const [error, setError] = useState([""]);
   const [loading, setLoading] = useState(false);
-  if (!order) return null;
   const { setIsTPSLOpen, isTPSLOpen } = useGeneralContext();
   const position = {
     symbol: order.symbol, // La paire de trading

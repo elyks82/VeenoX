@@ -25,7 +25,7 @@ export const RenderCells = ({
   i,
   closePendingOrder,
 }: any) => {
-  const { setIsTPSLOpen } = useGeneralContext();
+  const { isTPSLOpen, setIsTPSLOpen } = useGeneralContext();
   const { ref, toDataURL, toBlob, download, copy } = usePoster({
     backgroundColor: "#0b8c70",
     backgroundImg: "/logo/veeno.png",
@@ -60,7 +60,7 @@ export const RenderCells = ({
         closePendingOrder,
         setIsTPSLOpen
       )}
-      <TPSLModal order={order} />
+      {isTPSLOpen ? <TPSLModal order={order} /> : null}
     </>
   );
 };
