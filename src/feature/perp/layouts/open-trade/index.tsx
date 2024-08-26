@@ -1,9 +1,10 @@
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
+import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
-import { formatQuantity, getFormattedAmount } from "@/utils/misc";
+import { formatQuantity, formatSymbol, getFormattedAmount } from "@/utils/misc";
 import {
   useCollateral,
   useOrderEntry,
@@ -78,6 +79,7 @@ export const OpenTrade = ({
   // const { data: markPrices }: { data: Record<string, number> } =
   //   useMarkPricesStream();
   // console.log("markPrices");
+  const [isTokenQuantity, setIsTokenQuantity] = useState(false);
   const [values, setValues] = useState(defaultValues);
   const [inputErrors, setInputErrors] = useState({
     input_quantity: false,
@@ -251,6 +253,8 @@ export const OpenTrade = ({
     }));
   };
 
+  console.log("valuesvaluesvalues", values);
+
   return (
     <section className="h-full w-full text-white">
       {isMobile ? null : <Leverage />}
@@ -413,15 +417,68 @@ export const OpenTrade = ({
                   handleValueChange("quantity", e.target.value);
                   handleInputErrors(true, "input_quantity");
                 } else {
-                  handleValueChange("quantity", e.target.value);
+                  if (isTokenQuantity)
+                    handleValueChange("quantity", e.target.value);
+                  else {
+                    const quantityUSD = getFormattedAmount(
+                      (values.quantity as never) *
+                        (values.type === "LIMIT"
+                          ? (values.price as never)
+                          : markPrice)
+                    ).toString();
+                    handleValueChange("quantity", quantityUSD);
+                  }
                   handleInputErrors(false, "input_quantity");
                 }
               }}
               type="number"
-              value={getFormattedAmount(values.quantity).toString()}
+              value={
+                isTokenQuantity
+                  ? getFormattedAmount(values.quantity).toString()
+                  : getFormattedAmount(
+                      (values.quantity as never) *
+                        (values.type === "LIMIT"
+                          ? (values.price as never)
+                          : markPrice)
+                    ).toString()
+              }
             />
-
-            <p className="px-2 text-white text-sm">{getSymbolForPair()}</p>
+            <Popover>
+              <PopoverTrigger className="h-full min-w-fit">
+                <button
+                  className="rounded text-[12px] flex items-center
+             justify-center min-w-[50px] pl-1 text-white font-medium h-[24px] ml-1 w-fit pr-2"
+                >
+                  <p className="px-2 text-white text-sm">
+                    {isTokenQuantity ? getSymbolForPair() : "USDC"}
+                  </p>
+                  <IoChevronDown className="text-white text-xs " />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                sideOffset={0}
+                className="flex flex-col p-1.5 z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
+              >
+                <button
+                  onClick={() => setIsTokenQuantity((prev) => !prev)}
+                  className={`h-[22px] ${
+                    isTokenQuantity ? "text-base_color font-bold" : "text-white"
+                  } w-fit px-1 text-xs`}
+                >
+                  {formatSymbol(asset?.symbol, true)}
+                </button>
+                <button
+                  onClick={() => setIsTokenQuantity((prev) => !prev)}
+                  className={`h-[22px] ${
+                    !isTokenQuantity
+                      ? "text-base_color font-bold"
+                      : "text-white"
+                  } w-fit px-1 text-xs`}
+                >
+                  USDC
+                </button>
+              </PopoverContent>
+            </Popover>
           </div>
           <p
             className={`text-red w-full text-xs mt-1 mb-1.5 pointer-events-none ${
@@ -463,6 +520,7 @@ export const OpenTrade = ({
               <p className="text-font-80">%</p>
             </div>
           </div>
+
           <div className="flex items-center justify-between mt-3">
             <p className="text-xs text-font-60">Est. Liq. price</p>
             <p className="text-xs text-white font-medium">
@@ -508,7 +566,7 @@ export const OpenTrade = ({
             </div>
           </button> */}
 
-          {values?.tp_sl ? (
+          {/* {values?.tp_sl ? (
             <>
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center h-[35px] bg-terciary w-2/3 border border-borderColor-DARK rounded mt-3">
@@ -553,7 +611,7 @@ export const OpenTrade = ({
                 </div>
               </div>
             </>
-          ) : null}
+          ) : null} */}
         </div>
         <div className={`${isMobile ? "hidden" : "flex"} h-[100px] w-full`} />
         <button
@@ -634,7 +692,5 @@ function getInput(
     order_quantity: formatQuantity(Number(data.quantity), base_tick),
     trigger_price: data.triggerPrice,
     reduce_only: data.reduce_only,
-    tp_trigger_price: data.tp_trigger_price,
-    sl_trigger_price: data.sl_trigger_price,
   };
 }
