@@ -127,8 +127,9 @@ export const Orderbook = ({
             sideOffset={0}
             className="flex flex-col p-1.5 z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
           >
-            {allDepths?.map((entry) => (
+            {allDepths?.map((entry, i) => (
               <button
+                key={i}
                 onClick={() => {
                   if (onDepthChange) onDepthChange(entry);
                 }}
@@ -155,8 +156,9 @@ export const Orderbook = ({
             sideOffset={0}
             className="flex flex-col p-1.5 z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
           >
-            {[asset.symbol, "USD"]?.map((entry) => (
+            {[asset.symbol, "USD"]?.map((entry, i) => (
               <button
+                key={i}
                 onClick={() => {
                   if (entry === asset.symbol)
                     setActiveOrderbookSymbol(formatSymbol(entry, true));

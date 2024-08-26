@@ -12,11 +12,11 @@ import { useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import { Oval } from "react-loader-spinner";
 
-export const TPSLModal = ({ order }) => {
-  if (!order) return null;
+export const TPSLModal = ({ order }: any) => {
   const [activePnlOrOffset, setActivePnlOrOffset] = useState("$");
   const [error, setError] = useState([""]);
   const [loading, setLoading] = useState(false);
+  if (!order) return null;
   const { setIsTPSLOpen, isTPSLOpen } = useGeneralContext();
   const position = {
     symbol: order.symbol, // La paire de trading
@@ -87,7 +87,6 @@ export const TPSLModal = ({ order }) => {
     setValue(field, value);
   };
 
-  console.log("algoOrder", algoOrder);
   return (
     <Dialog open={isTPSLOpen}>
       <DialogContent
