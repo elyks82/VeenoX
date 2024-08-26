@@ -191,7 +191,7 @@ export const Orderbook = ({
               <img src="/loader/loader.gif" className="w-[150px]" />
             </div>
           ) : (
-            <table className="w-full h-full">
+            <table className="w-full h-calc-full-market">
               <thead>
                 <tr className="text-font-60 text-xs">
                   <th className="pl-2.5 text-start py-1 font-normal">Price</th>

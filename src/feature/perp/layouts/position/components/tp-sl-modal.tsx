@@ -63,6 +63,8 @@ export const TPSLModal = ({ order }) => {
     if (error) setError([""]);
     setValue(field, value);
   };
+
+  console.log("algoOrder", algoOrder);
   return (
     <Dialog open={isTPSLOpen}>
       <DialogContent
