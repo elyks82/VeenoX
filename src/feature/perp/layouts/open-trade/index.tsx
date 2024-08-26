@@ -19,7 +19,7 @@ import {
   useSymbolsInfo,
 } from "@orderly.network/hooks";
 import { API, OrderEntity, OrderSide } from "@orderly.network/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
 import { Leverage } from "./components/leverage";
@@ -68,6 +68,7 @@ export const OpenTrade = ({
   const { state } = useOrderlyAccount();
   const { setIsEnableTradingModalOpen, setIsWalletConnectorOpen } =
     useGeneralContext();
+
   const {
     totalCollateral,
     freeCollateral: freeCollat,
@@ -83,7 +84,7 @@ export const OpenTrade = ({
   // const { data: markPrices }: { data: Record<string, number> } =
   //   useMarkPricesStream();
   // console.log("markPrices");
-  const [isTokenQuantity, setIsTokenQuantity] = useState(false);
+  const [isTokenQuantity, setIsTokenQuantity] = useState(true);
   const [values, setValues] = useState(defaultValues);
   const [inputErrors, setInputErrors] = useState({
     input_quantity: false,
@@ -137,7 +138,6 @@ export const OpenTrade = ({
       validator,
       currentAsset.base_tick
     );
-    console.log("error", errors);
     if (errors) triggerAlert("Error", errors?.total?.message);
     const isValid = !Object.keys(errors)?.length;
     if (isValid) {
@@ -259,17 +259,20 @@ export const OpenTrade = ({
     }));
   };
 
-  console.log(
-    isTokenQuantity
-      ? getFormattedAmount(values.quantity).toString()
-      : getFormattedAmount(
-          (Number(values.quantity) as number) *
-            (values.type === "LIMIT" ? Number(values.price) : markPrice)
-        ).toString()
-  );
+  const calculateQuantity = (free: number, price: number) => {
+    return Number((free / price).toFixed(8));
+  };
 
-  const disableSlider =
-    !isTokenQuantity && values.type === "LIMIT" && !values.price;
+  useEffect(() => {
+    if (freeCollateral && markPrice) {
+      const calculatedQty = calculateQuantity(freeCollateral, markPrice);
+      setValues((prev) => ({
+        ...prev,
+        quantity: calculatedQty.toString(),
+      }));
+      setSliderValue(100);
+    }
+  }, [markPrice, freeCollateral]);
 
   return (
     <section className="h-full w-full text-white">
@@ -387,8 +390,16 @@ export const OpenTrade = ({
                     handleInputErrors(false, "input_price_min");
                     handleValueChange("price", e.target.value);
                   }}
+                  value={values.price}
                 />
-
+                <button
+                  onClick={() =>
+                    handleValueChange("price", markPrice.toString())
+                  }
+                  className="text-sm text-base_color font-medium mr-1"
+                >
+                  Last
+                </button>
                 <p className="px-2 text-white text-sm">USD</p>
               </div>
               <p
