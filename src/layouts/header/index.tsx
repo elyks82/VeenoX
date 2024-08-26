@@ -33,7 +33,6 @@ export const Header = () => {
   const { connect, connectors } = useConnect();
   const { isEnableTradingModalOpen, setIsEnableTradingModalOpen } =
     useGeneralContext();
-  console.log("state", state);
   // useEffect(() => {
   //   if (isConnected && address) {
   //     account.setAddress(address, {

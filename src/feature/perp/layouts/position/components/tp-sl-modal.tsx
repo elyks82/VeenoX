@@ -13,15 +13,33 @@ import { IoChevronDown } from "react-icons/io5";
 import { Oval } from "react-loader-spinner";
 
 export const TPSLModal = ({ order }) => {
+  if (!order) return null;
   const [activePnlOrOffset, setActivePnlOrOffset] = useState("$");
   const [error, setError] = useState([""]);
   const [loading, setLoading] = useState(false);
   const { setIsTPSLOpen, isTPSLOpen } = useGeneralContext();
-  const [algoOrder, { setValue, submit, errors }] = useTPSLOrder({
-    ...order,
+  const position = {
+    symbol: order.symbol, // La paire de trading
+    average_open_price: order.average_open_price, // Le prix moyen d'entrée
+    position_qty: order.position_qty, // Quantité négative pour une position courte
+    tp_trigger_price: order.tp_trigger_price,
+    sl_trigger_price: order.sl_trigger_price,
+    quantity: String(Math.abs(order.position_qty)),
+    // Autres données éventuelles...
+  };
+  const [algoOrder, { setValue, submit, errors }] = useTPSLOrder(position, {
+    defaultOrder: order.algo_order,
   });
-  const [_, { cancelAllTPSLOrders }] = useOrderStream(order);
+  const [
+    orders,
+    { cancelAllTPSLOrders, cancelTPSLChildOrder, updateTPSLOrder },
+  ] = useOrderStream(order);
+  console.log("ORDER", algoOrder, order);
 
+  //   console.log(
+  //     "orde SSr",
+  //     positions.rows?.find((entry) => entry)
+  //   );
   const handleSubmit = async () => {
     setLoading(true);
     if (errors) {
@@ -34,8 +52,13 @@ export const TPSLModal = ({ order }) => {
       setLoading(false);
       return;
     } else setError([""]);
-
+    // const orderId = orders?.find(
+    //   (entry) =>
+    //     entry.average_executed_price === order.average_open_price &&
+    //     entry.quantity === Math.abs(order.position_qty)
+    // )?.order_id;
     try {
+      console.log("orderIDISHERE", algoOrder);
       await submit();
       triggerAlert("Success", `Your TP/SL has been placed`);
       setIsTPSLOpen(false);

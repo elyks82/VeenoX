@@ -80,8 +80,6 @@ export const Orderbook = ({
     asset?.symbol
   );
 
-  console.log("data", data);
-
   return (
     <section
       ref={sectionRef}

@@ -107,34 +107,6 @@ export const Position = ({ asset }: PositionProps) => {
     return true;
   };
 
-  const position = {
-    message: "MACHIN TRUC",
-    position: {
-      symbol: asset?.symbol,
-      side: "BUY",
-
-      leverage: "10",
-
-      pnl: "24",
-      /**
-       * The return on investment of the position
-       */
-      ROI: "100",
-      /**
-       * The informations of the position, such as open price, opened at, mark price, quantity and custom message.
-       */
-      informations: {
-        title: "VeenoX",
-        value: "Test",
-      },
-      // /**
-      //  * The quote currency of the position
-      //  */
-      // currency: string;
-    },
-  };
-
-  // console.log("algoOrder", algoOrder, setValue);
   return (
     <div className="w-full">
       <div className="w-full flex justify-between items-center border-b border-borderColor ">
@@ -232,7 +204,6 @@ export const Position = ({ asset }: PositionProps) => {
                   </div>
                 );
               }
-
               return (
                 <tr key={i}>
                   <RenderCells

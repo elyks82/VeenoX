@@ -7,7 +7,6 @@ export const Footer = () => {
   const ws = useWS();
 
   useEffect(() => {
-    console.log("Im the useEffect");
     const unsubscribe = ws.subscribe(
       {
         id: "maintenance_status",

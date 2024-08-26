@@ -14,7 +14,7 @@ import {
 } from "@orderly.network/hooks";
 import { API, OrderEntity, OrderSide } from "@orderly.network/types";
 import { useState } from "react";
-import { IoChevronDown } from "react-icons/io5";
+import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
 import { Leverage } from "./components/leverage";
 
@@ -75,13 +75,6 @@ export const OpenTrade = ({
     dp: 2,
   });
 
-  console.log("totalValue", totalValue);
-  console.log("availableBalance", availableBalance);
-  console.log("freeCollat", freeCollat);
-  console.log("totalCollateral", totalCollateral);
-  console.log("unsettledPnL", unsettledPnL);
-  console.log("positions", positions);
-  console.log("accountInfo", accountInfo);
   // const { data: markPrices }: { data: Record<string, number> } =
   //   useMarkPricesStream();
   // console.log("markPrices");
@@ -109,8 +102,6 @@ export const OpenTrade = ({
     { watchOrderbook: true }
   );
 
-  console.log("estLiqPrice", estLiqPrice, maxQty, markPrice);
-
   // const isAlgoOrder = values?.algo_order_id !== undefined;
 
   const rangeInfo = useSymbolPriceRange(
@@ -128,7 +119,7 @@ export const OpenTrade = ({
       const symbol = cur();
       return symbol;
     });
-  const currentAsset = symbols.find((cur) => cur.symbol === asset?.symbol);
+  const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
@@ -170,7 +161,6 @@ export const OpenTrade = ({
   const barPosition = getSectionBarPosition();
 
   const handleButtonLongClick = async () => {
-    console.log("I RUN");
     if (state.status === 0) setIsWalletConnectorOpen(true);
     else if (state.status === 2 || state.status === 4)
       setIsEnableTradingModalOpen(true);
@@ -490,9 +480,14 @@ export const OpenTrade = ({
             <p className="text-xs text-font-60">Fees</p>
             <p className="text-xs text-white font-medium">0.00% / 0.03%</p>
           </div>
-          {/* <button
+          <button
             className="text-xs text-white mt-4 flex items-center justify-between w-full"
-            onClick={() => handleBooleanChange("reduce_only")}
+            onClick={() => {
+              setValues((prev) => ({
+                ...prev,
+                reduce_only: !prev.reduce_only,
+              }));
+            }}
           >
             <p>Reduce only</p>
             <div className="w-[15px] h-[15px] rounded border border-borderColor-DARK bg-terciary">
@@ -500,8 +495,8 @@ export const OpenTrade = ({
                 <IoCheckmarkOutline className="text-blue-400" />
               ) : null}
             </div>
-          </button> */}
-          <button
+          </button>
+          {/* <button
             className="text-xs text-white mt-2 flex items-center justify-between w-full"
             onClick={() => handleBooleanChange("tp_sl")}
           >
@@ -511,7 +506,7 @@ export const OpenTrade = ({
                 <IoCheckmarkOutline className="text-blue-400" />
               ) : null}
             </div>
-          </button>
+          </button> */}
 
           {values?.tp_sl ? (
             <>
