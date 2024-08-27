@@ -66,8 +66,11 @@ export const OpenTrade = ({
   const { setTradeInfo } = useGeneralContext();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
   const { state } = useOrderlyAccount();
-  const { setIsEnableTradingModalOpen, setIsWalletConnectorOpen } =
-    useGeneralContext();
+  const {
+    setIsEnableTradingModalOpen,
+    setIsWalletConnectorOpen,
+    setOrderPositions,
+  } = useGeneralContext();
 
   const {
     totalCollateral,
@@ -151,6 +154,7 @@ export const OpenTrade = ({
       console.log("val", val);
       await onSubmit(val);
       triggerAlert("Success", "Order has been executed.");
+      setOrderPositions(val);
       setValues(defaultValues);
     } catch (err) {
       console.log("err", err);

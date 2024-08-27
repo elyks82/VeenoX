@@ -29,6 +29,7 @@ const TradingViewChart = ({
   const ref = useRef<HTMLDivElement>(null);
   const [tvWidget, setTvWidget] = useState<any>(null);
   const ws = useWS();
+  const { orderPositions, setOrderPositions } = useGeneralContext();
 
   const chartInit = () => {
     if (!asset) return;
@@ -62,27 +63,34 @@ const TradingViewChart = ({
           ...widgetOptionsDefault,
         });
 
-        setTvWidget(widgetInstance);
-
         widgetInstance.onChartReady(() => {
           widgetInstance.applyOverrides((overrides as any) || {});
-          const chart = widgetInstance.activeChart();
-
-          positions?.forEach((position) => {
-            console.log("position", position);
-            const orderLine = chart
-              .createOrderLine()
-              .setText("Position Ouverte")
-              .setLineColor("#FF0000")
-              .setPrice(position?.average_executed_price || 150) // Définir le prix de la position ouverte
-              .setLineWidth(2)
-              .setBodyBackgroundColor("rgba(255, 0, 0, 0.1)")
-              .setBodyBorderColor("#FF0000");
-          });
+          setTvWidget(widgetInstance);
         });
       }
     );
   };
+
+  const updatePositions = (chart) => {
+    if (positions?.length > 0) {
+      positions.forEach((position) => {
+        console.log("position", position);
+        chart
+          .createOrderLine()
+          .setText("Open Price")
+          .setPrice(position?.average_open_price || 150)
+          .setLineWidth(2)
+          .setBodyTextColor("#000");
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (tvWidget?.activeChart && orderPositions?.length > 0) {
+      const chart = tvWidget.activeChart();
+      updatePositions(chart, orderPositions);
+    }
+  }, [tvWidget, orderPositions]);
 
   useEffect(() => {
     chartInit();

@@ -1,3 +1,4 @@
+import { useGeneralContext } from "@/context";
 import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
 import { getFormattedAmount, getTokenPercentage } from "@/utils/misc";
@@ -28,6 +29,7 @@ export const Position = ({ asset }: PositionProps) => {
   const [activeSection, setActiveSection] = useState(Sections.POSITION);
   const sections = ["Positions", "Pending", "TP/SL", "Filled", "Order History"];
   const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const { setOrderPositions, orderPositions } = useGeneralContext();
   const [underlineStyle, setUnderlineStyle] = useState<{
     width: string;
     left: string;
@@ -45,6 +47,17 @@ export const Position = ({ asset }: PositionProps) => {
   } = useCollateral({
     dp: 2,
   });
+
+  useEffect(() => {
+    console.log("TO");
+    if (!orderPositions?.length && data?.rows?.length > 0) {
+      console.log("TO");
+      setOrderPositions(data.rows);
+    }
+  }, [data?.rows]);
+
+  console.log(orderPositions);
+
   useEffect(() => {
     const updateUnderline = () => {
       const button = buttonRefs.current[activeSection];
@@ -88,6 +101,7 @@ export const Position = ({ asset }: PositionProps) => {
     try {
       await onSubmit(cancelOrder as any);
       triggerAlert("Success", "Position is successfully closed");
+      setOrderPositions([]);
     } catch (e) {
       console.log("e", e);
     }
