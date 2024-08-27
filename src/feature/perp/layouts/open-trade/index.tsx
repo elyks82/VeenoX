@@ -345,7 +345,7 @@ export const OpenTrade = ({
           <div className="flex items-center w-full justify-between mt-4">
             <p className="text-xs text-font-60">Available to Trade</p>
             <p className="text-xs text-white font-medium">
-              {getFormattedAmount(markPrice * maxQty)} USDC
+              {getFormattedAmount(freeCollateral)} USDC
             </p>
           </div>
 
