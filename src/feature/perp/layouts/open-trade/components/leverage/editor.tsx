@@ -60,7 +60,8 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
   const [selectedMax, setSelectedMax] = useState(100);
   const [selectedMin, setSelectedMin] = useState(0);
   const [selectedStep, setSelectedStep] = useState(1);
-  console.log("YO");
+
+  console.log("formatMaxLeverage", maxLeverage);
   useEffect(() => {
     const valuesCopy = values.map((value) =>
       checkValuesAgainstBoundaries(value, selectedMin, selectedMax)
@@ -74,7 +75,7 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
         min={1}
         max={11}
         disabled={state.status !== 5}
-        values={values}
+        values={[leverageValue]}
         onChange={(value) => {
           setValues(value);
           const _value = leverageLevers[value[0]];

@@ -18,7 +18,7 @@ import {
   useSymbolPriceRange,
   useSymbolsInfo,
 } from "@orderly.network/hooks";
-import { API, OrderEntity, OrderSide } from "@orderly.network/types";
+import { OrderEntity, OrderSide } from "@orderly.network/types";
 import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
@@ -226,10 +226,10 @@ export const OpenTrade = ({
     return value / price;
   };
   function percentageToValue(percentage: number) {
-    return (percentage / 100) * convertToToken(freeCollateral);
+    return (percentage / 100) * maxQty;
   }
   function toPercentage(value: number) {
-    const percentage = (value / convertToToken(freeCollateral)) * 100;
+    const percentage = (value / maxQty) * 100;
     return percentage;
   }
 
@@ -242,15 +242,13 @@ export const OpenTrade = ({
     setValues((prev) => ({ ...prev, [name]: value === "" ? "" : value }));
   };
 
-  const [data, proxy] = usePositionStream();
+  const [data] = usePositionStream();
 
   // useEffect(() => {
   //   if (values.type === "Market")
   //     setValues((prev) => ({ ...prev, price: markPrices[asset.symbol] }));
   // }, [values.type]);
-  const [open, setOpen] = useState(false);
-  const [symbol, setSymbol] = useState<API.Symbol>();
-  const [sliderValue, setSliderValue] = useState(0);
+  const [sliderValue, setSliderValue] = useState(toPercentage(maxQty));
 
   const handleInputErrors = (boolean: boolean, name: string) => {
     setInputErrors((prev) => ({
@@ -259,20 +257,15 @@ export const OpenTrade = ({
     }));
   };
 
-  const calculateQuantity = (free: number, price: number) => {
-    return Number((free / price).toFixed(8));
-  };
-
   useEffect(() => {
-    if (freeCollateral && markPrice) {
-      const calculatedQty = calculateQuantity(freeCollateral, markPrice);
+    if (maxQty) {
       setValues((prev) => ({
         ...prev,
-        quantity: calculatedQty.toString(),
+        quantity: maxQty.toString(),
       }));
       setSliderValue(100);
     }
-  }, [markPrice, freeCollateral]);
+  }, [maxQty]);
 
   return (
     <section className="h-full w-full text-white">
@@ -438,9 +431,7 @@ export const OpenTrade = ({
                 if (e.target.value === "") {
                   handleInputErrors(false, "input_quantity");
                   handleValueChange("quantity", "");
-                } else if (
-                  Number(e.target.value) > convertToToken(freeCollateral)
-                ) {
+                } else if (Number(e.target.value) > maxQty) {
                   handleValueChange("quantity", e.target.value);
                   handleInputErrors(true, "input_quantity");
                 } else {
@@ -504,10 +495,11 @@ export const OpenTrade = ({
           >
             Quantity can't exceed{" "}
             {isTokenQuantity
-              ? getFormattedAmount(convertToToken(freeCollateral))
-              : getFormattedAmount(freeCollateral)}{" "}
+              ? getFormattedAmount(maxQty)
+              : getFormattedAmount(maxQty * markPrice)}{" "}
             {isTokenQuantity ? getSymbolForPair() : "USDC"}
           </p>
+
           <div className="mt-2 flex items-center">
             <Slider
               value={[sliderValue]}
