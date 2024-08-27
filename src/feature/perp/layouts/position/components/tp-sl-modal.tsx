@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { triggerAlert } from "@/lib/toaster";
 import { useOrderStream, useTPSLOrder } from "@orderly.network/hooks";
 import { useState } from "react";
+import { GrPowerReset } from "react-icons/gr";
 import { IoChevronDown } from "react-icons/io5";
 import { Oval } from "react-loader-spinner";
 
@@ -85,7 +86,6 @@ export const TPSLModal = ({ order }: any) => {
     if (error) setError([""]);
     setValue(field, value);
   };
-
   return (
     <Dialog open={isTPSLOpen}>
       <DialogContent
@@ -97,16 +97,18 @@ export const TPSLModal = ({ order }: any) => {
             <DialogTitle className="pb-5">Edit TP/SL</DialogTitle>
           </DialogHeader>
         </DialogHeader>
-        {/* 1. Take Profit: <br />
-              USDC Level at which your order will be automatically closed for
-              profit. <br /> 2. Stop Loss: <br />
-              USDC Level at which your order will be automatically closed to
-              limit losses. */}
-        {/* <p>
-          USDC Level at which your order will be automatically closed for
-          profit.
-        </p> */}
-        <p className="text-sm text-font-80 mb-2">Take profit:</p>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-white mb-2">Take profit:</p>
+          {order?.tp_trigger_price || order?.sl_trigger_price ? (
+            <button
+              className="flex items-center font-medium justify-center text-xs text-white"
+              onClick={handleRemoveTPSL}
+            >
+              <GrPowerReset className="mr-1" />
+              Reset TP/SL
+            </button>
+          ) : null}
+        </div>
         <div className="flex items-center justify-between gap-2">
           <div className="flex px-2.5 w-full items-center bg-terciary border border-borderColor rounded h-[35px] text-sm">
             <input
@@ -172,7 +174,7 @@ export const TPSLModal = ({ order }: any) => {
             {error.find((entry) => entry.includes("TP"))}
           </p>
         ) : null}
-        <p className="text-sm text-font-80 mb-2 mt-2.5">Stop loss:</p>
+        <p className="text-sm text-white mb-2 mt-2.5">Stop loss:</p>
         <div className="flex items-center justify-between gap-2">
           <div className="flex px-2.5 w-full items-center bg-terciary border border-borderColor rounded h-[35px] text-sm">
             <input
@@ -242,7 +244,7 @@ export const TPSLModal = ({ order }: any) => {
         {/* Ajoutez d'autres champs pour TP, SL, etc. */}
         <div className="flex items-center w-full gap-2.5 mt-5">
           <button
-            className="bg-base_color w-full rounded flex items-center justify-center h-[40px] text-sm text-white"
+            className="border-base_color border w-full rounded flex items-center justify-center h-[40px] text-sm text-white"
             onClick={handleSubmit}
           >
             {loading && (
@@ -262,12 +264,6 @@ export const TPSLModal = ({ order }: any) => {
               />
             )}
             Create TP & SL Order
-          </button>
-          <button
-            className="border-base_color w-full border rounded flex items-center justify-center h-[40px] text-sm text-white"
-            onClick={handleRemoveTPSL}
-          >
-            Cancel TP/SL
           </button>
         </div>
       </DialogContent>

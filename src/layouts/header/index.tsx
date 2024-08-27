@@ -1,7 +1,6 @@
 "use client";
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
-import { triggerAlert } from "@/lib/toaster";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import Link from "next/link";
 import { useState } from "react";
@@ -98,13 +97,6 @@ export const Header = () => {
   };
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const triggerAlertClick = () => {
-    triggerAlert(
-      "Success",
-      "Successfully deposit on VeenoX. Your balance will update shortly."
-    );
-  };
-
   return (
     <header className="flex items-center justify-between h-[60px] px-2.5 border-b border-borderColor">
       <div className="flex items-center gap-5">
@@ -115,9 +107,12 @@ export const Header = () => {
               alt="Veeno Logo"
               className="h-[30px] w-[30px] max-w-[25px] max-h-[25px] sm:max-w-[30px] sm:max-h-[30px]"
             />
-            <h3 className="text-white font-poppins text-base sm:text-xl ">
-              VEENOX
-            </h3>
+            <img
+              src="/test.png"
+              height={30}
+              className="h-[20px] max-h-[20px] invert opacity-90"
+            />
+
             <nav className="ml-5 h-full hidden lg:flex">
               <ul className="text-white text-medium text-sm flex items-center gap-5 h-full">
                 <li>Trade</li>
