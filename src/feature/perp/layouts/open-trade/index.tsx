@@ -129,6 +129,7 @@ export const OpenTrade = ({
   const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
+    console.log("I come here");
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
 
@@ -138,19 +139,21 @@ export const OpenTrade = ({
       validator,
       currentAsset.base_tick
     );
-    if (errors) triggerAlert("Error", errors?.total?.message);
-    const isValid = !Object.keys(errors)?.length;
-    if (isValid) {
-      try {
-        const val = getInput(values, asset.symbol, currentAsset.base_tick);
-        await onSubmit(val);
-        triggerAlert("Success", "Order has been executed.");
-      } catch (err) {
-        console.log("err", err);
-        triggerAlert("Error", "Error during executing the order.");
-      } finally {
-        setValues(defaultValues);
-      }
+    console.log("Yo");
+    if (errors && Object.keys(errors)?.length > 0) {
+      console.log("err", errors);
+      triggerAlert("Error", errors?.total?.message);
+      return;
+    }
+    console.log("Im gere");
+    try {
+      const val = getInput(values, asset.symbol, currentAsset.base_tick);
+      console.log("val", val);
+      await onSubmit(val);
+      triggerAlert("Success", "Order has been executed.");
+      setValues(defaultValues);
+    } catch (err) {
+      console.log("err", err);
     }
   };
 
@@ -221,10 +224,6 @@ export const OpenTrade = ({
   };
   const buttonStatus = getButtonStatus();
 
-  const convertToToken = (value: number) => {
-    const price = asset.mark_price;
-    return value / price;
-  };
   function percentageToValue(percentage: number) {
     return (percentage / 100) * maxQty;
   }
@@ -346,7 +345,7 @@ export const OpenTrade = ({
           <div className="flex items-center w-full justify-between mt-4">
             <p className="text-xs text-font-60">Available to Trade</p>
             <p className="text-xs text-white font-medium">
-              {getFormattedAmount(availableBalance)} USDC
+              {getFormattedAmount(markPrice * maxQty)} USDC
             </p>
           </div>
 
@@ -704,7 +703,7 @@ function getInput(
     symbol,
     side: data.direction as OrderSide,
     order_type: data.type.toUpperCase() as any,
-    order_price: Number(data.price),
+    order_price: isNaN(Number(data.price)) ? undefined : Number(data.price),
     order_quantity: formatQuantity(Number(data.quantity), base_tick),
     trigger_price: data.triggerPrice,
     reduce_only: data.reduce_only,

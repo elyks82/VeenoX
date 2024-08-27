@@ -28,8 +28,8 @@ export const Leverage = () => {
       () => {
         triggerAlert("Success", "Max leverage has been updated successfully");
       },
-      () => {
-        triggerAlert("Error", "Error whild updating max leverage");
+      (error: { message: string }) => {
+        triggerAlert("Error", error.message);
       }
     );
   };
@@ -42,6 +42,7 @@ export const Leverage = () => {
           maxLeverage={maxLeverage}
           leverageLevers={leverageLevers}
           onSave={onSave}
+          onSubmit={onSubmit}
         />
         <button onClick={onSubmit}>
           {isMutating ? "Loading" : `current: ${currentLeverage}`}

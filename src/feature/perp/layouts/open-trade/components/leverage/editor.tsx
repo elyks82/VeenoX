@@ -12,12 +12,14 @@ interface LeverageEditorProps {
   onSave?: (value: { leverage: number }) => Promise<void>;
   maxLeverage?: number;
   leverageLevers: number[];
+  onSubmit: () => void;
 }
 
 export const LeverageEditor: FC<LeverageEditorProps> = ({
   maxLeverage,
   leverageLevers,
   onSave,
+  onSubmit,
 }) => {
   const [leverage, setLeverage] = useState(() => maxLeverage ?? 0);
   const { state } = useAccount();
@@ -87,6 +89,7 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
             onSave?.({ leverage: _value }).catch(() => {
               setLeverage(maxLeverage ?? 1);
             });
+            onSubmit();
           } catch (err) {
             triggerAlert("Error", "Error while trying to update max leverage");
           }
