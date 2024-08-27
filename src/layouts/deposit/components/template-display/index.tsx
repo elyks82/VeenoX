@@ -172,12 +172,16 @@ TemplateDisplayProps) => {
               const newValue = filterAllowedCharacters(e.target.value);
               setAmount(newValue as any);
               setQuantity(newValue.toString());
+              console.log("newValue", newValue);
             }}
           />
           <div className="flex items-center">
             <button
               className="text-sm font-medium text-base_color uppercase"
-              onClick={() => setAmount(balance as never)}
+              onClick={() => {
+                setAmount(balance as never);
+                setQuantity(balance.toString());
+              }}
             >
               MAX
             </button>
@@ -237,7 +241,9 @@ TemplateDisplayProps) => {
           />
         </div>
         <div className="flex text-xs text-white items-center justify-between my-4 ">
-          <p className="text-font-60 mr-2">Deposit Fees:</p>
+          <p className="text-font-60 mr-2">
+            {isDeposit ? "Deposit" : "Withdraw"} Fees:
+          </p>
           <p>{isDeposit ? getFormattedAmount(formattedDepositFee) : "1.00"}$</p>
         </div>
       </div>

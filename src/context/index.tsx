@@ -1,5 +1,5 @@
 "use client";
-import { ContextTradeInfo, MobileActiveSectionType } from "@/models";
+import { ContextTradeInfo, Inputs, MobileActiveSectionType } from "@/models";
 import React, {
   Dispatch,
   FC,
@@ -27,6 +27,8 @@ interface GeneralContextProps {
   setIsDeposit: Dispatch<SetStateAction<boolean>>;
   isTPSLOpen: boolean;
   setIsTPSLOpen: Dispatch<SetStateAction<boolean>>;
+  orderPosition: Inputs[];
+  setOrderPosition: Dispatch<SetStateAction<Inputs[]>>;
 }
 
 const INITIAL_TRADE_INFO = {
@@ -54,6 +56,7 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isDeposit, setIsDeposit] = useState(true);
   const [isEnableTradingModalOpen, setIsEnableTradingModalOpen] =
     useState(false);
+  const [orderPosition, setOrderPosition] = useState([]);
   const [isTPSLOpen, setIsTPSLOpen] = useState(false);
   const value = useMemo(
     () => ({
@@ -73,6 +76,8 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
       setIsDeposit,
       isTPSLOpen,
       setIsTPSLOpen,
+      orderPosition,
+      setOrderPosition,
     }),
     [
       showMobileTradeCreator,
@@ -83,6 +88,7 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
       isEnableTradingModalOpen,
       isDeposit,
       isTPSLOpen,
+      orderPosition,
     ]
   );
 

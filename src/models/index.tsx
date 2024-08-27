@@ -133,3 +133,14 @@ export interface OrderEntryReturn {
     validator: (values: any) => any;
   };
 }
+
+export type Inputs = {
+  direction: "BUY" | "SELL";
+  type: "MARKET" | "LIMIT" | "STOPLIMIT";
+  triggerPrice?: string;
+  price?: string;
+  quantity?: string;
+  reduce_only: boolean;
+  tp_trigger_price?: string;
+  sl_trigger_price?: string;
+};

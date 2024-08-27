@@ -15,6 +15,7 @@ interface TradingViewChartProps {
   mobile?: boolean;
   custom_css_url?: string;
   className?: string;
+  positions: any;
 }
 
 const TradingViewChart = ({
@@ -22,6 +23,7 @@ const TradingViewChart = ({
   mobile = false,
   custom_css_url = "../themed.css",
   className = "",
+  positions,
 }: TradingViewChartProps) => {
   const { isChartLoading, setIsChartLoading } = useGeneralContext();
   const ref = useRef<HTMLDivElement>(null);
@@ -64,6 +66,19 @@ const TradingViewChart = ({
 
         widgetInstance.onChartReady(() => {
           widgetInstance.applyOverrides((overrides as any) || {});
+          const chart = widgetInstance.activeChart();
+
+          positions?.forEach((position) => {
+            console.log("position", position);
+            const orderLine = chart
+              .createOrderLine()
+              .setText("Position Ouverte")
+              .setLineColor("#FF0000")
+              .setPrice(position?.average_executed_price || 150) // Définir le prix de la position ouverte
+              .setLineWidth(2)
+              .setBodyBackgroundColor("rgba(255, 0, 0, 0.1)")
+              .setBodyBorderColor("#FF0000");
+          });
         });
       }
     );
