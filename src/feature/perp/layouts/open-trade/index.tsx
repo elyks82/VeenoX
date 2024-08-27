@@ -492,7 +492,7 @@ export const OpenTrade = ({
                 : "opacity-0 absolute"
             }`}
           >
-            Quantity can't exceed{" "}
+            Quantity can&apos;t exceed{" "}
             {isTokenQuantity
               ? getFormattedAmount(maxQty)
               : getFormattedAmount(maxQty * markPrice)}{" "}
