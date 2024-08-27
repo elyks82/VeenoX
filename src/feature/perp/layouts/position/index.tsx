@@ -182,7 +182,6 @@ export const Position = ({ asset }: PositionProps) => {
           <thead>
             <tr>
               {thead[activeSection].map((title: string, i: number) => {
-                const odd = i % 2 === 0;
                 const isFirst = i === 0;
                 const isLast = i === thead[activeSection].length - 1;
                 return (

@@ -1,6 +1,6 @@
 export const thead = {
   0: [
-    "Instrument",
+    "Symbol",
     "Quantity",
     "Avg. open",
     "Mark price",
@@ -13,7 +13,7 @@ export const thead = {
     "Order",
   ],
   1: [
-    "Instrument",
+    "Symbol",
     "Type",
     "Side",
     "TP / SL",
@@ -26,7 +26,7 @@ export const thead = {
     "Order time",
   ],
   2: [
-    "Instrument",
+    "Symbol",
     "Side",
     "Quantity",
     "Trigger",
@@ -36,7 +36,7 @@ export const thead = {
     "Order time",
   ],
   3: [
-    "Instrument",
+    "Symbol",
     "Type",
     "Side",
     "Filled / Quantity",
@@ -51,7 +51,7 @@ export const thead = {
     "Order time",
   ],
   4: [
-    "Instrument",
+    "Symbol",
     "Type",
     "Side",
     "Filled / Quantity",
