@@ -4,7 +4,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
-import { formatQuantity, formatSymbol, getFormattedAmount } from "@/utils/misc";
+import {
+  formatQuantity,
+  formatSymbol,
+  getFormattedAmount,
+  getTokenPercentage,
+} from "@/utils/misc";
 import {
   useCollateral,
   useOrderEntry,
@@ -13,13 +18,12 @@ import {
   useSymbolPriceRange,
   useSymbolsInfo,
 } from "@orderly.network/hooks";
-import { API, OrderEntity, OrderSide } from "@orderly.network/types";
-import { useState } from "react";
-import { IoCheckmarkOutline, IoChevronDown } from "react-icons/io5";
+import { OrderEntity, OrderSide } from "@orderly.network/types";
+import { useEffect, useState } from "react";
+import { IoChevronDown } from "react-icons/io5";
 import "rsuite/Slider/styles/index.css";
 import { Leverage } from "./components/leverage";
 
-type KeyBooleanType = "reduce_only" | "tp_sl";
 type OpenTradeProps = {
   isMobile?: boolean;
   holding?: number;
@@ -64,6 +68,7 @@ export const OpenTrade = ({
   const { state } = useOrderlyAccount();
   const { setIsEnableTradingModalOpen, setIsWalletConnectorOpen } =
     useGeneralContext();
+
   const {
     totalCollateral,
     freeCollateral: freeCollat,
@@ -79,7 +84,7 @@ export const OpenTrade = ({
   // const { data: markPrices }: { data: Record<string, number> } =
   //   useMarkPricesStream();
   // console.log("markPrices");
-  const [isTokenQuantity, setIsTokenQuantity] = useState(false);
+  const [isTokenQuantity, setIsTokenQuantity] = useState(true);
   const [values, setValues] = useState(defaultValues);
   const [inputErrors, setInputErrors] = useState({
     input_quantity: false,
@@ -124,6 +129,7 @@ export const OpenTrade = ({
   const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
+    console.log("I come here");
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
 
@@ -133,18 +139,21 @@ export const OpenTrade = ({
       validator,
       currentAsset.base_tick
     );
-    if (errors) triggerAlert("Error", errors?.total?.message);
-    const isValid = !Object.keys(errors)?.length;
-    if (isValid) {
-      try {
-        const val = getInput(values, asset.symbol, currentAsset.base_tick);
-        await onSubmit(val);
-        triggerAlert("Success", "Order has been executed.");
-      } catch (err) {
-        triggerAlert("Error", "Error during executing the order.");
-      } finally {
-        setValues(defaultValues);
-      }
+    console.log("Yo");
+    if (errors && Object.keys(errors)?.length > 0) {
+      console.log("err", errors);
+      triggerAlert("Error", errors?.total?.message);
+      return;
+    }
+    console.log("Im gere");
+    try {
+      const val = getInput(values, asset.symbol, currentAsset.base_tick);
+      console.log("val", val);
+      await onSubmit(val);
+      triggerAlert("Success", "Order has been executed.");
+      setValues(defaultValues);
+    } catch (err) {
+      console.log("err", err);
     }
   };
 
@@ -215,15 +224,11 @@ export const OpenTrade = ({
   };
   const buttonStatus = getButtonStatus();
 
-  const convertToToken = (value: number) => {
-    const price = asset.mark_price;
-    return value / price;
-  };
   function percentageToValue(percentage: number) {
-    return (percentage / 100) * convertToToken(freeCollateral);
+    return (percentage / 100) * maxQty;
   }
   function toPercentage(value: number) {
-    const percentage = (value / convertToToken(freeCollateral)) * 100;
+    const percentage = (value / maxQty) * 100;
     return percentage;
   }
 
@@ -236,15 +241,13 @@ export const OpenTrade = ({
     setValues((prev) => ({ ...prev, [name]: value === "" ? "" : value }));
   };
 
-  const [data, proxy] = usePositionStream();
+  const [data] = usePositionStream();
 
   // useEffect(() => {
   //   if (values.type === "Market")
   //     setValues((prev) => ({ ...prev, price: markPrices[asset.symbol] }));
   // }, [values.type]);
-  const [open, setOpen] = useState(false);
-  const [symbol, setSymbol] = useState<API.Symbol>();
-  const [sliderValue, setSliderValue] = useState(0);
+  const [sliderValue, setSliderValue] = useState(toPercentage(maxQty));
 
   const handleInputErrors = (boolean: boolean, name: string) => {
     setInputErrors((prev) => ({
@@ -253,7 +256,15 @@ export const OpenTrade = ({
     }));
   };
 
-  console.log("valuesvaluesvalues", values);
+  useEffect(() => {
+    if (maxQty) {
+      setValues((prev) => ({
+        ...prev,
+        quantity: maxQty.toString(),
+      }));
+      setSliderValue(100);
+    }
+  }, [maxQty]);
 
   return (
     <section className="h-full w-full text-white">
@@ -334,7 +345,7 @@ export const OpenTrade = ({
           <div className="flex items-center w-full justify-between mt-4">
             <p className="text-xs text-font-60">Available to Trade</p>
             <p className="text-xs text-white font-medium">
-              {getFormattedAmount(availableBalance)} USDC
+              {getFormattedAmount(markPrice * maxQty)} USDC
             </p>
           </div>
 
@@ -371,8 +382,16 @@ export const OpenTrade = ({
                     handleInputErrors(false, "input_price_min");
                     handleValueChange("price", e.target.value);
                   }}
+                  value={values.price}
                 />
-
+                <button
+                  onClick={() =>
+                    handleValueChange("price", markPrice.toString())
+                  }
+                  className="text-sm text-base_color font-medium mr-1"
+                >
+                  Last
+                </button>
                 <p className="px-2 text-white text-sm">USD</p>
               </div>
               <p
@@ -411,23 +430,12 @@ export const OpenTrade = ({
                 if (e.target.value === "") {
                   handleInputErrors(false, "input_quantity");
                   handleValueChange("quantity", "");
-                } else if (
-                  Number(e.target.value) > convertToToken(freeCollateral)
-                ) {
+                } else if (Number(e.target.value) > maxQty) {
                   handleValueChange("quantity", e.target.value);
                   handleInputErrors(true, "input_quantity");
                 } else {
-                  if (isTokenQuantity)
-                    handleValueChange("quantity", e.target.value);
-                  else {
-                    const quantityUSD = getFormattedAmount(
-                      (values.quantity as never) *
-                        (values.type === "LIMIT"
-                          ? (values.price as never)
-                          : markPrice)
-                    ).toString();
-                    handleValueChange("quantity", quantityUSD);
-                  }
+                  handleValueChange("quantity", e.target.value);
+
                   handleInputErrors(false, "input_quantity");
                 }
               }}
@@ -436,10 +444,7 @@ export const OpenTrade = ({
                 isTokenQuantity
                   ? getFormattedAmount(values.quantity).toString()
                   : getFormattedAmount(
-                      (values.quantity as never) *
-                        (values.type === "LIMIT"
-                          ? (values.price as never)
-                          : markPrice)
+                      (Number(values.quantity) as number) * markPrice
                     ).toString()
               }
             />
@@ -488,9 +493,12 @@ export const OpenTrade = ({
             }`}
           >
             Quantity can&apos;t exceed{" "}
-            {getFormattedAmount(convertToToken(freeCollateral))}{" "}
-            {getSymbolForPair()}
+            {isTokenQuantity
+              ? getFormattedAmount(maxQty)
+              : getFormattedAmount(maxQty * markPrice)}{" "}
+            {isTokenQuantity ? getSymbolForPair() : "USDC"}
           </p>
+
           <div className="mt-2 flex items-center">
             <Slider
               value={[sliderValue]}
@@ -499,10 +507,8 @@ export const OpenTrade = ({
               onValueChange={(value) => {
                 setSliderValue(value[0]);
                 handleInputErrors(false, "input_quantity");
-                setValues((prev) => ({
-                  ...prev,
-                  quantity: percentageToValue(value[0]) as never,
-                }));
+                const newValue = percentageToValue(value[0]).toString();
+                handleValueChange("quantity", newValue);
               }}
               isBuy={values.direction === "BUY"}
             />
@@ -548,10 +554,18 @@ export const OpenTrade = ({
             }}
           >
             <p>Reduce only</p>
-            <div className="w-[15px] h-[15px] rounded border border-borderColor-DARK bg-terciary">
-              {values.reduce_only ? (
-                <IoCheckmarkOutline className="text-blue-400" />
-              ) : null}
+            <div
+              className={`w-[15px] p-0.5 h-[15px] rounded border ${
+                values.reduce_only
+                  ? "border-base_color"
+                  : "border-[rgba(255,255,255,0.3)]"
+              } transition-all duration-100 ease-in-out`}
+            >
+              <div
+                className={`w-full h-full rounded-[1px] bg-base_color ${
+                  values.reduce_only ? "opacity-100" : "opacity-0"
+                } transition-all duration-100 ease-in-out`}
+              />
             </div>
           </button>
           {/* <button
@@ -627,15 +641,16 @@ export const OpenTrade = ({
           <div className="pb-4 mb-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs text-font-60 mb-[3px]">
-                  Total value (USDC)
-                </p>
-                <p className="text-base text-white font-medium">{totalValue}</p>
+                <p className="text-xs text-font-60 mb-[3px]">Total value ($)</p>
+                <p className="text-sm text-white font-medium">{totalValue}</p>
               </div>
               <div>
-                <p className="text-xs text-font-60 mb-1">Unreal PnL (USDC)</p>
+                <p className="text-xs text-font-60 mb-[3px] text-end">
+                  Unreal PnL ($)
+                </p>
                 <p className="text-sm text-white font-medium text-end">
-                  {data?.aggregated.unrealPnL} ({data?.aggregated.unrealPnLROI}
+                  {getFormattedAmount(data?.aggregated.unrealPnL)} (
+                  {getTokenPercentage(data?.aggregated.unrealPnlROI)}
                   %)
                 </p>
               </div>
@@ -688,7 +703,7 @@ function getInput(
     symbol,
     side: data.direction as OrderSide,
     order_type: data.type.toUpperCase() as any,
-    order_price: Number(data.price),
+    order_price: isNaN(Number(data.price)) ? undefined : Number(data.price),
     order_quantity: formatQuantity(Number(data.quantity), base_tick),
     trigger_price: data.triggerPrice,
     reduce_only: data.reduce_only,

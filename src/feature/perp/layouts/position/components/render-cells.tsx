@@ -194,9 +194,11 @@ const renderAdditionalCells = (
         >
           {trade.position_qty}
         </td>
-        <td className={tdStyle}>{trade.average_open_price}</td>
-        <td className={tdStyle}>{trade.mark_price}</td>
-        <td className={tdStyle}>{trade.est_liq_price}</td>
+        <td className={tdStyle}>
+          {getFormattedAmount(trade.average_open_price)}
+        </td>
+        <td className={tdStyle}>{getFormattedAmount(trade.mark_price)}</td>
+        <td className={tdStyle}>{getFormattedAmount(trade.est_liq_price)}</td>
         <td
           className={cn(
             tdStyle,
@@ -212,18 +214,18 @@ const renderAdditionalCells = (
           {getFormattedAmount(trade.unrealized_pnl)}
         </td>
         <td className={tdStyle}>
-          <div className="flex flex-col w-full h-full font-medium  text-white">
-            <p>
-              <span className="text-green">TP:</span>{" "}
+          <div className="flex flex-col w-full h-full  text-white">
+            <p className="mb-1">
+              <span className="text-green font-bold">TP</span>{" "}
               {trade.tp_trigger_price || "--"}
             </p>
             <p>
-              <span className="text-red">SL:</span>{" "}
+              <span className="text-red font-bold">SL</span>{" "}
               {trade.sl_trigger_price || "--"}
             </p>
           </div>
         </td>
-        <td className={tdStyle}>{trade.cost_position}</td>
+        <td className={tdStyle}>{getFormattedAmount(trade.cost_position)}</td>
         <td className={tdStyle}>{getFormattedAmount(trade.mm)}</td>
         <td className={cn(tdStyle, "")}>
           {getFormattedAmount(trade.settle_price)}

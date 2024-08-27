@@ -1,75 +1,41 @@
-import { triggerAlert } from "@/lib/toaster";
 import { getLeverageValue } from "@/utils/misc";
 import { useAccount } from "@orderly.network/hooks";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Range,
   checkValuesAgainstBoundaries,
   getTrackBackground,
 } from "react-range";
+import { getMaxLeverageToValue } from "../../utils";
 
 interface LeverageEditorProps {
   onSave?: (value: { leverage: number }) => Promise<void>;
   maxLeverage?: number;
   leverageLevers: number[];
-  isMutating: boolean;
-  onSubmit: () => void;
 }
+
+const MIN = 0;
+const MAX = 100;
+const STEP = 1;
 
 export const LeverageEditor: FC<LeverageEditorProps> = ({
   maxLeverage,
   leverageLevers,
   onSave,
-  onSubmit,
-  isMutating,
 }) => {
-  const [leverage, setLeverage] = useState(() => maxLeverage ?? 0);
   const { state } = useAccount();
-  const leverageValue = useMemo(() => {
-    const index = leverageLevers.findIndex((item) => item === leverage);
-    return index !== -1 ? index : 1;
-  }, [leverage, leverageLevers]);
 
-  const getMaxLeverageToValue = () => {
-    switch (leverageValue) {
-      case 1:
-        return 1;
-      case 2:
-        return 2;
-      case 3:
-        return 3;
-      case 4:
-        return 4;
-      case 5:
-        return 5;
-      case 10:
-        return 6;
-      case 15:
-        return 7;
-      case 20:
-        return 8;
-      case 30:
-        return 9;
-      case 40:
-        return 10;
-      case 50:
-        return 11;
-      default:
-        return 10;
-    }
-  };
-  const formatMaxLeverage = getMaxLeverageToValue();
+  const formatMaxLeverage = getMaxLeverageToValue(maxLeverage as number);
   const [values, setValues] = useState([formatMaxLeverage]);
-  const [selectedMax, setSelectedMax] = useState(100);
-  const [selectedMin, setSelectedMin] = useState(0);
-  const [selectedStep, setSelectedStep] = useState(1);
 
+  console.log("formatMaxLeverage", maxLeverage);
   useEffect(() => {
     const valuesCopy = values.map((value) =>
-      checkValuesAgainstBoundaries(value, selectedMin, selectedMax)
+      checkValuesAgainstBoundaries(value, MIN, MAX)
     );
     setValues(valuesCopy);
-  }, [selectedMin, selectedMax, selectedStep]);
+  }, []);
+
   return (
     <div className="mb-2.5 w-[97%] mx-auto">
       <Range
@@ -78,24 +44,12 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
         max={11}
         disabled={state.status !== 5}
         values={values}
-        onChange={(value) => {
-          setValues(value);
-          const _value = leverageLevers[value[0]];
-          setLeverage(_value);
-        }}
+        onChange={(value) => setValues(value)}
         onFinalChange={(value) => {
-          const _value = leverageLevers[value[0]];
+          const _value = leverageLevers[value[0] - 1];
           try {
-            onSave?.({ leverage: _value }).catch(() => {
-              setLeverage(maxLeverage ?? 1);
-            });
-            triggerAlert(
-              "Success",
-              "Max leverage has been updated successfully"
-            );
-          } catch (err) {
-            triggerAlert("Error", "Error while trying to update max leverage");
-          }
+            onSave?.({ leverage: _value });
+          } catch (err) {}
         }}
         renderMark={({ props, index }) => {
           const leverage = getLeverageValue(index);
@@ -107,7 +61,8 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
                 ...props.style,
                 display: "flex",
                 flexDirection: "column",
-                marginTop: "-2.3px",
+                marginTop: "-2px",
+                marginRight: "-2px",
               }}
             >
               <div
@@ -118,14 +73,14 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
                   borderRadius: "1px",
                   transform: "rotate(45deg)",
                   backgroundColor:
-                    index * selectedStep + selectedMin < values[0]
+                    index * STEP + MIN < values[0]
                       ? "#836ef9"
                       : "rgba(70,70,70,1)",
                 }}
               >
                 <div
                   className={`w-full h-full ${
-                    index * selectedStep + selectedMin < values[0]
+                    index * STEP + MIN < values[0]
                       ? "bg-[#836ef9]"
                       : "bg-borderColor-DARK"
                   }  rounded-[1px]`}
