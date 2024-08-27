@@ -107,6 +107,30 @@ export const Position = ({ asset }: PositionProps) => {
     return true;
   };
 
+  const getPnLChange = () => {
+    const arr =
+      data?.rows?.map((row) => ({
+        open_price: row.average_open_price,
+        mark_price: row.mark_price,
+      })) || [];
+
+    const total = arr.reduce(
+      (acc, curr) => {
+        acc.open_price += curr.open_price;
+        acc.mark_price += curr.mark_price;
+        return acc;
+      },
+      { open_price: 0, mark_price: 0 }
+    );
+
+    const totalPnL = total.mark_price - total.open_price;
+    const pnlPercentage = (totalPnL / total.open_price) * 100;
+
+    return Math.abs(pnlPercentage);
+  };
+
+  const pnl_change = getPnLChange();
+
   return (
     <div className="w-full">
       <div className="w-full flex justify-between items-center border-b border-borderColor ">
@@ -143,7 +167,7 @@ export const Position = ({ asset }: PositionProps) => {
             }`}
           >
             {getFormattedAmount(data?.aggregated.unrealPnL)} (
-            {getTokenPercentage(data?.aggregated.unrealPnlROI)}%)
+            {getTokenPercentage(pnl_change)}%)
           </p>
         </div>
         <div>
