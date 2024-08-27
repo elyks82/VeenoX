@@ -91,7 +91,7 @@ export const Home = () => {
                 className="mt-[40px] rounded  text-white text-lg mr-auto cursor-pointer bg-base_color"
               >
                 <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
-                  <div className="flex items-center justify-center w-full text-base h-full px-4 py-2">
+                  <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
                     Access preview{" "}
                   </div>
                 </Link>
@@ -156,7 +156,7 @@ export const Home = () => {
               >
                 & Earn Program
               </h2>
-              <p className="text-base text-font-60 mt-5 max-w-[600px] text-start">
+              <p className="text-lg text-font-60 mt-5 max-w-[600px] text-start">
                 The Learn Trading and Earn program addresses the lack of trading
                 knowledge by teaching individuals how to trade effectively and
                 avoid irreversible losses. The program includes instructional
@@ -181,7 +181,7 @@ export const Home = () => {
                 across the market
               </h2>
 
-              <p className="text-base text-font-60 mt-5 text-start max-w-[600px]">
+              <p className="text-lg text-font-60 mt-5 max-w-[600px]">
                 Our platform offers the lowest trading fees among all perpetual
                 decentralized exchanges (DEXs) in the crypto space. By
                 prioritizing cost efficiency, we empower traders to maximize
@@ -220,7 +220,7 @@ export const Home = () => {
                   Swap on <span className=" text-base_color">Monad</span>
                 </h2>
 
-                <p className="text-base text-font-60 mt-5 max-w-[600px]">
+                <p className="text-lg text-font-60 mt-5 max-w-[600px]">
                   Users will have the capability to seamlessly swap any assets
                   available on the Monad chain. This functionality ensures
                   flexibility and convenience, enabling users to exchange a wide
