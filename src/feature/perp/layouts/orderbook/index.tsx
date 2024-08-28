@@ -150,7 +150,7 @@ export const Orderbook = ({
             isMobileOpenTrade ? "min-w-[140px] w-full" : "w-auto"
           }  sm:w-auto`}
         >
-          {!data?.asks?.length ? (
+          {!data?.asks?.length && !data?.bids?.length ? (
             <div className="w-full h-full flex items-center justify-center">
               <img src="/loader/loader.gif" className="w-[150px]" />
             </div>
