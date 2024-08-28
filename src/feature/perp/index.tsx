@@ -3,6 +3,7 @@ import { useGeneralContext } from "@/context";
 import { EnableTrading } from "@/layouts/enable-trading";
 import { FavoriteProps, FuturesAssetProps } from "@/models";
 import {
+  useCollateral,
   useHoldingStream,
   useMarkets,
   useWalletConnector,
@@ -41,7 +42,17 @@ export const Perp = ({ asset }: PerpProps) => {
   const rowUpRef = useRef<HTMLDivElement>(null);
   const { usdc } = useHoldingStream();
   const orderbookRef = useRef<HTMLDivElement>(null);
-
+  const {
+    totalCollateral,
+    freeCollateral: freeCollat,
+    totalValue,
+    availableBalance,
+    unsettledPnL,
+    positions,
+    accountInfo,
+  } = useCollateral({
+    dp: 2,
+  });
   const [
     data,
     {

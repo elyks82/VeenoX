@@ -66,8 +66,11 @@ export const OpenTrade = ({
   const { setTradeInfo } = useGeneralContext();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
   const { state } = useOrderlyAccount();
-  const { setIsEnableTradingModalOpen, setIsWalletConnectorOpen } =
-    useGeneralContext();
+  const {
+    setIsEnableTradingModalOpen,
+    setIsWalletConnectorOpen,
+    setOrderPositions,
+  } = useGeneralContext();
 
   const {
     totalCollateral,
@@ -129,7 +132,6 @@ export const OpenTrade = ({
   const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
-    console.log("I come here");
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
 
@@ -139,18 +141,15 @@ export const OpenTrade = ({
       validator,
       currentAsset.base_tick
     );
-    console.log("Yo");
     if (errors && Object.keys(errors)?.length > 0) {
-      console.log("err", errors);
       triggerAlert("Error", errors?.total?.message);
       return;
     }
-    console.log("Im gere");
     try {
       const val = getInput(values, asset.symbol, currentAsset.base_tick);
-      console.log("val", val);
       await onSubmit(val);
       triggerAlert("Success", "Order has been executed.");
+      setOrderPositions(val as any);
       setValues(defaultValues);
     } catch (err) {
       console.log("err", err);

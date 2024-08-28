@@ -82,12 +82,7 @@ export const Deposit = () => {
   const { usdc, data } = useHoldingStream();
   const { data: acc, error, isLoading } = useAccountInfo();
   const { switchChain } = useSwitchChain();
-
-  const test = async () => {
-    if (!address) return;
-    await fetchBalance(address, dst.decimals);
-  };
-
+  console.log("qua", quantity);
   const handleClick = async () => {
     if (isSupportedChain) {
       if (isDeposit) {
@@ -124,7 +119,11 @@ export const Deposit = () => {
               setTimeout(() => {
                 setIsDepositSuccess(false);
               }, 1000);
-            }, 3000);
+              triggerAlert(
+                "Information",
+                "Deposit is processing... Your funds will appear in your VeenoX account shortly. "
+              );
+            }, 2000);
           } catch (err) {
             triggerAlert("Error", "Error while depositing on Veeno.");
             setIsApprovalDepositLoading(false);
@@ -139,7 +138,7 @@ export const Deposit = () => {
           if (parseFloat(amount.toString()) <= availableWithdraw) {
             await withdraw({
               chainId: chainId as number,
-              amount: availableWithdraw.toString(),
+              amount: amount.toString(),
               token: "USDC",
               allowCrossChainWithdraw: true,
             });
@@ -152,7 +151,11 @@ export const Deposit = () => {
               setTimeout(() => {
                 setIsWithdrawSuccess(false);
               }, 1000);
-            }, 3000);
+              triggerAlert(
+                "Information",
+                "Withdrawal is processing... Your funds will appear in your wallet shortly."
+              );
+            }, 2000);
           }
         } catch (e) {}
       }
@@ -169,6 +172,7 @@ export const Deposit = () => {
         else if (isDepositSuccess) return "Deposit Successfull";
         else return "Deposit";
       }
+      if (isWithdrawSuccess) return "Successfully withdraw";
       return "Withdraw";
     }
     return "Switch Network";
@@ -242,7 +246,9 @@ export const Deposit = () => {
           <button
             onClick={handleClick}
             className={`${
-              isDepositSuccess ? "bg-green" : "bg-base_color"
+              isDepositSuccess || isWithdrawSuccess
+                ? "bg-green"
+                : "bg-base_color"
             } w-full h-[40px] rounded px-2.5 text-white text-sm flex items-center justify-center transition-all duration-200 ease-in-out`}
           >
             {isApprovalDepositLoading ? (
