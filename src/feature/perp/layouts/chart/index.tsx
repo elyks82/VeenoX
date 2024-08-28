@@ -89,9 +89,16 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
       updatedState.drawings = [
         ...updatedState.drawings,
-        ...savedState.drawings,
+        ...savedState.drawings.filter((s) =>
+          currentState.drawings.some((c) => c.name === s.name)
+        ),
       ];
-      updatedState.studies = [...updatedState.studies, ...savedState.studies];
+      updatedState.studies = [
+        ...updatedState.studies,
+        ...savedState.studies.filter((s) =>
+          currentState.studies.some((c) => c.name === s.name)
+        ),
+      ];
 
       localStorage.setItem("chartState", JSON.stringify(updatedState));
     },
@@ -203,7 +210,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         const widgetOptions = {
           symbol: formatSymbol(asset?.symbol),
           datafeed: Datafeed(asset, ws, setIsChartLoading),
-          interval: "1D" as const,
+          interval: "1D",
           container: ref.current,
           library_path: "/static/charting_library/",
           locale: "en",
@@ -231,16 +238,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
           try {
             await loadSavedState(chart);
-            console.log("Saved state loaded");
           } catch (error) {
             console.error("Error loading saved state:", error);
           }
-
           setIsInitialLoadComplete(true);
-          console.log("Initial load complete");
-
           const cleanup = setupChangeListeners(widgetInstance);
-          console.log("Change listeners set up");
 
           return cleanup;
         });
