@@ -25,7 +25,7 @@ export const RenderCells = ({
   i,
   closePendingOrder,
 }: any) => {
-  const { isTPSLOpen, setIsTPSLOpen } = useGeneralContext();
+  const { isTPSLOpen, setIsTPSLOpen, setOrderPositions } = useGeneralContext();
   const { ref, toDataURL, toBlob, download, copy } = usePoster({
     backgroundColor: "#0b8c70",
     backgroundImg: "/logo/veeno.png",
@@ -58,7 +58,8 @@ export const RenderCells = ({
         closeTrade,
         i,
         closePendingOrder,
-        setIsTPSLOpen
+        setIsTPSLOpen,
+        setOrderPositions
       )}
       {isTPSLOpen ? <TPSLModal order={order} /> : null}
     </>
@@ -91,7 +92,8 @@ const renderAdditionalCells = (
   closeTrade: Function,
   i: number,
   closePendingOrder: Function,
-  setIsTPSLOpen: Dispatch<SetStateAction<boolean>>
+  setIsTPSLOpen: Dispatch<SetStateAction<boolean>>,
+  setOrderPositions: any
 ) => {
   if (section === Sections.FILLED) {
     return (
@@ -169,7 +171,10 @@ const renderAdditionalCells = (
         </td>
         <td className={cn(tdStyle, "pr-5")}>
           <button
-            onClick={() => closePendingOrder(trade.order_id)}
+            onClick={() => {
+              closePendingOrder(trade.order_id);
+              setOrderPositions([]);
+            }}
             className="h-[30px] w-fit px-2 text-xs text-white bg-terciary border-borderColor-DARK rounded"
           >
             Close
