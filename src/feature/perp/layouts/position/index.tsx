@@ -49,10 +49,8 @@ export const Position = ({ asset }: PositionProps) => {
   });
 
   useEffect(() => {
-    console.log("TO");
-    if (!orderPositions?.length && data?.rows?.length > 0) {
-      console.log("TO");
-      setOrderPositions(data.rows);
+    if (!orderPositions?.length && (data?.rows?.length as number) > 0) {
+      setOrderPositions(data?.rows as any);
     }
   }, [data?.rows]);
 

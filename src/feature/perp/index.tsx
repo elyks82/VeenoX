@@ -222,11 +222,7 @@ export const Perp = ({ asset }: PerpProps) => {
                     <TokenInfo params={params} asset={asset} />
                     <MobilePnL />
                     <MobileSectionSelector />
-                    <TradingViewChart
-                      positions={positions}
-                      asset={asset}
-                      className={""}
-                    />
+                    <TradingViewChart asset={asset} className={""} />
                   </>
                 ) : (
                   <>
@@ -240,11 +236,7 @@ export const Perp = ({ asset }: PerpProps) => {
                           : "hidden"
                       } bg-green`}
                     >
-                      <TradingViewChart
-                        positions={positions}
-                        asset={asset}
-                        className={""}
-                      />
+                      <TradingViewChart asset={asset} className={""} />
                     </div>
                     <div
                       className={`${

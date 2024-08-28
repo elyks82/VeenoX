@@ -34,7 +34,7 @@ export const TPSLModal = ({ order }: any) => {
     orders,
     { cancelAllTPSLOrders, cancelTPSLChildOrder, updateTPSLOrder },
   ] = useOrderStream(order);
-  console.log("ORDER", algoOrder, order);
+  const { setOrderPositions, orderPositions } = useGeneralContext();
 
   //   console.log(
   //     "orde SSr",
@@ -58,10 +58,10 @@ export const TPSLModal = ({ order }: any) => {
     //     entry.quantity === Math.abs(order.position_qty)
     // )?.order_id;
     try {
-      console.log("orderIDISHERE", algoOrder);
       await submit();
       triggerAlert("Success", `Your TP/SL has been placed`);
       setIsTPSLOpen(false);
+      setOrderPositions([]);
       setLoading(false);
     } catch (error) {
       console.error("Erreur lors de la soumission de l'ordre:", error);

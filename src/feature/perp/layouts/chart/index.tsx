@@ -2,7 +2,7 @@ import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
-import { useWS } from "@orderly.network/hooks";
+import { usePositionStream, useWS } from "@orderly.network/hooks";
 import { useEffect, useRef, useState } from "react";
 import { Timezone } from "../../../../../public/static/charting_library/charting_library";
 import { DISABLED_FEATURES, ENABLED_FEATURES } from "./constant";
@@ -15,7 +15,6 @@ interface TradingViewChartProps {
   mobile?: boolean;
   custom_css_url?: string;
   className?: string;
-  positions: any;
 }
 
 const TradingViewChart = ({
@@ -23,13 +22,14 @@ const TradingViewChart = ({
   mobile = false,
   custom_css_url = "../themed.css",
   className = "",
-  positions,
 }: TradingViewChartProps) => {
   const { isChartLoading, setIsChartLoading } = useGeneralContext();
   const ref = useRef<HTMLDivElement>(null);
   const [tvWidget, setTvWidget] = useState<any>(null);
   const ws = useWS();
-  const { orderPositions, setOrderPositions } = useGeneralContext();
+  const { orderPositions } = useGeneralContext();
+  const [orders] = usePositionStream();
+  const [chartLines, setChartLines] = useState<{ [key: string]: any }>({});
 
   const chartInit = () => {
     if (!asset) return;
@@ -48,7 +48,9 @@ const TradingViewChart = ({
           enabled_features: ENABLED_FEATURES,
           disabled_features: [
             ...DISABLED_FEATURES,
-            ...(mobile ? ["left_toolbar"] : []),
+            ...(mobile
+              ? ["left_toolbar"]
+              : ["show_right_widgets_panel_by_default"]),
           ],
           timezone: Intl.DateTimeFormat().resolvedOptions()
             .timeZone as Timezone,
@@ -71,24 +73,65 @@ const TradingViewChart = ({
     );
   };
 
-  const updatePositions = (chart) => {
-    if (positions?.length > 0) {
-      positions.forEach((position) => {
-        console.log("position", position);
-        chart
+  const updatePositions = (chart: any) => {
+    if ((orders?.rows?.length as number) > 0) {
+      Object.values(chartLines).forEach((line) => line.remove());
+      const newChartLines: { [key: string]: any } = {};
+
+      (orders?.rows as any).forEach((position: any) => {
+        const openPriceLine = chart
           .createOrderLine()
           .setText("Open Price")
           .setPrice(position?.average_open_price || 150)
           .setLineWidth(2)
-          .setBodyTextColor("#000");
+          .setBodyTextColor("#000")
+          .setBodyBackgroundColor("#836EF969")
+          .setBodyBorderColor("#836EF9")
+          .setBodyTextColor("#FFF")
+          .setLineColor("#836EF9");
+
+        newChartLines[`open_${position?.algo_order?.algo_order_id}`] =
+          openPriceLine;
+
+        if (position.tp_trigger_price) {
+          const tpLine = chart
+            .createOrderLine()
+            .setText("Take Profit")
+            .setPrice(position.tp_trigger_price || 150)
+            .setLineWidth(2)
+            .setBodyTextColor("#000")
+            .setBodyBackgroundColor("#1c5e57")
+            .setBodyBorderColor("#5FEDDF")
+            .setBodyTextColor("#FFF")
+            .setLineColor("#5FEDDF");
+
+          newChartLines[`tp_${position?.algo_order?.algo_order_id}`] = tpLine;
+        }
+
+        if (position.sl_trigger_price) {
+          const slLine = chart
+            .createOrderLine()
+            .setText("Stop Loss")
+            .setPrice(position?.sl_trigger_price || 150)
+            .setLineWidth(2)
+            .setBodyTextColor("#000")
+            .setBodyBackgroundColor("#4a002b")
+            .setBodyBorderColor("#A0055D")
+            .setBodyTextColor("#FFF")
+            .setLineColor("#A0055D");
+
+          newChartLines[`sl_${position?.algo_order?.algo_order_id}`] = slLine;
+        }
       });
+
+      setChartLines(newChartLines);
     }
   };
 
   useEffect(() => {
     if (tvWidget?.activeChart && orderPositions?.length > 0) {
       const chart = tvWidget.activeChart();
-      updatePositions(chart, orderPositions);
+      updatePositions(chart);
     }
   }, [tvWidget, orderPositions]);
 
