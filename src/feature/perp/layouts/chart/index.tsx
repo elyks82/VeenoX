@@ -84,11 +84,14 @@ const TradingViewChart = ({
           .setText("Open Price")
           .setPrice(position?.average_open_price || 150)
           .setLineWidth(2)
+          .setQuantity(position?.position_qty)
           .setBodyTextColor("#000")
-          .setBodyBackgroundColor("#836EF969")
+          .setBodyBackgroundColor("#836EF9")
           .setBodyBorderColor("#836EF9")
           .setBodyTextColor("#FFF")
-          .setLineColor("#836EF9");
+          .setLineColor("#836EF9")
+          .setQuantityBackgroundColor("#836EF9")
+          .setQuantityBorderColor("#836EF9");
 
         newChartLines[`open_${position?.algo_order?.algo_order_id}`] =
           openPriceLine;
@@ -99,11 +102,12 @@ const TradingViewChart = ({
             .setText("Take Profit")
             .setPrice(position.tp_trigger_price || 150)
             .setLineWidth(2)
+            .setQuantity("")
             .setBodyTextColor("#000")
-            .setBodyBackgroundColor("#1c5e57")
-            .setBodyBorderColor("#5FEDDF")
+            .setBodyBackgroundColor("#427af4")
+            .setBodyBorderColor("#427af4")
             .setBodyTextColor("#FFF")
-            .setLineColor("#5FEDDF");
+            .setLineColor("#427af4");
 
           newChartLines[`tp_${position?.algo_order?.algo_order_id}`] = tpLine;
         }
@@ -114,11 +118,12 @@ const TradingViewChart = ({
             .setText("Stop Loss")
             .setPrice(position?.sl_trigger_price || 150)
             .setLineWidth(2)
+            .setQuantity("")
             .setBodyTextColor("#000")
-            .setBodyBackgroundColor("#4a002b")
-            .setBodyBorderColor("#A0055D")
+            .setBodyBackgroundColor("#F5921A")
+            .setBodyBorderColor("#F5921A")
             .setBodyTextColor("#FFF")
-            .setLineColor("#A0055D");
+            .setLineColor("#F5921A");
 
           newChartLines[`sl_${position?.algo_order?.algo_order_id}`] = slLine;
         }
@@ -133,7 +138,7 @@ const TradingViewChart = ({
       const chart = tvWidget.activeChart();
       updatePositions(chart);
     }
-  }, [tvWidget, orderPositions]);
+  }, [tvWidget, orderPositions, orders?.rows]);
 
   useEffect(() => {
     chartInit();
