@@ -222,7 +222,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           fullscreen: false,
           autosize: true,
           theme: "Dark",
-          overrides: overrides,
           loading_screen: { backgroundColor: "#1B1D22" },
           timezone: Intl.DateTimeFormat().resolvedOptions()
             .timeZone as Timezone,
@@ -232,6 +231,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         const widgetInstance = new Widget(widgetOptions);
 
         widgetInstance.onChartReady(async () => {
+          widgetInstance.applyOverrides(overrides as any);
           setTvWidget(widgetInstance);
 
           const chart = widgetInstance.activeChart();
