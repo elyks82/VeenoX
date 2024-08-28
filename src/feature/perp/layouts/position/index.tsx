@@ -143,6 +143,25 @@ export const Position = ({ asset }: PositionProps) => {
 
   const pnl_change = getPnLChange();
 
+  const getEmptyMessageFromActiveSection = () => {
+    switch (activeSection) {
+      case Sections.POSITION:
+        return "No open order";
+      case Sections.FILLED:
+        return "No filled position";
+      case Sections.ORDER_HISTORY:
+        return "No history";
+      case Sections.PENDING:
+        return "No pending order";
+      case Sections.TP_SL:
+        return "No TP/SL order";
+      default:
+        return "No open order";
+    }
+  };
+
+  const noOrderMessage = getEmptyMessageFromActiveSection();
+
   return (
     <div className="w-full">
       <div className="w-full flex justify-between items-center border-b border-borderColor ">
@@ -151,7 +170,7 @@ export const Position = ({ asset }: PositionProps) => {
             <button
               key={index}
               ref={(el) => (buttonRefs.current[index] = el) as any}
-              className={`text-xs sm:text-sm text-white font-bold p-2.5 ${
+              className={`text-xs sm:text-sm text-white font-medium p-2.5 ${
                 activeSection === index ? "font-bikd" : ""
               }`}
               onClick={() => setActiveSection(index)}
@@ -227,15 +246,16 @@ export const Position = ({ asset }: PositionProps) => {
                 return (
                   <div
                     key={i}
-                    className="flex flex-col pb-7 justify-center text-xs text-white items-center absolute h-[300px] left-1/2"
+                    className="flex flex-col justify-center text-xs text-white items-center absolute h-[260px] left-1/2"
                   >
                     <Image
                       src="/empty/no-result.svg"
                       height={50}
                       width={100}
                       alt="Empty position image"
+                      className="mt-2"
                     />
-                    <p className="mt-2">No trade open</p>
+                    <p className="mt-2">{noOrderMessage}</p>
                   </div>
                 );
               }
@@ -251,6 +271,18 @@ export const Position = ({ asset }: PositionProps) => {
                 </tr>
               );
             })}
+            {!orders?.length ? (
+              <div className="flex flex-col justify-center text-xs text-white items-center absolute h-[260px] left-1/2">
+                <Image
+                  src="/empty/no-result.svg"
+                  height={50}
+                  width={100}
+                  alt="Empty position image"
+                  className="mt-2"
+                />
+                <p className="mt-2">{noOrderMessage}</p>
+              </div>
+            ) : null}
           </tbody>
         </table>
       </div>
