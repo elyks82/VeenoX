@@ -2,7 +2,7 @@ import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
-import { useWS } from "@orderly.network/hooks";
+import { usePositionStream, useWS } from "@orderly.network/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Bar,
@@ -84,7 +84,6 @@ interface CustomDatafeed extends IBasicDataFeed {
   unsubscribeBars: (subscriberUID: string) => void;
 }
 
-// Définition du type pour les options du widget
 interface WidgetOptions extends ChartingLibraryWidgetOptions {
   symbol: string;
   interval: ResolutionString;
@@ -99,7 +98,6 @@ interface WidgetOptions extends ChartingLibraryWidgetOptions {
   timezone: "exchange" | Timezone;
 }
 
-// Type pour l'instance du widget
 type WidgetInstance = IChartingLibraryWidget;
 
 const TradingViewChart: React.FC<TradingViewChartProps> = ({
@@ -113,6 +111,9 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [tvWidget, setTvWidget] = useState<IChartingLibraryWidget | null>(null);
   const ws = useWS();
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
+  const [chartLines, setChartLines] = useState<{ [key: string]: any }>({});
+  const [orders] = usePositionStream();
+  const { orderPositions } = useGeneralContext();
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -272,7 +273,12 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   );
 
   const initChart = useCallback(() => {
-    if (!asset || !ref.current) return;
+    if (!asset || !ref.current) {
+      console.warn(
+        "Asset or ref is not available. Skipping chart initialization."
+      );
+      return;
+    }
 
     import("../../../../../public/static/charting_library").then(
       ({ widget: Widget }) => {
@@ -316,6 +322,70 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       }
     );
   }, [asset, mobile, ws, setupChangeListeners]);
+
+  const updatePositions = (chart: any) => {
+    if ((orders?.rows?.length as number) > 0) {
+      Object.values(chartLines).forEach((line) => line.remove());
+      const newChartLines: { [key: string]: any } = {};
+      ((orders?.rows as any) || []).forEach((position: any) => {
+        const openPriceLine = chart
+          .createOrderLine()
+          .setText("Open Price")
+          .setPrice(position?.average_open_price || 150)
+          .setLineWidth(2)
+          .setQuantity(position?.position_qty)
+          .setBodyTextColor("#000")
+          .setBodyBackgroundColor("#836EF9")
+          .setBodyBorderColor("#836EF9")
+          .setBodyTextColor("#FFF")
+          .setLineColor("#836EF9")
+          .setQuantityBackgroundColor("#836EF9")
+          .setQuantityBorderColor("#836EF9");
+        newChartLines[`open_${position?.algo_order?.algo_order_id}`] =
+          openPriceLine;
+        if (position.tp_trigger_price) {
+          const tpLine = chart
+            .createOrderLine()
+            .setText("Take Profit")
+            .setPrice(position.tp_trigger_price || 150)
+            .setLineWidth(2)
+            .setQuantity("")
+            .setBodyTextColor("#000")
+            .setBodyBackgroundColor("#427af4")
+            .setBodyBorderColor("#427af4")
+            .setBodyTextColor("#FFF")
+            .setLineColor("#427af4");
+          newChartLines[`tp_${position?.algo_order?.algo_order_id}`] = tpLine;
+        }
+        if (position.sl_trigger_price) {
+          const slLine = chart
+            .createOrderLine()
+            .setText("Stop Loss")
+            .setPrice(position?.sl_trigger_price || 150)
+            .setLineWidth(2)
+            .setQuantity("")
+            .setBodyTextColor("#000")
+            .setBodyBackgroundColor("#F5921A")
+            .setBodyBorderColor("#F5921A")
+            .setBodyTextColor("#FFF")
+            .setLineColor("#F5921A");
+          newChartLines[`sl_${position?.algo_order?.algo_order_id}`] = slLine;
+        }
+      });
+      setChartLines(newChartLines);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      tvWidget?.activeChart &&
+      orderPositions?.length > 0 &&
+      tvWidget !== null
+    ) {
+      const chart = tvWidget?.activeChart();
+      if (chart) updatePositions(chart);
+    }
+  }, [tvWidget, orderPositions, orders?.rows]);
 
   useEffect(() => {
     initChart();

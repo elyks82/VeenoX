@@ -246,10 +246,10 @@ const renderAdditionalCells = (
               TP/SL
             </button>
             <button
-              onClick={() => closeTrade(i)}
+              onClick={() => closeTrade(trade.symbol, i)}
               className="h-[30px] w-fit px-2.5 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
             >
-              Close
+              Close {trade.symbol}
             </button>
           </div>
         </td>
