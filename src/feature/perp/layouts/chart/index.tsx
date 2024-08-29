@@ -5,7 +5,15 @@ import { formatSymbol } from "@/utils/misc";
 import { useWS } from "@orderly.network/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  Bar,
+  ChartingLibraryWidgetOptions,
+  HistoryMetadata,
+  IBasicDataFeed,
   IChartingLibraryWidget,
+  LanguageCode,
+  LibrarySymbolInfo,
+  ResolutionString,
+  SearchSymbolResultItem,
   Timezone,
 } from "../../../../../public/static/charting_library/charting_library";
 import { DISABLED_FEATURES, ENABLED_FEATURES } from "./constant";
@@ -32,6 +40,67 @@ interface ChartState {
   symbol: string;
   interval: string;
 }
+
+interface IChartWidgetApi {
+  onDataLoaded(): ISubscription;
+  onSymbolChanged(): ISubscription;
+  onIntervalChanged(): ISubscription;
+}
+
+interface ISubscription {
+  unsubscribeAll(obj?: object): void;
+}
+interface CustomDatafeed extends IBasicDataFeed {
+  onReady: (
+    callback: (configuration: {
+      supported_resolutions: ResolutionString[];
+    }) => void
+  ) => void;
+  resolveSymbol: (
+    symbolName: string,
+    onResolve: (symbolInfo: LibrarySymbolInfo) => void,
+    onError: (reason: string) => void
+  ) => void;
+  getBars: (
+    symbolInfo: LibrarySymbolInfo,
+    resolution: ResolutionString,
+    periodParams: { from: number; to: number; firstDataRequest: boolean },
+    onResult: (bars: Bar[], meta: HistoryMetadata) => void,
+    onError: (reason: string) => void
+  ) => void;
+  searchSymbols: (
+    userInput: string,
+    exchange: string,
+    symbolType: string,
+    onResult: (result: SearchSymbolResultItem[]) => void
+  ) => void;
+  subscribeBars: (
+    symbolInfo: LibrarySymbolInfo,
+    resolution: ResolutionString,
+    onRealtimeCallback: (bar: Bar) => void,
+    subscriberUID: string,
+    onResetCacheNeededCallback: () => void
+  ) => void;
+  unsubscribeBars: (subscriberUID: string) => void;
+}
+
+// Définition du type pour les options du widget
+interface WidgetOptions extends ChartingLibraryWidgetOptions {
+  symbol: string;
+  interval: ResolutionString;
+  datafeed: CustomDatafeed;
+  locale: LanguageCode;
+  enabled_features: string[];
+  disabled_features: string[];
+  fullscreen: boolean;
+  autosize: boolean;
+  theme: "Light" | "Dark";
+  loading_screen: { backgroundColor: string };
+  timezone: "exchange" | Timezone;
+}
+
+// Type pour l'instance du widget
+type WidgetInstance = IChartingLibraryWidget;
 
 const TradingViewChart: React.FC<TradingViewChartProps> = ({
   asset,
@@ -121,7 +190,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           console.warn("setSymbol is not available or not a function");
         }
 
-        const promises = [];
+        const promises: Promise<void>[] = [];
 
         parsedState.drawings.forEach((drawing: any) => {
           try {
@@ -190,9 +259,9 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
       return () => {
         try {
-          chart.onDataLoaded().unsubscribeAll();
-          chart.onSymbolChanged().unsubscribeAll();
-          chart.onIntervalChanged().unsubscribeAll();
+          chart.onDataLoaded().unsubscribeAll(saveState);
+          chart.onSymbolChanged().unsubscribeAll(saveState);
+          chart.onIntervalChanged().unsubscribeAll(saveState);
         } catch (error) {
           console.error("Error removing chart listeners:", error);
         }
@@ -207,12 +276,10 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
     import("../../../../../public/static/charting_library").then(
       ({ widget: Widget }) => {
-        const widgetOptions = {
+        const widgetOptions: WidgetOptions = {
           symbol: formatSymbol(asset?.symbol),
-          datafeed: Datafeed(asset, ws, setIsChartLoading),
-          interval: "1D",
-          container: ref.current,
-          library_path: "/static/charting_library/",
+          datafeed: Datafeed(asset, ws, setIsChartLoading) as never,
+          container: ref.current as never,
           locale: "en",
           enabled_features: ENABLED_FEATURES,
           disabled_features: [
