@@ -31,15 +31,17 @@ export const overrides = {
   "scalesProperties.fontSize": 12,
   "scalesProperties.textColor": "#FFFFFF",
 
-  volumePaneSize: "small",
   "mainSeriesProperties.priceLineVisible": true,
   "mainSeriesProperties.crossHairMarkerVisible": true,
+
+  "mainSeriesProperties.statusViewStyle.background": "#00FF00", // Changez cette couleur selon vos besoins
+  "mainSeriesProperties.statusViewStyle.borderColor": "#000000",
 
   "scalesProperties.scaleMargins": {
     // Ajustez les marges de l'échelle
     top: 0.1,
     bottom: 0.1,
-    right: 100,
+    right: 0,
   },
-  "paneProperties.padding": 100,
+  "paneProperties.padding": 0,
 };

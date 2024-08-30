@@ -12,5 +12,4 @@ export const widgetOptionsDefault = {
     TRADING_VIEW_DEFAULTS.CHARTS_STORAGE_API_VERSION as AvailableSaveloadVersions,
   client_id: TRADING_VIEW_DEFAULTS.CLIENT_ID as string,
   user_id: TRADING_VIEW_DEFAULTS.USER_ID as string,
-  custom_css_url: TRADING_VIEW_DEFAULTS.CUSTOM_CSS as string,
 };

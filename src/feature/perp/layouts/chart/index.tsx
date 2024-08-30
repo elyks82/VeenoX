@@ -3,6 +3,7 @@ import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
 import { usePositionStream, useWS } from "@orderly.network/hooks";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Bar,
@@ -284,28 +285,39 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
     import("../../../../../public/static/charting_library").then(
       ({ widget: Widget }) => {
+        console.log("asset?.symbol", asset?.symbol);
         const widgetOptions: WidgetOptions = {
           symbol: formatSymbol(asset?.symbol),
           datafeed: Datafeed(asset, ws, setIsChartLoading) as never,
           container: ref.current as never,
+          container_id: ref.current?.id as never,
           locale: "en",
+          disabled_features: DISABLED_FEATURES,
           enabled_features: ENABLED_FEATURES,
-          disabled_features: [
-            ...DISABLED_FEATURES,
-            ...(mobile ? ["left_toolbar"] : []),
-          ],
           fullscreen: false,
           autosize: true,
           theme: "Dark",
+          custom_css_url: "/static/pro.css",
           loading_screen: { backgroundColor: "#1B1D22" },
+
           timezone: Intl.DateTimeFormat().resolvedOptions()
             .timeZone as Timezone,
           ...widgetOptionsDefault,
+          studies_overrides: {
+            "volume.volume.color.0": "#0ECB81",
+            "volume.volume.color.1": "#ea4339",
+            "volume.volume.transparency": 50,
+          },
+          overrides: {
+            volumePaneSize: "small",
+          },
         };
 
         const widgetInstance = new Widget(widgetOptions);
 
         widgetInstance.onChartReady(async () => {
+          widgetInstance.activeChart().getTimeScale().setRightOffset(0);
+
           widgetInstance.applyOverrides(overrides as any);
           setTvWidget(widgetInstance);
           setIsChartReady(true);
@@ -420,13 +432,22 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       } catch (e) {
         console.log("e", e);
       }
-  }, [orders?.rows]);
+  }, [orders?.rows, asset?.symbol]);
+
+  const params = useParams();
+  console.log(params);
 
   useEffect(() => {
-    if (isChartReady && chartRef.current) {
+    if (chartRef.current && isChartReady) {
       updatePositions();
     }
-  }, [isChartReady, orders?.rows, updatePositions]);
+  }, [
+    orders?.rows,
+    updatePositions,
+    params?.perp,
+    asset?.symbol,
+    isChartReady,
+  ]);
 
   useEffect(() => {
     initChart();

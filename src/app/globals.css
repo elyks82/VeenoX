@@ -26,6 +26,7 @@ body {
   user-select: none;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 * {
@@ -229,4 +230,17 @@ input[type="number"] {
   background-color: transparent;
   width: 5px;
   height: 100%;
+}
+
+.tv-floating-toolbar,
+.tvcolorpicker-popup,
+.chart-popup {
+  background-color: #ff0000 !important;
+}
+
+/* Personnalisation du texte dans les popups */
+.tv-floating-toolbar *,
+.tvcolorpicker-popup *,
+.chart-popup * {
+  color: #ff0000 !important;
 }

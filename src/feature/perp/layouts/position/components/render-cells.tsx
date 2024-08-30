@@ -1,11 +1,12 @@
 import { useGeneralContext } from "@/context";
+import { triggerAlert } from "@/lib/toaster";
 import { cn } from "@/utils/cn";
 import {
   formatSymbol,
   getFormattedAmount,
   getFormattedDate,
 } from "@/utils/misc";
-import { usePoster } from "@orderly.network/hooks";
+import { useOrderEntry, usePoster } from "@orderly.network/hooks";
 import { Dispatch, SetStateAction, useState } from "react";
 import { TPSLModal } from "./tp-sl-modal";
 
@@ -21,8 +22,6 @@ enum Sections {
 export const RenderCells = ({
   order,
   activeSection,
-  closeTrade,
-  i,
   closePendingOrder,
 }: any) => {
   const { isTPSLOpen, setIsTPSLOpen, setOrderPositions } = useGeneralContext();
@@ -44,22 +43,26 @@ export const RenderCells = ({
     setImagePreview(imageUrl as never);
   };
 
+  const { onSubmit } = useOrderEntry(
+    {
+      symbol: order.symbol,
+      side: (order.position_qty as number) >= 0 ? "SELL" : ("BUY" as any),
+      order_type: "MARKET" as any,
+      order_quantity: order?.position_qty,
+    },
+    { watchOrderbook: true }
+  );
+
   return (
     <>
-      {/* <button onClick={handlePreview}>Générer l'aperçu</button>
-      {imagePreview && <img src={imagePreview} alt="Aperçu du poster" />}
-      <canvas ref={ref} /> */}
-      {/* Créez vos champs de formulaire ici */}
-
       {renderCommonCells(order)}
       {renderAdditionalCells(
         order,
         activeSection,
-        closeTrade,
-        i,
         closePendingOrder,
         setIsTPSLOpen,
-        setOrderPositions
+        setOrderPositions,
+        onSubmit
       )}
       {isTPSLOpen ? <TPSLModal order={order} /> : null}
     </>
@@ -89,11 +92,10 @@ const renderCommonCells = (trade: any) => (
 const renderAdditionalCells = (
   trade: any,
   section: Sections,
-  closeTrade: Function,
-  i: number,
   closePendingOrder: Function,
   setIsTPSLOpen: Dispatch<SetStateAction<boolean>>,
-  setOrderPositions: any
+  setOrderPositions: any,
+  onSubmit: any
 ) => {
   if (section === Sections.FILLED) {
     return (
@@ -246,7 +248,33 @@ const renderAdditionalCells = (
               TP/SL
             </button>
             <button
-              onClick={() => closeTrade(trade.symbol, i)}
+              onClick={async () => {
+                const qty = trade.position_qty as number;
+                const side = qty >= 0 ? "SELL" : "BUY";
+
+                const cancelOrder: any = {
+                  symbol: trade.symbol,
+                  side: side as any,
+                  order_type: "MARKET" as any,
+                  order_price: undefined,
+                  order_quantity: Math.abs(qty as number),
+                  trigger_price: undefined,
+                  reduce_only: true,
+                };
+
+                try {
+                  console.log("Submitting order:", cancelOrder);
+                  await onSubmit(cancelOrder);
+                  triggerAlert("Success", "Position is successfully closed");
+                  setOrderPositions([]);
+                } catch (e) {
+                  console.log("Error closing position:", e);
+                  triggerAlert(
+                    "Error",
+                    "Failed to close position. Please try again."
+                  );
+                }
+              }}
               className="h-[30px] w-fit px-2.5 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
             >
               Close {trade.symbol}
