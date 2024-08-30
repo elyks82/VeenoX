@@ -297,6 +297,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           fullscreen: false,
           autosize: true,
           theme: "Dark",
+          custom_css_url: "/static/pro.css",
           loading_screen: { backgroundColor: "#1B1D22" },
           timezone: Intl.DateTimeFormat().resolvedOptions()
             .timeZone as Timezone,

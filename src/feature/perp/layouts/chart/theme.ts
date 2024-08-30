@@ -34,6 +34,9 @@ export const overrides = {
   "mainSeriesProperties.priceLineVisible": true,
   "mainSeriesProperties.crossHairMarkerVisible": true,
 
+  "mainSeriesProperties.statusViewStyle.background": "#00FF00", // Changez cette couleur selon vos besoins
+  "mainSeriesProperties.statusViewStyle.borderColor": "#000000",
+
   "scalesProperties.scaleMargins": {
     // Ajustez les marges de l'échelle
     top: 0.1,
