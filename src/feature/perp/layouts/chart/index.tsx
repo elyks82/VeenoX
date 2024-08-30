@@ -3,6 +3,7 @@ import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
 import { usePositionStream, useWS } from "@orderly.network/hooks";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Bar,
@@ -433,11 +434,20 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       }
   }, [orders?.rows, asset?.symbol]);
 
+  const params = useParams();
+  console.log(params);
+
   useEffect(() => {
-    if (isChartReady && chartRef.current) {
+    if (chartRef.current && isChartReady) {
       updatePositions();
     }
-  }, [isChartReady, orders?.rows, updatePositions, asset?.symbol]);
+  }, [
+    orders?.rows,
+    updatePositions,
+    params?.perp,
+    asset?.symbol,
+    isChartReady,
+  ]);
 
   useEffect(() => {
     initChart();

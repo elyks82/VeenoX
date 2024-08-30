@@ -43,6 +43,16 @@ export const RenderCells = ({
     setImagePreview(imageUrl as never);
   };
 
+  const { onSubmit } = useOrderEntry(
+    {
+      symbol: order.symbol,
+      side: (order.position_qty as number) >= 0 ? "SELL" : ("BUY" as any),
+      order_type: "MARKET" as any,
+      order_quantity: order?.position_qty,
+    },
+    { watchOrderbook: true }
+  );
+
   return (
     <>
       {renderCommonCells(order)}
@@ -51,7 +61,8 @@ export const RenderCells = ({
         activeSection,
         closePendingOrder,
         setIsTPSLOpen,
-        setOrderPositions
+        setOrderPositions,
+        onSubmit
       )}
       {isTPSLOpen ? <TPSLModal order={order} /> : null}
     </>
@@ -83,17 +94,9 @@ const renderAdditionalCells = (
   section: Sections,
   closePendingOrder: Function,
   setIsTPSLOpen: Dispatch<SetStateAction<boolean>>,
-  setOrderPositions: any
+  setOrderPositions: any,
+  onSubmit: any
 ) => {
-  const { onSubmit } = useOrderEntry(
-    {
-      symbol: trade.symbol,
-      side: (trade.position_qty as number) >= 0 ? "SELL" : ("BUY" as any),
-      order_type: "MARKET" as any,
-      order_quantity: trade?.position_qty,
-    },
-    { watchOrderbook: true }
-  );
   if (section === Sections.FILLED) {
     return (
       <>
