@@ -337,11 +337,8 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
   const updatePositions = useCallback(() => {
     const chart = chartRef.current;
-    console.log("chart", chart);
     if (chart)
       try {
-        console.log("to");
-
         const relevantPositions =
           orders?.rows?.filter(
             (position: any) => position.symbol === asset?.symbol
@@ -368,13 +365,18 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         prevPositionsRef.current = relevantPositions;
 
         Object.entries(chartLines).forEach(([id, line]) => {
-          if (line && chart.removeEntity) {
-            chart.removeEntity(id);
-          }
+          line.remove();
         });
+
         const newChartLines: { [key: string]: any } = {};
-        console.log("orders", orders?.rows);
+
+        console.log("relevantPositions", relevantPositions, chartLines);
         relevantPositions?.forEach((position: any) => {
+          console.log(
+            "orders",
+            position.tp_trigger_price,
+            position.sl_trigger_price
+          );
           if (position.symbol !== asset?.symbol) return;
           const openPriceLineId = `open_${position?.algo_order?.algo_order_id}`;
 
