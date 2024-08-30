@@ -31,7 +31,6 @@ export const overrides = {
   "scalesProperties.fontSize": 12,
   "scalesProperties.textColor": "#FFFFFF",
 
-  volumePaneSize: "small",
   "mainSeriesProperties.priceLineVisible": true,
   "mainSeriesProperties.crossHairMarkerVisible": true,
 
@@ -39,7 +38,7 @@ export const overrides = {
     // Ajustez les marges de l'échelle
     top: 0.1,
     bottom: 0.1,
-    right: 100,
+    right: 0,
   },
-  "paneProperties.padding": 100,
+  "paneProperties.padding": 0,
 };

@@ -289,11 +289,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           datafeed: Datafeed(asset, ws, setIsChartLoading) as never,
           container: ref.current as never,
           locale: "en",
-          enabled_features: ENABLED_FEATURES,
           disabled_features: [
             ...DISABLED_FEATURES,
             ...(mobile ? ["left_toolbar"] : []),
           ],
+          enabled_features: ENABLED_FEATURES,
           fullscreen: false,
           autosize: true,
           theme: "Dark",
@@ -301,6 +301,14 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           timezone: Intl.DateTimeFormat().resolvedOptions()
             .timeZone as Timezone,
           ...widgetOptionsDefault,
+          studies_overrides: {
+            "volume.volume.color.0": "#0ECB81",
+            "volume.volume.color.1": "#ea4339",
+            "volume.volume.transparency": 50,
+          },
+          overrides: {
+            volumePaneSize: "small",
+          },
         };
 
         const widgetInstance = new Widget(widgetOptions);
