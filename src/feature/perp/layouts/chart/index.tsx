@@ -114,6 +114,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [chartLines, setChartLines] = useState<{ [key: string]: any }>({});
   const [orders] = usePositionStream();
   const { orderPositions } = useGeneralContext();
+  const [isChartReady, setIsChartReady] = useState(false);
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -304,8 +305,10 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         const widgetInstance = new Widget(widgetOptions);
 
         widgetInstance.onChartReady(async () => {
+          console.log("Chart is ready");
           widgetInstance.applyOverrides(overrides as any);
           setTvWidget(widgetInstance);
+          setIsChartReady(true);
 
           const chart = widgetInstance.activeChart();
 
@@ -314,8 +317,10 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           } catch (error) {
             console.error("Error loading saved state:", error);
           }
-          setIsInitialLoadComplete(true);
+
           const cleanup = setupChangeListeners(widgetInstance);
+
+          updatePositions(chart);
 
           return cleanup;
         });
@@ -323,11 +328,15 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     );
   }, [asset, mobile, ws, setupChangeListeners]);
 
-  const updatePositions = (chart: any) => {
-    if ((orders?.rows?.length as number) > 0) {
+  const updatePositions = useCallback(
+    (chart: any) => {
+      if (!chart || !orders?.rows || orders.rows.length === 0) return;
+
       Object.values(chartLines).forEach((line) => line.remove());
       const newChartLines: { [key: string]: any } = {};
-      ((orders?.rows as any) || []).forEach((position: any) => {
+
+      orders.rows.forEach((position: any) => {
+        if (position.symbol !== asset?.symbol) return;
         const openPriceLine = chart
           .createOrderLine()
           .setText("Open Price")
@@ -343,6 +352,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           .setQuantityBorderColor("#836EF9");
         newChartLines[`open_${position?.algo_order?.algo_order_id}`] =
           openPriceLine;
+
         if (position.tp_trigger_price) {
           const tpLine = chart
             .createOrderLine()
@@ -357,6 +367,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             .setLineColor("#427af4");
           newChartLines[`tp_${position?.algo_order?.algo_order_id}`] = tpLine;
         }
+
         if (position.sl_trigger_price) {
           const slLine = chart
             .createOrderLine()
@@ -372,20 +383,20 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           newChartLines[`sl_${position?.algo_order?.algo_order_id}`] = slLine;
         }
       });
+
       setChartLines(newChartLines);
-    }
-  };
+    },
+    [orders?.rows]
+  );
 
   useEffect(() => {
-    if (
-      tvWidget?.activeChart &&
-      orderPositions?.length > 0 &&
-      tvWidget !== null
-    ) {
-      const chart = tvWidget?.activeChart();
-      if (chart) updatePositions(chart);
+    if (isChartReady && tvWidget) {
+      const chart = tvWidget.activeChart();
+      if (chart) {
+        updatePositions(chart);
+      }
     }
-  }, [tvWidget, orderPositions, orders?.rows]);
+  }, [isChartReady, tvWidget, updatePositions, orders?.rows]);
 
   useEffect(() => {
     initChart();
