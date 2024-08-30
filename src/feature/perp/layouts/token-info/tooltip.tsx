@@ -4,7 +4,6 @@ import { formatSymbol, getFormattedAmount } from "@/utils/misc";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaStar } from "react-icons/fa6";
 
 export const PairSelector = ({ params }: FavoriteProps) => {
   const {
@@ -114,9 +113,9 @@ export const PairSelector = ({ params }: FavoriteProps) => {
                   >
                     <td className="py-1">
                       <div className="w-full h-full flex items-center">
-                        <button className="mr-2" onClick={() => {}}>
+                        {/* <button className="mr-2" onClick={() => {}}>
                           <FaStar className="text-xs " />{" "}
-                        </button>
+                        </button> */}
                         <Link
                           className={`hover:text-white ${
                             isActivePair ? "text-base_color" : "text-white"

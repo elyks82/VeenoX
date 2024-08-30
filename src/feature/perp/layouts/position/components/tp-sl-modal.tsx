@@ -34,7 +34,7 @@ export const TPSLModal = ({ order }: any) => {
     orders,
     { cancelAllTPSLOrders, cancelTPSLChildOrder, updateTPSLOrder },
   ] = useOrderStream(order);
-  const { setOrderPositions, orderPositions } = useGeneralContext();
+  const { setOrderPositions } = useGeneralContext();
 
   //   console.log(
   //     "orde SSr",
@@ -75,6 +75,7 @@ export const TPSLModal = ({ order }: any) => {
     try {
       await cancelAllTPSLOrders();
       triggerAlert("Success", "TP/SL has been reset");
+      setOrderPositions([]);
       setIsTPSLOpen(false);
     } catch (e) {
       triggerAlert("Error", "An error happened during cancel tp/sl order");

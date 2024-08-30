@@ -133,7 +133,7 @@ export const Perp = ({ asset }: PerpProps) => {
   };
 
   useEffect(() => {
-    setTimeout(() => setIsChartLoading(false), 7000);
+    setTimeout(() => setIsChartLoading(false), 3000);
     const handleResize = () => {
       if (window.innerWidth <= 600) {
         setColWidths([1, 1]);
