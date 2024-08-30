@@ -22,8 +22,6 @@ enum Sections {
 export const RenderCells = ({
   order,
   activeSection,
-  closeTrade,
-  i,
   closePendingOrder,
 }: any) => {
   const { isTPSLOpen, setIsTPSLOpen, setOrderPositions } = useGeneralContext();
@@ -47,17 +45,10 @@ export const RenderCells = ({
 
   return (
     <>
-      {/* <button onClick={handlePreview}>Générer l'aperçu</button>
-      {imagePreview && <img src={imagePreview} alt="Aperçu du poster" />}
-      <canvas ref={ref} /> */}
-      {/* Créez vos champs de formulaire ici */}
-
       {renderCommonCells(order)}
       {renderAdditionalCells(
         order,
         activeSection,
-        closeTrade,
-        i,
         closePendingOrder,
         setIsTPSLOpen,
         setOrderPositions
