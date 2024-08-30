@@ -251,7 +251,8 @@ export const Position = ({ asset }: PositionProps) => {
                 </tr>
               );
             })}
-            {!orders?.length ? (
+            {(!orders?.length && activeSection !== Sections.POSITION) ||
+            (activeSection === Sections.POSITION && !data?.rows?.length) ? (
               <div className="flex flex-col justify-center text-xs text-white items-center absolute h-[260px] left-1/2">
                 <Image
                   src="/empty/no-result.svg"

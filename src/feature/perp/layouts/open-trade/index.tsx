@@ -152,7 +152,7 @@ export const OpenTrade = ({
       setOrderPositions(val as any);
       setValues(defaultValues);
     } catch (err) {
-      triggerAlert("Error", "An error happen, please try  again");
+      console.log("errerrerrerr", err);
     }
   };
 

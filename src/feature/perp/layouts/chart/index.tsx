@@ -284,6 +284,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
     import("../../../../../public/static/charting_library").then(
       ({ widget: Widget }) => {
+        console.log("asset?.symbol", asset?.symbol);
         const widgetOptions: WidgetOptions = {
           symbol: formatSymbol(asset?.symbol),
           datafeed: Datafeed(asset, ws, setIsChartLoading) as never,
@@ -430,13 +431,13 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       } catch (e) {
         console.log("e", e);
       }
-  }, [orders?.rows]);
+  }, [orders?.rows, asset?.symbol]);
 
   useEffect(() => {
     if (isChartReady && chartRef.current) {
       updatePositions();
     }
-  }, [isChartReady, orders?.rows, updatePositions]);
+  }, [isChartReady, orders?.rows, updatePositions, asset?.symbol]);
 
   useEffect(() => {
     initChart();
