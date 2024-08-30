@@ -152,6 +152,7 @@ export const OpenTrade = ({
       setOrderPositions(val as any);
       setValues(defaultValues);
     } catch (err) {
+      triggerAlert("Error", err.stack);
       console.log("err", err);
     }
   };

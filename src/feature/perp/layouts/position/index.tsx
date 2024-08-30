@@ -8,7 +8,6 @@ import {
   useOrderStream,
   usePositionStream,
 } from "@orderly.network/hooks";
-import { OrderEntity } from "@orderly.network/types";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { RenderCells } from "./components/render-cells";
@@ -87,32 +86,6 @@ export const Position = ({ asset }: PositionProps) => {
     },
     { watchOrderbook: true }
   );
-
-  const closeTrade = async (symbol: string, i: number) => {
-    const qty = data?.rows?.[0].position_qty as number;
-    console.log("Position quantity:", data?.rows);
-    const side = qty >= 0 ? "SELL" : "BUY";
-
-    const cancelOrder: OrderEntity = {
-      symbol: symbol,
-      side: side as any,
-      order_type: "MARKET" as any,
-      order_price: undefined,
-      order_quantity: Math.abs(data?.rows?.[i].position_qty as number),
-      trigger_price: undefined,
-      reduce_only: true,
-    };
-
-    try {
-      console.log("Submitting order:", cancelOrder);
-      await onSubmit(cancelOrder);
-      triggerAlert("Success", "Position is successfully closed");
-      setOrderPositions([]);
-    } catch (e) {
-      console.log("Error closing position:", e);
-      triggerAlert("Error", "Failed to close position. Please try again.");
-    }
-  };
 
   const closePendingOrder = async (id: number) => {
     await cancelOrder(id, asset?.symbol);
@@ -273,8 +246,6 @@ export const Position = ({ asset }: PositionProps) => {
                   <RenderCells
                     order={order}
                     activeSection={activeSection}
-                    closeTrade={closeTrade}
-                    i={i}
                     closePendingOrder={closePendingOrder}
                   />
                 </tr>
