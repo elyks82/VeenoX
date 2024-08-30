@@ -306,7 +306,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         const widgetInstance = new Widget(widgetOptions);
 
         widgetInstance.onChartReady(async () => {
-          console.log("Chart is ready");
           widgetInstance.applyOverrides(overrides as any);
           setTvWidget(widgetInstance);
           setIsChartReady(true);
