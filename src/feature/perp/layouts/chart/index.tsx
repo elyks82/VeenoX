@@ -115,6 +115,8 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [orders] = usePositionStream();
   const { orderPositions } = useGeneralContext();
   const [isChartReady, setIsChartReady] = useState(false);
+  const chartRef = useRef<any>(null);
+  const prevPositionsRef = useRef("");
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -129,12 +131,12 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         symbol: chart.symbol(),
         interval: chart.resolution(),
       };
-
+      console.log("updatedState");
       const savedStateString = localStorage.getItem("chartState");
       const savedState: ChartState = savedStateString
         ? JSON.parse(savedStateString)
         : { drawings: [], studies: [], symbol: "", interval: "" };
-
+      console.log("updatedState");
       const updateElements = (
         currentElements: ChartElement[],
         savedElements: ChartElement[]
@@ -150,26 +152,28 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           return true;
         });
       };
-
+      console.log("updatedState");
       const updatedState: ChartState = {
         drawings: updateElements(currentState.drawings, savedState.drawings),
         studies: updateElements(currentState.studies, savedState.studies),
         symbol: currentState.symbol,
         interval: currentState.interval,
       };
-
+      console.log("updatedState");
       updatedState.drawings = [
         ...updatedState.drawings,
         ...savedState.drawings.filter((s) =>
           currentState.drawings.some((c) => c.name === s.name)
         ),
       ];
+      console.log("updatedState");
       updatedState.studies = [
         ...updatedState.studies,
         ...savedState.studies.filter((s) =>
           currentState.studies.some((c) => c.name === s.name)
         ),
       ];
+      console.log("updatedState");
 
       localStorage.setItem("chartState", JSON.stringify(updatedState));
     },
@@ -179,6 +183,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const loadSavedState = async (chart: any) => {
     return new Promise<void>((resolve) => {
       const savedState = localStorage.getItem("chartState");
+      console.log("saved", savedState);
       if (savedState) {
         const parsedState = JSON.parse(savedState);
 
@@ -238,7 +243,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const setupChangeListeners = useCallback(
     (widget: IChartingLibraryWidget) => {
       const chart = widget.activeChart();
-
+      chartRef.current = chart;
       const saveState = () => {
         saveChartState(chart);
       };
@@ -311,6 +316,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           setIsChartReady(true);
 
           const chart = widgetInstance.activeChart();
+          chartRef.current = widgetInstance;
 
           try {
             await loadSavedState(chart);
@@ -318,9 +324,10 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             console.error("Error loading saved state:", error);
           }
 
+          setIsInitialLoadComplete(true);
           const cleanup = setupChangeListeners(widgetInstance);
 
-          updatePositions(chart);
+          updatePositions();
 
           return cleanup;
         });
@@ -328,82 +335,115 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     );
   }, [asset, mobile, ws, setupChangeListeners]);
 
-  const updatePositions = useCallback(
-    (chart: any) => {
-      if (!chart || !orders?.rows || orders.rows.length === 0) return;
+  const updatePositions = useCallback(() => {
+    const chart = chartRef.current;
+    console.log("chart", chart);
+    if (chart)
+      try {
+        console.log("to");
 
-      Object.values(chartLines).forEach((line) => line.remove());
-      const newChartLines: { [key: string]: any } = {};
+        const relevantPositions =
+          orders?.rows?.filter(
+            (position: any) => position.symbol === asset?.symbol
+          ) || [];
 
-      orders.rows.forEach((position: any) => {
-        if (position.symbol !== asset?.symbol) return;
-        const openPriceLine = chart
-          .createOrderLine()
-          .setText("Open Price")
-          .setPrice(position?.average_open_price || 150)
-          .setLineWidth(2)
-          .setQuantity(position?.position_qty)
-          .setBodyTextColor("#000")
-          .setBodyBackgroundColor("#836EF9")
-          .setBodyBorderColor("#836EF9")
-          .setBodyTextColor("#FFF")
-          .setLineColor("#836EF9")
-          .setQuantityBackgroundColor("#836EF9")
-          .setQuantityBorderColor("#836EF9");
-        newChartLines[`open_${position?.algo_order?.algo_order_id}`] =
-          openPriceLine;
+        const hasPositionsChanged =
+          relevantPositions.length !== prevPositionsRef.current.length ||
+          relevantPositions.some((newPos: any, index: number) => {
+            const oldPos = prevPositionsRef.current[index];
+            return (
+              !oldPos ||
+              newPos.average_open_price !== oldPos.average_open_price ||
+              newPos.tp_trigger_price !== oldPos.tp_trigger_price ||
+              newPos.sl_trigger_price !== oldPos.sl_trigger_price ||
+              newPos.position_qty !== oldPos.position_qty
+            );
+          });
 
-        if (position.tp_trigger_price) {
-          const tpLine = chart
-            .createOrderLine()
-            .setText("Take Profit")
-            .setPrice(position.tp_trigger_price || 150)
-            .setLineWidth(2)
-            .setQuantity("")
-            .setBodyTextColor("#000")
-            .setBodyBackgroundColor("#427af4")
-            .setBodyBorderColor("#427af4")
-            .setBodyTextColor("#FFF")
-            .setLineColor("#427af4");
-          newChartLines[`tp_${position?.algo_order?.algo_order_id}`] = tpLine;
+        if (!hasPositionsChanged) {
+          console.log("Positions unchanged, skipping update");
+          return;
         }
 
-        if (position.sl_trigger_price) {
-          const slLine = chart
-            .createOrderLine()
-            .setText("Stop Loss")
-            .setPrice(position?.sl_trigger_price || 150)
-            .setLineWidth(2)
-            .setQuantity("")
-            .setBodyTextColor("#000")
-            .setBodyBackgroundColor("#F5921A")
-            .setBodyBorderColor("#F5921A")
-            .setBodyTextColor("#FFF")
-            .setLineColor("#F5921A");
-          newChartLines[`sl_${position?.algo_order?.algo_order_id}`] = slLine;
-        }
-      });
+        prevPositionsRef.current = relevantPositions;
 
-      setChartLines(newChartLines);
-    },
-    [orders?.rows]
-  );
+        Object.entries(chartLines).forEach(([id, line]) => {
+          if (line && chart.removeEntity) {
+            chart.removeEntity(id);
+          }
+        });
+        const newChartLines: { [key: string]: any } = {};
+        console.log("orders", orders?.rows);
+        relevantPositions?.forEach((position: any) => {
+          if (position.symbol !== asset?.symbol) return;
+          const openPriceLineId = `open_${position?.algo_order?.algo_order_id}`;
+
+          const openPriceLine = chart
+            .createOrderLine()
+            .setText("Open Price")
+            .setPrice(position?.average_open_price || 150)
+            .setLineWidth(2)
+            .setQuantity(position?.position_qty)
+            .setBodyTextColor("#000")
+            .setBodyBackgroundColor("#836EF9")
+            .setBodyBorderColor("#836EF9")
+            .setBodyTextColor("#FFF")
+            .setLineColor("#836EF9")
+            .setQuantityBackgroundColor("#836EF9")
+            .setQuantityBorderColor("#836EF9");
+          newChartLines[openPriceLineId] = openPriceLine;
+
+          if (position.tp_trigger_price) {
+            const tpLineId = `tp_${position?.algo_order?.algo_order_id}`;
+            const tpLine = chart
+              .createOrderLine()
+              .setText("Take Profit")
+              .setPrice(position.tp_trigger_price || 150)
+              .setLineWidth(2)
+              .setQuantity("")
+              .setBodyTextColor("#000")
+              .setBodyBackgroundColor("#427af4")
+              .setBodyBorderColor("#427af4")
+              .setBodyTextColor("#FFF")
+              .setLineColor("#427af4");
+            newChartLines[tpLineId] = tpLine;
+          }
+
+          if (position.sl_trigger_price) {
+            const slLineId = `sl_${position?.algo_order?.algo_order_id}`;
+            const slLine = chart
+              .createOrderLine()
+              .setText("Stop Loss")
+              .setPrice(position?.sl_trigger_price || 150)
+              .setLineWidth(2)
+              .setQuantity("")
+              .setBodyTextColor("#000")
+              .setBodyBackgroundColor("#F5921A")
+              .setBodyBorderColor("#F5921A")
+              .setBodyTextColor("#FFF")
+              .setLineColor("#F5921A");
+            newChartLines[slLineId] = slLine;
+          }
+        });
+        console.log("I CAME HERE");
+        setChartLines(newChartLines);
+      } catch (e) {
+        console.log("e", e);
+      }
+  }, [orders?.rows]);
 
   useEffect(() => {
-    if (isChartReady && tvWidget) {
-      const chart = tvWidget.activeChart();
-      if (chart) {
-        updatePositions(chart);
-      }
+    if (isChartReady && chartRef.current) {
+      updatePositions();
     }
-  }, [isChartReady, tvWidget, updatePositions, orders?.rows]);
+  }, [isChartReady, orders?.rows, updatePositions]);
 
   useEffect(() => {
     initChart();
     return () => {
-      if (tvWidget) {
-        tvWidget.remove();
-        setTvWidget(null);
+      if (chartRef.current) {
+        // Nettoyage si nécessaire
+        chartRef.current = null;
       }
     };
   }, [asset?.symbol, custom_css_url, mobile, initChart]);
