@@ -121,7 +121,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const saveChartState = useCallback(
     (chart: any) => {
       if (!isInitialLoadComplete) {
-        console.log("Initial load not complete, skipping save");
         return;
       }
 
@@ -131,12 +130,12 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         symbol: chart.symbol(),
         interval: chart.resolution(),
       };
-      console.log("updatedState");
+
       const savedStateString = localStorage.getItem("chartState");
       const savedState: ChartState = savedStateString
         ? JSON.parse(savedStateString)
         : { drawings: [], studies: [], symbol: "", interval: "" };
-      console.log("updatedState");
+
       const updateElements = (
         currentElements: ChartElement[],
         savedElements: ChartElement[]
@@ -152,28 +151,25 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           return true;
         });
       };
-      console.log("updatedState");
+
       const updatedState: ChartState = {
         drawings: updateElements(currentState.drawings, savedState.drawings),
         studies: updateElements(currentState.studies, savedState.studies),
         symbol: currentState.symbol,
         interval: currentState.interval,
       };
-      console.log("updatedState");
       updatedState.drawings = [
         ...updatedState.drawings,
         ...savedState.drawings.filter((s) =>
           currentState.drawings.some((c) => c.name === s.name)
         ),
       ];
-      console.log("updatedState");
       updatedState.studies = [
         ...updatedState.studies,
         ...savedState.studies.filter((s) =>
           currentState.studies.some((c) => c.name === s.name)
         ),
       ];
-      console.log("updatedState");
 
       localStorage.setItem("chartState", JSON.stringify(updatedState));
     },
@@ -347,7 +343,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         const hasPositionsChanged =
           relevantPositions.length !== prevPositionsRef.current.length ||
           relevantPositions.some((newPos: any, index: number) => {
-            const oldPos = prevPositionsRef.current[index];
+            const oldPos: any = prevPositionsRef.current[index];
             return (
               !oldPos ||
               newPos.average_open_price !== oldPos.average_open_price ||
@@ -362,7 +358,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           return;
         }
 
-        prevPositionsRef.current = relevantPositions;
+        (prevPositionsRef.current as any) = relevantPositions;
 
         Object.entries(chartLines).forEach(([id, line]) => {
           line.remove();
@@ -370,13 +366,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
         const newChartLines: { [key: string]: any } = {};
 
-        console.log("relevantPositions", relevantPositions, chartLines);
         relevantPositions?.forEach((position: any) => {
-          console.log(
-            "orders",
-            position.tp_trigger_price,
-            position.sl_trigger_price
-          );
           if (position.symbol !== asset?.symbol) return;
           const openPriceLineId = `open_${position?.algo_order?.algo_order_id}`;
 
@@ -427,7 +417,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             newChartLines[slLineId] = slLine;
           }
         });
-        console.log("I CAME HERE");
         setChartLines(newChartLines);
       } catch (e) {
         console.log("e", e);
@@ -444,7 +433,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     initChart();
     return () => {
       if (chartRef.current) {
-        // Nettoyage si nécessaire
         chartRef.current = null;
       }
     };
