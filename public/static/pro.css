@@ -13,3 +13,16 @@
   --tv-color-toolbar-toggle-button-background-active: #2b2f36e6;
   --tv-color-toolbar-toggle-button-background-active-hover: #2b2f36e6;
 }
+
+.tv-floating-toolbar,
+.tvcolorpicker-popup,
+.chart-popup {
+  background-color: #ff0000 !important;
+}
+
+/* Personnalisation du texte dans les popups */
+.tv-floating-toolbar *,
+.tvcolorpicker-popup *,
+.chart-popup * {
+  color: #ff0000 !important;
+}

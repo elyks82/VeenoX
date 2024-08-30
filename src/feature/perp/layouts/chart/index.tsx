@@ -288,17 +288,16 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           symbol: formatSymbol(asset?.symbol),
           datafeed: Datafeed(asset, ws, setIsChartLoading) as never,
           container: ref.current as never,
+          container_id: ref.current?.id as never,
           locale: "en",
-          disabled_features: [
-            ...DISABLED_FEATURES,
-            ...(mobile ? ["left_toolbar"] : []),
-          ],
+          disabled_features: DISABLED_FEATURES,
           enabled_features: ENABLED_FEATURES,
           fullscreen: false,
           autosize: true,
           theme: "Dark",
           custom_css_url: "/static/pro.css",
           loading_screen: { backgroundColor: "#1B1D22" },
+
           timezone: Intl.DateTimeFormat().resolvedOptions()
             .timeZone as Timezone,
           ...widgetOptionsDefault,
