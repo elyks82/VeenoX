@@ -203,7 +203,7 @@ export const Orderbook = ({
                       })}
 
                       <div
-                        className="absolute left-0 h-[90%] max-h-full bg-red-opacity-10 z-0 transition-all duration-150 ease-linear"
+                        className="absolute left-0 h-[90%] max-h-[30px] bg-red-opacity-10 z-0 transition-all duration-150 ease-linear"
                         style={{ width: `${asksWidth[i]}%` }}
                       />
                     </tr>
