@@ -316,7 +316,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         const widgetInstance = new Widget(widgetOptions);
 
         widgetInstance.onChartReady(async () => {
-          widgetInstance.activeChart().getTimeScale().setRightOffset(0);
+          widgetInstance.activeChart().getTimeScale().setRightOffset(30);
 
           widgetInstance.applyOverrides(overrides as any);
           setTvWidget(widgetInstance);
