@@ -7,15 +7,14 @@ import {
   getTrackBackground,
 } from "react-range";
 import { getMaxLeverageToValue } from "../../utils";
-
 interface LeverageEditorProps {
   onSave?: (value: { leverage: number }) => Promise<void>;
   maxLeverage?: number;
   leverageLevers: number[];
 }
 
-const MIN = 0;
-const MAX = 100;
+const MIN = 1;
+const MAX = 11;
 const STEP = 1;
 
 export const LeverageEditor: FC<LeverageEditorProps> = ({
@@ -24,11 +23,15 @@ export const LeverageEditor: FC<LeverageEditorProps> = ({
   onSave,
 }) => {
   const { state } = useAccount();
+  const [values, setValues] = useState<number[]>([MIN]);
 
-  const formatMaxLeverage = getMaxLeverageToValue(maxLeverage as number);
-  const [values, setValues] = useState([formatMaxLeverage]);
+  useEffect(() => {
+    if (maxLeverage !== undefined) {
+      const formatMaxLeverage = getMaxLeverageToValue(maxLeverage);
+      setValues([formatMaxLeverage]);
+    }
+  }, [maxLeverage]);
 
-  console.log("formatMaxLeverage", maxLeverage);
   useEffect(() => {
     const valuesCopy = values.map((value) =>
       checkValuesAgainstBoundaries(value, MIN, MAX)

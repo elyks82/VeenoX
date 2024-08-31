@@ -304,19 +304,19 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             .timeZone as Timezone,
           ...widgetOptionsDefault,
           studies_overrides: {
-            "volume.volume.color.0": "#0ECB81",
-            "volume.volume.color.1": "#ea4339",
+            "volume.volume.color.0": "#ea4339",
+            "volume.volume.color.1": "#0ECB81",
             "volume.volume.transparency": 50,
           },
           overrides: {
-            volumePaneSize: "small",
+            volumePaneSize: "medium",
           },
         };
 
         const widgetInstance = new Widget(widgetOptions);
 
         widgetInstance.onChartReady(async () => {
-          widgetInstance.activeChart().getTimeScale().setRightOffset(0);
+          widgetInstance.activeChart().getTimeScale().setRightOffset(30);
 
           widgetInstance.applyOverrides(overrides as any);
           setTvWidget(widgetInstance);
