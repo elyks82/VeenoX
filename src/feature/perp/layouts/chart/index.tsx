@@ -309,7 +309,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             "volume.volume.transparency": 50,
           },
           overrides: {
-            volumePaneSize: "small",
+            volumePaneSize: "medium",
           },
         };
 
