@@ -118,6 +118,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [isChartReady, setIsChartReady] = useState(false);
   const chartRef = useRef<any>(null);
   const prevPositionsRef = useRef("");
+  const [currentInterval, setCurrentInterval] = useState<string>("");
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -248,7 +249,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       try {
         chart.onDataLoaded().subscribe(null, saveState);
         chart.onSymbolChanged().subscribe(null, saveState);
-        chart.onIntervalChanged().subscribe(null, saveState);
+        chart.onIntervalChanged().subscribe(null, () => {
+          saveState();
+          setCurrentInterval(chart.resolution());
+          updatePositions();
+        });
       } catch (error) {
         console.error("Error setting up chart listeners:", error);
       }
@@ -367,16 +372,23 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         const areLinesMissing = Object.keys(chartLines).length === 0;
         console.log("Object.keys(chartLines)", Object.keys(chartLines));
 
-        if (!hasPositionsChanged && !areLinesMissing) {
-          console.log("Positions unchanged, skipping update");
+        if (
+          !hasPositionsChanged &&
+          !areLinesMissing &&
+          currentInterval === chart.resolution()
+        ) {
+          console.log(
+            "Positions unchanged and interval is the same, skipping update"
+          );
           return;
         }
 
         (prevPositionsRef.current as any) = relevantPositions;
 
-        Object.entries(chartLines).forEach(([id, line]) => {
-          line.remove();
-        });
+        if (Object.keys(chartLines)?.length > 0)
+          Object.entries(chartLines).forEach(([id, line]) => {
+            line.remove();
+          });
 
         const newChartLines: { [key: string]: any } = {};
 
