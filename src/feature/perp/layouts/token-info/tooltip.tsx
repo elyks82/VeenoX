@@ -104,7 +104,7 @@ export const PairSelector = ({ params }: FavoriteProps) => {
               const isActivePair = pathname.includes(token.symbol);
               return (
                 <tbody
-                  key={i}
+                  key={token.symbol}
                   className="hover:bg-[#242424] transition-all duration-75 ease-linear"
                 >
                   <tr

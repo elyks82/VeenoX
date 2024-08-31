@@ -364,7 +364,9 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             );
           });
 
-        if (!hasPositionsChanged) {
+        const areLinesMissing = Object.keys(chartLines).length === 0;
+
+        if (!hasPositionsChanged && !areLinesMissing) {
           console.log("Positions unchanged, skipping update");
           return;
         }
