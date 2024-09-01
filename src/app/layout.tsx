@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
 import { headers } from "next/headers";
+import NextTopLoader from "nextjs-toploader";
 import "react-toastify/dist/ReactToastify.css";
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
@@ -40,6 +41,21 @@ export default function RootLayout({
         <WagmiProvider initialState={initialState}>
           <OrderlyProvider>
             <Providers>
+              <NextTopLoader
+                color="#836EF9"
+                initialPosition={0.08}
+                crawlSpeed={200}
+                height={3}
+                crawl={false}
+                showSpinner={false}
+                easing="ease"
+                speed={200}
+                shadow="0 0 10px #2299DD,0 0 5px #2299DD"
+                template='<div class="bar" role="bar"><div class="peg"></div></div> 
+               <div class="spinner" role="spinner"><div class="spinner-icon"></div></div>'
+                zIndex={1600}
+                showAtBottom={false}
+              />
               <Header />
               {children}
               <SpeedInsights />
