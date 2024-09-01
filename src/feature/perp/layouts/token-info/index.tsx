@@ -151,11 +151,31 @@ export const TokenInfo = ({ asset: assetBuffer, params }: TokenInfoProps) => {
               </span>
             </div>
             <div>
-              <p className="text-xs text-font-60">Mark </p>
+              <TooltipProvider>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center text-xs text-font-60">
+                      <p className="underline">Mark</p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="h-fit overflow-clip max-w-[220px] w-full p-2 bg-secondary border border-borderColor shadow-xl whitespace-pre-wrap"
+                  >
+                    Used for margining, computing unrealized PnL, liquidations,
+                    and triggering TP/SL orders.
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <p className="text-xs mt-1 text-white font-medium">
                 {marketInfo?.mark_price}
               </p>
             </div>
+            {/* 
+Open interest = The total outstanding position of all users on this contract
+Funding rate =
+
+Used for margining, computing unrealized PnL, liquidations, and triggering TP/SL orders. */}
             <div>
               <p className="text-xs text-font-60">Index</p>
               <p className="text-xs mt-1 text-white font-medium">
@@ -163,32 +183,50 @@ export const TokenInfo = ({ asset: assetBuffer, params }: TokenInfoProps) => {
               </p>
             </div>
             <div className="relative">
-              <p className="text-xs text-font-60">24h Volume</p>
               <TooltipProvider>
                 <Tooltip delayDuration={0}>
                   <TooltipTrigger asChild>
-                    <span className="flex items-center mt-1">
-                      <img
-                        className="h-[13px] w-[13px] mr-1.5"
-                        src="/logo/orderly.svg"
-                        alt="Orderly Network logo"
-                      />
-                      <p className="text-xs  text-white font-medium">
-                        {getFormattedAmount(marketInfo?.["24h_amount"])}
-                      </p>
-                    </span>
+                    <div className="flex items-center text-xs text-font-60">
+                      <p className="underline">24h Volume</p>
+                    </div>
                   </TooltipTrigger>
                   <TooltipContent
                     side="bottom"
-                    className="h-fit overflow-clip w-[180px] p-2 bg-terciary border border-borderColor-DARK shadow-xl whitespace-pre-wrap"
+                    className="h-fit overflow-clip w-[180px] p-2 bg-secondary border border-borderColor shadow-xl whitespace-pre-wrap"
                   >
                     24 hour total trading volume on the Orderly Network.
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+              <span className="flex items-center mt-1">
+                <img
+                  className="h-[13px] w-[13px] mr-1.5"
+                  src="/logo/orderly.svg"
+                  alt="Orderly Network logo"
+                />
+                <p className="text-xs  text-white font-medium">
+                  {getFormattedAmount(marketInfo?.["24h_amount"])}
+                </p>
+              </span>
             </div>
             <div>
-              <p className="text-xs text-font-60">Pred. funding rate</p>
+              <TooltipProvider>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center text-xs text-font-60">
+                      <p className="underline">Pred. funding rate</p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="h-fit overflow-clip max-w-[220px] w-full p-2 bg-secondary border border-borderColor shadow-xl whitespace-pre-wrap"
+                  >
+                    The funding rate is the rate at which long positions pay
+                    short positions, or vice versa, to maintain balance between
+                    supply and demand in the derivatives market.
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <span className="text-xs box-border h-fit flex items-center mt-1 font-medium">
                 <p className={colorFundingChange}>
                   {getTokenPercentage(pred_funding_rate) || "0.00"}%
@@ -201,7 +239,21 @@ export const TokenInfo = ({ asset: assetBuffer, params }: TokenInfoProps) => {
               </span>
             </div>
             <div>
-              <p className="text-xs text-font-60">Open interest </p>
+              <TooltipProvider>
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center text-xs text-font-60">
+                      <p className="underline">Open interest </p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="h-fit overflow-clip max-w-[220px] w-full p-2 bg-secondary border border-borderColor shadow-xl whitespace-pre-wrap"
+                  >
+                    The total outstanding position of all users on this contract
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <p className="text-xs mt-1 text-white">
                 {getFormattedAmount(marketInfo?.open_interest)}
               </p>
