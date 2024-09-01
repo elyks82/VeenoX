@@ -17,23 +17,24 @@ export const TPSLModal = ({ order }: any) => {
   const [activePnlOrOffset, setActivePnlOrOffset] = useState("$");
   const [error, setError] = useState([""]);
   const [loading, setLoading] = useState(false);
-  const { setIsTPSLOpen, isTPSLOpen } = useGeneralContext();
+  const { TPSLOpenOrder, setTPSLOpenOrder } = useGeneralContext();
+  console.log("order", TPSLOpenOrder.symbol);
   const position = {
-    symbol: order.symbol, // La paire de trading
-    average_open_price: order.average_open_price, // Le prix moyen d'entrée
-    position_qty: order.position_qty, // Quantité négative pour une position courte
-    tp_trigger_price: order.tp_trigger_price,
-    sl_trigger_price: order.sl_trigger_price,
-    quantity: String(Math.abs(order.position_qty)),
+    symbol: TPSLOpenOrder.symbol, // La paire de trading
+    average_open_price: TPSLOpenOrder.average_open_price, // Le prix moyen d'entrée
+    position_qty: TPSLOpenOrder.position_qty, // Quantité négative pour une position courte
+    tp_trigger_price: TPSLOpenOrder.tp_trigger_price,
+    sl_trigger_price: TPSLOpenOrder.sl_trigger_price,
+    quantity: String(Math.abs(TPSLOpenOrder.position_qty)),
     // Autres données éventuelles...
   };
   const [algoOrder, { setValue, submit, errors }] = useTPSLOrder(position, {
-    defaultOrder: order.algo_order,
+    defaultOrder: TPSLOpenOrder.algo_order,
   });
   const [
     orders,
     { cancelAllTPSLOrders, cancelTPSLChildOrder, updateTPSLOrder },
-  ] = useOrderStream(order);
+  ] = useOrderStream(TPSLOpenOrder);
   const { setOrderPositions } = useGeneralContext();
 
   //   console.log(
@@ -60,7 +61,7 @@ export const TPSLModal = ({ order }: any) => {
     try {
       await submit();
       triggerAlert("Success", `Your TP/SL has been placed`);
-      setIsTPSLOpen(false);
+      setTPSLOpenOrder(null);
       setOrderPositions([]);
       setLoading(false);
     } catch (error) {
@@ -76,10 +77,10 @@ export const TPSLModal = ({ order }: any) => {
       await cancelAllTPSLOrders();
       triggerAlert("Success", "TP/SL has been reset");
       setOrderPositions([]);
-      setIsTPSLOpen(false);
+      setTPSLOpenOrder(null);
     } catch (e) {
       triggerAlert("Error", "An error happened during cancel tp/sl order");
-      setIsTPSLOpen(false);
+      setTPSLOpenOrder(null);
     }
   };
 
@@ -88,9 +89,9 @@ export const TPSLModal = ({ order }: any) => {
     setValue(field, value);
   };
   return (
-    <Dialog open={isTPSLOpen}>
+    <Dialog open={TPSLOpenOrder}>
       <DialogContent
-        close={() => setIsTPSLOpen(false)}
+        close={() => setTPSLOpenOrder(null)}
         className="max-w-[440px] w-[90%] h-auto max-h-auto flex flex-col gap-0"
       >
         <DialogHeader>

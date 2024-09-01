@@ -14,7 +14,7 @@ import { cookieToInitialState } from "wagmi";
 import "./globals.css";
 
 const OrderlyProvider = dynamic(() => import("../lib/orderly/"), {
-  ssr: false,
+  ssr: true,
 });
 
 const inter = Inter({

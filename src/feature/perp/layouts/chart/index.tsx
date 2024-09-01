@@ -3,7 +3,7 @@ import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
 import { usePositionStream, useWS } from "@orderly.network/hooks";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bar,
   ChartingLibraryWidgetOptions,
@@ -120,6 +120,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const chartRef = useRef<any>(null);
   const prevPositionsRef = useRef("");
   const [currentInterval, setCurrentInterval] = useState<string>("");
+  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -348,15 +349,18 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     );
   }, [asset, mobile, ws, setupChangeListeners]);
 
+  const relevantPositions = useMemo(() => {
+    return (
+      orders?.rows?.filter(
+        (position: any) => position.symbol === asset?.symbol
+      ) || []
+    );
+  }, [orders?.rows, asset?.symbol]);
+
   const updatePositions = useCallback(() => {
     const chart = chartRef.current;
     if (chart)
       try {
-        const relevantPositions =
-          orders?.rows?.filter(
-            (position: any) => position.symbol === asset?.symbol
-          ) || [];
-
         const hasPositionsChanged =
           relevantPositions.length !== prevPositionsRef.current.length ||
           relevantPositions.some((newPos: any, index: number) => {
@@ -400,7 +404,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             .createOrderLine()
             .setText("Open Price")
             .setPrice(position?.average_open_price || 150)
-            .setLineWidth(2)
+            .setLineWidth(1)
             .setQuantity(position?.position_qty)
             .setBodyTextColor("#000")
             .setBodyBackgroundColor("#836EF9")
@@ -417,7 +421,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
               .createOrderLine()
               .setText("Take Profit")
               .setPrice(position.tp_trigger_price || 150)
-              .setLineWidth(2)
+              .setLineWidth(1)
               .setQuantity("")
               .setBodyTextColor("#000")
               .setBodyBackgroundColor("#427af4")
@@ -433,7 +437,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
               .createOrderLine()
               .setText("Stop Loss")
               .setPrice(position?.sl_trigger_price || 150)
-              .setLineWidth(2)
+              .setLineWidth(1)
               .setQuantity("")
               .setBodyTextColor("#000")
               .setBodyBackgroundColor("#F5921A")
@@ -444,22 +448,31 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           }
         });
         setChartLines(newChartLines);
+
+        updateTimeoutRef.current = setTimeout(() => {
+          updatePositions();
+        }, 1000);
       } catch (e) {
         console.log("e", e);
       }
-  }, [orders?.rows, asset?.symbol]);
+  }, [isChartReady, asset?.symbol, chartLines]);
 
   useEffect(() => {
     if (chartRef.current && isChartReady) {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
       updatePositions();
     }
-  }, [
-    orders?.rows,
-    updatePositions,
-    params?.perp,
-    asset?.symbol,
-    isChartReady,
-  ]);
+  }, [params?.perp, asset?.symbol, isChartReady]);
+
+  useEffect(() => {
+    return () => {
+      if (updateTimeoutRef.current) {
+        clearTimeout(updateTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     initChart();

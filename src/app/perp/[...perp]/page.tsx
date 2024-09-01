@@ -1,5 +1,7 @@
 import { Perp } from "@/feature/perp";
 
+// export const dynamic = "force-static";
+
 type ParamsProps = {
   params: {
     perp: string[];

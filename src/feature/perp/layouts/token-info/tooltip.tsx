@@ -61,7 +61,6 @@ export const PairSelector = ({ params }: FavoriteProps) => {
         });
   };
   const filteredMarketData = getFilteredMarketData();
-  const handleAddToFavorite = () => {};
 
   return (
     <div className="w-full">
@@ -108,6 +107,7 @@ export const PairSelector = ({ params }: FavoriteProps) => {
                 100;
               const isUp = token.change > 0;
               const isActivePair = pathname.includes(token.symbol);
+              console.log("`/perp/${token.symbol}`", `/perp/${token.symbol}`);
               return (
                 <tbody
                   key={token.symbol}
@@ -141,12 +141,14 @@ export const PairSelector = ({ params }: FavoriteProps) => {
                           } transition-all duration-75 ease-in-out`}
                           href={`/perp/${token.symbol}`}
                         >
-                          <div className="flex w-full items-center">
-                            {formatSymbol(token.symbol)}
-                            <span className="bg-base_color text-white hover:text-white rounded text-[11px] px-1 py-[1px] ml-2">
-                              x{token.leverage}
-                            </span>
-                          </div>
+                          <>
+                            <div className="flex w-full items-center">
+                              {formatSymbol(token.symbol)}
+                              <span className="bg-base_color text-white hover:text-white rounded text-[11px] px-1 py-[1px] ml-2">
+                                x{token.leverage}
+                              </span>
+                            </div>
+                          </>
                         </Link>{" "}
                       </div>
                     </td>

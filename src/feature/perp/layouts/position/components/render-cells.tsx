@@ -24,7 +24,8 @@ export const RenderCells = ({
   activeSection,
   closePendingOrder,
 }: any) => {
-  const { isTPSLOpen, setIsTPSLOpen, setOrderPositions } = useGeneralContext();
+  const { TPSLOpenOrder, setTPSLOpenOrder, setOrderPositions } =
+    useGeneralContext();
   const { ref, toDataURL, toBlob, download, copy } = usePoster({
     backgroundColor: "#0b8c70",
     backgroundImg: "/logo/veeno.png",
@@ -60,11 +61,11 @@ export const RenderCells = ({
         order,
         activeSection,
         closePendingOrder,
-        setIsTPSLOpen,
+        setTPSLOpenOrder,
         setOrderPositions,
         onSubmit
       )}
-      {isTPSLOpen ? <TPSLModal order={order} /> : null}
+      {TPSLOpenOrder ? <TPSLModal order={order} /> : null}
     </>
   );
 };
@@ -93,7 +94,7 @@ const renderAdditionalCells = (
   trade: any,
   section: Sections,
   closePendingOrder: Function,
-  setIsTPSLOpen: Dispatch<SetStateAction<boolean>>,
+  setTPSLOpenOrder: Dispatch<SetStateAction<boolean>>,
   setOrderPositions: any,
   onSubmit: any
 ) => {
@@ -240,7 +241,7 @@ const renderAdditionalCells = (
         <td className={cn(tdStyle, "pr-5")}>
           <div className="w-full h-full justify-end items-center flex">
             <button
-              onClick={() => setIsTPSLOpen(true)}
+              onClick={() => setTPSLOpenOrder(trade)}
               className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
             h-[30px] px-2.5 rounded flex items-center
         "
@@ -266,7 +267,7 @@ const renderAdditionalCells = (
                   console.log("Submitting order:", cancelOrder);
                   await onSubmit(cancelOrder);
                   triggerAlert("Success", "Position is successfully closed");
-                  setOrderPositions([]);
+                  setOrderPositions(["closed"]);
                 } catch (e) {
                   console.log("Error closing position:", e);
                   triggerAlert(
