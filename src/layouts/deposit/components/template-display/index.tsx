@@ -1,5 +1,6 @@
 import { useGeneralContext } from "@/context";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
+import { triggerAlert } from "@/lib/toaster";
 import {
   ConnectorNameType,
   addressSlicer,
@@ -12,11 +13,16 @@ import {
   supportedChains,
 } from "@/utils/network";
 import { utils } from "@orderly.network/core";
-import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
+import {
+  useAccountInstance,
+  useAccount as useOrderlyAccount,
+  useSettleSubscription,
+} from "@orderly.network/hooks";
 import { FixedNumber } from "ethers";
 import Image from "next/image";
-import { Dispatch, ReactNode, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
+import { Oval } from "react-loader-spinner";
 import { useAccount, useSwitchChain } from "wagmi";
 import { filterAllowedCharacters } from "../../utils";
 
@@ -27,6 +33,7 @@ type TemplateDisplayProps = {
   setQuantity: Dispatch<SetStateAction<string>>;
   children: ReactNode;
   depositFee: BigInt;
+  unsettledPnL: number;
 };
 
 const InputQuantity = () => {
@@ -34,6 +41,7 @@ const InputQuantity = () => {
   const { address, chainId, chain } = useAccount();
   const { switchChain } = useSwitchChain();
   const { isDeposit } = useGeneralContext();
+
   const chainLogo =
     supportedChains.find((entry) => entry.label === (chain?.name as string))
       ?.icon || getImageFromChainId(chainId as ChainsImageType);
@@ -118,11 +126,14 @@ export const TemplateDisplay = ({
   setQuantity,
   children,
   depositFee,
+  unsettledPnL,
 }: // dst,
 TemplateDisplayProps) => {
   const { state } = useOrderlyAccount();
   const { isDeposit } = useGeneralContext();
   const { address, chainId, chain } = useAccount();
+  const accountInstance = useAccountInstance();
+  const [isSettleLoading, setIsSettleLoading] = useState(false);
 
   const getPageContent = (): PageContentType => {
     if (isDeposit)
@@ -149,6 +160,25 @@ TemplateDisplayProps) => {
     depositFee as never,
     chain?.nativeCurrency.decimals
   );
+
+  useSettleSubscription({
+    onMessage: (data: any) => {
+      const { status } = data;
+      switch (status) {
+        case "COMPLETED":
+          triggerAlert("Success", "Settlement has been completed.");
+          setIsSettleLoading(false);
+          break;
+        case "FAILED":
+          triggerAlert("Error", "Settlement has failed.");
+          setIsSettleLoading(false);
+          break;
+        default:
+          break;
+      }
+    },
+  });
+
   return (
     <>
       <div className="flex items-center w-full justify-between mb-2">
@@ -209,6 +239,54 @@ TemplateDisplayProps) => {
           </div>
         </div>
       </div>
+      {isDeposit ? null : (
+        <div className="w-full flex items-center text-xs justify-between mt-2">
+          <p className="text-font-60">
+            Unsettled:{" "}
+            <span
+              className={`font-medium ${
+                unsettledPnL > 0
+                  ? "text-green"
+                  : unsettledPnL < 0
+                  ? "text-red"
+                  : "text-white"
+              }`}
+            >
+              {unsettledPnL}
+            </span>{" "}
+            USDC
+          </p>
+          <button
+            onClick={() => {
+              if (unsettledPnL !== 0 && accountInstance) {
+                setIsSettleLoading(true);
+                accountInstance?.settle();
+              }
+            }}
+            className={`${
+              unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
+            } flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white`}
+          >
+            {isSettleLoading ? (
+              <Oval
+                visible={true}
+                height="13"
+                width="13"
+                color="#FFF"
+                secondaryColor="rgba(255,255,255,0.6)"
+                ariaLabel="oval-loading"
+                strokeWidth={6}
+                strokeWidthSecondary={6}
+                wrapperStyle={{
+                  marginRight: "5px",
+                }}
+                wrapperClass=""
+              />
+            ) : null}
+            <span>Settle PnL</span>
+          </button>
+        </div>
+      )}
       {children}
       <div className="flex flex-col w-full">
         <div

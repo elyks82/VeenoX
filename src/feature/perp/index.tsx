@@ -9,6 +9,7 @@ import {
   useWalletConnector,
 } from "@orderly.network/hooks";
 import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Favorites } from "./layouts/favorites";
 import { MobileOpenTrade } from "./layouts/mobile-open-trade";
@@ -42,6 +43,7 @@ export const Perp = ({ asset }: PerpProps) => {
   const rowUpRef = useRef<HTMLDivElement>(null);
   const { usdc } = useHoldingStream();
   const orderbookRef = useRef<HTMLDivElement>(null);
+  const useParam = useParams();
   const {
     totalCollateral,
     freeCollateral: freeCollat,
@@ -222,7 +224,11 @@ export const Perp = ({ asset }: PerpProps) => {
                     <TokenInfo params={params} asset={asset} />
                     <MobilePnL />
                     <MobileSectionSelector />
-                    <TradingViewChart asset={asset} className={""} />
+                    <TradingViewChart
+                      params={useParam}
+                      asset={asset}
+                      className={""}
+                    />
                   </>
                 ) : (
                   <>
@@ -236,7 +242,11 @@ export const Perp = ({ asset }: PerpProps) => {
                           : "hidden"
                       } bg-green`}
                     >
-                      <TradingViewChart asset={asset} className={""} />
+                      <TradingViewChart
+                        params={useParam}
+                        asset={asset}
+                        className={""}
+                      />
                     </div>
                     <div
                       className={`${

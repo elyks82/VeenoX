@@ -3,7 +3,6 @@ import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
 import { usePositionStream, useWS } from "@orderly.network/hooks";
-import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Bar,
@@ -27,6 +26,7 @@ interface TradingViewChartProps {
   mobile?: boolean;
   custom_css_url?: string;
   className?: string;
+  params: any;
 }
 
 interface ChartElement {
@@ -106,6 +106,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   mobile = false,
   custom_css_url = "../themed.css",
   className = "",
+  params,
 }) => {
   const { isChartLoading, setIsChartLoading } = useGeneralContext();
   const ref = useRef<HTMLDivElement>(null);
@@ -447,9 +448,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         console.log("e", e);
       }
   }, [orders?.rows, asset?.symbol]);
-
-  const params = useParams();
-  console.log(params);
 
   useEffect(() => {
     if (chartRef.current && isChartReady) {

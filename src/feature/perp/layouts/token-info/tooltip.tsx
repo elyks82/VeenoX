@@ -1,9 +1,11 @@
 import { useGeneralContext } from "@/context";
 import { FavoriteProps, MarketTickerProps } from "@/models";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
+import { useLocalStorage } from "@orderly.network/hooks";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaRegStar, FaStar } from "react-icons/fa6";
 
 export const PairSelector = ({ params }: FavoriteProps) => {
   const {
@@ -19,6 +21,10 @@ export const PairSelector = ({ params }: FavoriteProps) => {
   const [searchInput, setSearchInput] = useState("");
   const { isChartLoading, setIsChartLoading } = useGeneralContext();
   const pathname = usePathname();
+  const [value, setValue] = useLocalStorage<string[]>(
+    "FAVORITES",
+    [] as string[]
+  );
 
   const getFilteredMarketData = () => {
     if (!data?.length) return [];
@@ -113,9 +119,22 @@ export const PairSelector = ({ params }: FavoriteProps) => {
                   >
                     <td className="py-1">
                       <div className="w-full h-full flex items-center">
-                        {/* <button className="mr-2" onClick={() => {}}>
-                          <FaStar className="text-xs " />{" "}
-                        </button> */}
+                        <button
+                          className="mr-2"
+                          onClick={() => {
+                            const symbol: string = token.symbol;
+                            const newValue = value.includes(symbol)
+                              ? value.filter((item: string) => item !== symbol)
+                              : [...value, symbol];
+                            setValue(newValue);
+                          }}
+                        >
+                          {value.includes(token.symbol) ? (
+                            <FaStar className="text-xs text-yellow-400" />
+                          ) : (
+                            <FaRegStar className="text-xs text-white" />
+                          )}
+                        </button>
                         <Link
                           className={`hover:text-white ${
                             isActivePair ? "text-base_color" : "text-white"

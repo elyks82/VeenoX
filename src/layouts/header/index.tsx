@@ -1,6 +1,13 @@
 "use client";
-import { Tooltip } from "@/components/tooltip";
+import CryptoFearAndGreedChart from "@/components/fear-greed";
+import { Tooltip as CustomTooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/lib/shadcn/tooltip";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import Link from "next/link";
 import { useState } from "react";
@@ -127,6 +134,27 @@ export const Header = () => {
       </div>
       <div className="flex items-center gap-5">
         <div className="flex relative w-fit h-fit">
+          <TooltipProvider>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <div className="w-full h-[38px] -mt-2.5 mr-2">
+                  <CryptoFearAndGreedChart
+                    fearLevel={50}
+                    fearClassification={"Greed"}
+                  />{" "}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                className="h-fit text-white overflow-clip max-w-[220px] w-full p-2 bg-secondary border border-borderColor shadow-xl whitespace-pre-wrap"
+              >
+                The Fear & Greed Index measures investor sentiment, indicating
+                whether the market is driven by fear (selling pressure) or greed
+                (buying enthusiasm)
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           <Deposit />
           <button
             className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
@@ -142,7 +170,7 @@ export const Header = () => {
           </button>
           <ConnectWallet />
           {/* {!isDisconnected ? ( */}
-          <Tooltip isOpen={isTooltipOpen}>
+          <CustomTooltip isOpen={isTooltipOpen}>
             <div className="flex items-center  text-sm" onClick={handleCopy}>
               {/* <p>{addressSlicer(address)}</p> */}
               <button className="ml-2 ">
@@ -159,7 +187,7 @@ export const Header = () => {
             >
               Disconnect
             </button>
-          </Tooltip>
+          </CustomTooltip>
           <button
             className="lg:hidden flex items-center justify-center"
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
