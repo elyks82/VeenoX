@@ -142,7 +142,10 @@ export const OpenTrade = ({
       currentAsset.base_tick
     );
     if (errors && Object.keys(errors)?.length > 0) {
-      triggerAlert("Error", errors?.total?.message);
+      console.log("Errror", errors);
+      if (errors?.total?.message) triggerAlert("Error", errors?.total?.message);
+      if (errors?.order_quantity?.message)
+        triggerAlert("Error", errors?.order_quantity?.message);
       return;
     }
     try {
