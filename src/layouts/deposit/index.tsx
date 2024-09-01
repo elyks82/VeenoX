@@ -8,10 +8,8 @@ import {
 import { triggerAlert } from "@/lib/toaster";
 import { supportedChainIds } from "@/utils/network";
 import {
-  useAccountInfo,
   useChains,
   useDeposit,
-  useHoldingStream,
   useAccount as useOrderlyAccount,
   useWalletConnector,
   useWithdraw,
@@ -42,6 +40,7 @@ export const Deposit = () => {
     useGeneralContext();
   const networkIdSupported = [42161, 421614, 8453, 84532, 10, 11155420];
   const isSupportedChain = networkIdSupported.includes(chainId as number);
+
   const [chains] = useChains("mainnet", {
     filter: (item: API.Chain) =>
       supportedChainIds.includes(item.network_infos?.chain_id),
@@ -60,7 +59,7 @@ export const Deposit = () => {
     availableWithdraw,
     unsettledPnL,
   } = useWithdraw();
-
+  console.log("unsettledPnL", unsettledPnL);
   const {
     dst,
     balance,
@@ -79,11 +78,12 @@ export const Deposit = () => {
     srcToken: token?.symbol,
     srcChainId: Number(chainId),
   });
-  const { usdc, data } = useHoldingStream();
-  const { data: acc, error, isLoading } = useAccountInfo();
   const { switchChain } = useSwitchChain();
-  console.log("qua", quantity);
   const handleClick = async () => {
+    if (unsettledPnL !== 0) {
+      triggerAlert("Error", "Settle PnL first.");
+      return;
+    }
     if (isSupportedChain) {
       if (isDeposit) {
         if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
@@ -166,6 +166,7 @@ export const Deposit = () => {
 
   const getButtonState = (): string => {
     if (isSupportedChain) {
+      if (unsettledPnL !== 0 && !isDeposit) return "Settle PnL First";
       if (isDeposit) {
         if (amount != null && Number(allowance) < Number(amount))
           return "Approve";
@@ -173,6 +174,7 @@ export const Deposit = () => {
         else return "Deposit";
       }
       if (isWithdrawSuccess) return "Successfully withdraw";
+
       return "Withdraw";
     }
     return "Switch Network";
@@ -236,6 +238,7 @@ export const Deposit = () => {
             setAmount={setAmount}
             setQuantity={setQuantity}
             depositFee={depositFee}
+            unsettledPnL={unsettledPnL}
           >
             <div className="h-[20px] w-full flex items-center justify-center my-5">
               <div className="h-0.5 w-full bg-borderColor-DARK" />
@@ -267,7 +270,6 @@ export const Deposit = () => {
                 wrapperClass=""
               />
             ) : null}
-
             {buttonState}
           </button>
         </DialogContent>
