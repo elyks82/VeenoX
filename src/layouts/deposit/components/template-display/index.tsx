@@ -239,52 +239,54 @@ TemplateDisplayProps) => {
           </div>
         </div>
       </div>
-      <div className="w-full flex items-center text-xs justify-between mt-2">
-        <p className="text-font-60">
-          Unsettled:{" "}
-          <span
-            className={`font-medium ${
-              unsettledPnL > 0
-                ? "text-green"
-                : unsettledPnL < 0
-                ? "text-red"
-                : "text-white"
-            }`}
+      {isDeposit ? null : (
+        <div className="w-full flex items-center text-xs justify-between mt-2">
+          <p className="text-font-60">
+            Unsettled:{" "}
+            <span
+              className={`font-medium ${
+                unsettledPnL > 0
+                  ? "text-green"
+                  : unsettledPnL < 0
+                  ? "text-red"
+                  : "text-white"
+              }`}
+            >
+              {unsettledPnL}
+            </span>{" "}
+            USDC
+          </p>
+          <button
+            onClick={() => {
+              if (unsettledPnL !== 0 && accountInstance) {
+                setIsSettleLoading(true);
+                accountInstance?.settle();
+              }
+            }}
+            className={`${
+              unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
+            } flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white`}
           >
-            {unsettledPnL}
-          </span>{" "}
-          USDC
-        </p>
-        <button
-          onClick={() => {
-            if (unsettledPnL !== 0 && accountInstance) {
-              setIsSettleLoading(true);
-              accountInstance?.settle();
-            }
-          }}
-          className={`${
-            unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
-          } flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white`}
-        >
-          {isSettleLoading ? (
-            <Oval
-              visible={true}
-              height="13"
-              width="13"
-              color="#FFF"
-              secondaryColor="rgba(255,255,255,0.6)"
-              ariaLabel="oval-loading"
-              strokeWidth={6}
-              strokeWidthSecondary={6}
-              wrapperStyle={{
-                marginRight: "5px",
-              }}
-              wrapperClass=""
-            />
-          ) : null}
-          <span>Settle PnL</span>
-        </button>
-      </div>
+            {isSettleLoading ? (
+              <Oval
+                visible={true}
+                height="13"
+                width="13"
+                color="#FFF"
+                secondaryColor="rgba(255,255,255,0.6)"
+                ariaLabel="oval-loading"
+                strokeWidth={6}
+                strokeWidthSecondary={6}
+                wrapperStyle={{
+                  marginRight: "5px",
+                }}
+                wrapperClass=""
+              />
+            ) : null}
+            <span>Settle PnL</span>
+          </button>
+        </div>
+      )}
       {children}
       <div className="flex flex-col w-full">
         <div
