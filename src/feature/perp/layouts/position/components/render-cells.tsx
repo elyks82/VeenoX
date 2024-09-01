@@ -278,7 +278,7 @@ const renderAdditionalCells = (
               }}
               className="h-[30px] w-fit px-2.5 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
             >
-              Close {trade.symbol}
+              Close
             </button>
           </div>
         </td>

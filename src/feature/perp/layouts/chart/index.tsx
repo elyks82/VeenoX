@@ -120,7 +120,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const chartRef = useRef<any>(null);
   const prevPositionsRef = useRef("");
   const [currentInterval, setCurrentInterval] = useState<string>("");
-  const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -448,31 +447,22 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           }
         });
         setChartLines(newChartLines);
-
-        updateTimeoutRef.current = setTimeout(() => {
-          updatePositions();
-        }, 1000);
       } catch (e) {
         console.log("e", e);
       }
-  }, [isChartReady, asset?.symbol, chartLines]);
+  }, [orderPositions, orders?.rows?.length, asset?.symbol]);
 
   useEffect(() => {
     if (chartRef.current && isChartReady) {
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current);
-      }
       updatePositions();
     }
-  }, [params?.perp, asset?.symbol, isChartReady]);
-
-  useEffect(() => {
-    return () => {
-      if (updateTimeoutRef.current) {
-        clearTimeout(updateTimeoutRef.current);
-      }
-    };
-  }, []);
+  }, [
+    orderPositions,
+    updatePositions,
+    params?.perp,
+    asset?.symbol,
+    isChartReady,
+  ]);
 
   useEffect(() => {
     initChart();
