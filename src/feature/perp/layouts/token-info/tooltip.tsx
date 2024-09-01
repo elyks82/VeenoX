@@ -21,6 +21,10 @@ export const PairSelector = ({ params }: FavoriteProps) => {
   const [searchInput, setSearchInput] = useState("");
   const { isChartLoading, setIsChartLoading } = useGeneralContext();
   const pathname = usePathname();
+  const [value, setValue] = useLocalStorage<string[]>(
+    "FAVORITES",
+    [] as string[]
+  );
 
   const getFilteredMarketData = () => {
     if (!data?.length) return [];
@@ -58,8 +62,6 @@ export const PairSelector = ({ params }: FavoriteProps) => {
   };
   const filteredMarketData = getFilteredMarketData();
   const handleAddToFavorite = () => {};
-
-  const [value, setValue] = useLocalStorage("FAVORITES", []);
 
   return (
     <div className="w-full">
@@ -120,14 +122,11 @@ export const PairSelector = ({ params }: FavoriteProps) => {
                         <button
                           className="mr-2"
                           onClick={() => {
-                            if (value.includes(token.symbol))
-                              setValue((prev: any) =>
-                                prev.filter(
-                                  (item: string) => item !== token.symbol
-                                )
-                              );
-                            else
-                              setValue((prev: any) => [...prev, token.symbol]);
+                            const symbol: string = token.symbol;
+                            const newValue = value.includes(symbol)
+                              ? value.filter((item: string) => item !== symbol)
+                              : [...value, symbol];
+                            setValue(newValue);
                           }}
                         >
                           {value.includes(token.symbol) ? (
