@@ -11,16 +11,19 @@ import {
   getTokenPercentage,
 } from "@/utils/misc";
 import {
+  useAccountInstance,
   useCollateral,
   useOrderEntry,
   useAccount as useOrderlyAccount,
   usePositionStream,
+  useSettleSubscription,
   useSymbolPriceRange,
   useSymbolsInfo,
 } from "@orderly.network/hooks";
 import { OrderEntity, OrderSide } from "@orderly.network/types";
 import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
+import { Oval } from "react-loader-spinner";
 import "rsuite/Slider/styles/index.css";
 import { Leverage } from "./components/leverage";
 
@@ -64,8 +67,10 @@ export const OpenTrade = ({
   holding,
 }: OpenTradeProps) => {
   const { setTradeInfo } = useGeneralContext();
+  const accountInstance = useAccountInstance();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
   const { state } = useOrderlyAccount();
+  const [isSettleLoading, setIsSettleLoading] = useState(false);
   const {
     setIsEnableTradingModalOpen,
     setIsWalletConnectorOpen,
@@ -82,6 +87,24 @@ export const OpenTrade = ({
     accountInfo,
   } = useCollateral({
     dp: 2,
+  });
+
+  useSettleSubscription({
+    onMessage: (data: any) => {
+      const { status } = data;
+      switch (status) {
+        case "COMPLETED":
+          triggerAlert("Success", "Settlement has been completed.");
+          setIsSettleLoading(false);
+          break;
+        case "FAILED":
+          triggerAlert("Error", "Settlement has failed.");
+          setIsSettleLoading(false);
+          break;
+        default:
+          break;
+      }
+    },
   });
 
   // const { data: markPrices }: { data: Record<string, number> } =
@@ -142,10 +165,10 @@ export const OpenTrade = ({
       currentAsset.base_tick
     );
     if (errors && Object.keys(errors)?.length > 0) {
-      console.log("Errror", errors);
       if (errors?.total?.message) triggerAlert("Error", errors?.total?.message);
       if (errors?.order_quantity?.message)
         triggerAlert("Error", errors?.order_quantity?.message);
+      console.log("errors", errors);
       return;
     }
     try {
@@ -674,7 +697,33 @@ export const OpenTrade = ({
                   {unsettledPnL}{" "}
                 </p>
               </div>
-              <button className="flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white">
+              <button
+                onClick={() => {
+                  if (unsettledPnL !== 0 && accountInstance) {
+                    setIsSettleLoading(true);
+                    accountInstance?.settle();
+                  }
+                }}
+                className={`${
+                  unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
+                } flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white`}
+              >
+                {isSettleLoading ? (
+                  <Oval
+                    visible={true}
+                    height="13"
+                    width="13"
+                    color="#FFF"
+                    secondaryColor="rgba(255,255,255,0.6)"
+                    ariaLabel="oval-loading"
+                    strokeWidth={6}
+                    strokeWidthSecondary={6}
+                    wrapperStyle={{
+                      marginRight: "5px",
+                    }}
+                    wrapperClass=""
+                  />
+                ) : null}
                 <span>Settle PnL</span>
               </button>
             </div>
