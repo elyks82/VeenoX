@@ -1,9 +1,11 @@
 import { useGeneralContext } from "@/context";
 import { FavoriteProps, MarketTickerProps } from "@/models";
 import { formatSymbol, getFormattedAmount } from "@/utils/misc";
+import { useLocalStorage } from "@orderly.network/hooks";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaRegStar, FaStar } from "react-icons/fa6";
 
 export const PairSelector = ({ params }: FavoriteProps) => {
   const {
@@ -56,6 +58,8 @@ export const PairSelector = ({ params }: FavoriteProps) => {
   };
   const filteredMarketData = getFilteredMarketData();
   const handleAddToFavorite = () => {};
+
+  const [value, setValue] = useLocalStorage("FAVORITES", []);
 
   return (
     <div className="w-full">
@@ -113,9 +117,25 @@ export const PairSelector = ({ params }: FavoriteProps) => {
                   >
                     <td className="py-1">
                       <div className="w-full h-full flex items-center">
-                        {/* <button className="mr-2" onClick={() => {}}>
-                          <FaStar className="text-xs " />{" "}
-                        </button> */}
+                        <button
+                          className="mr-2"
+                          onClick={() => {
+                            if (value.includes(token.symbol))
+                              setValue((prev: any) =>
+                                prev.filter(
+                                  (item: string) => item !== token.symbol
+                                )
+                              );
+                            else
+                              setValue((prev: any) => [...prev, token.symbol]);
+                          }}
+                        >
+                          {value.includes(token.symbol) ? (
+                            <FaStar className="text-xs text-yellow-400" />
+                          ) : (
+                            <FaRegStar className="text-xs text-white" />
+                          )}
+                        </button>
                         <Link
                           className={`hover:text-white ${
                             isActivePair ? "text-base_color" : "text-white"
