@@ -182,7 +182,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const loadSavedState = async (chart: any) => {
     return new Promise<void>((resolve) => {
       const savedState = localStorage.getItem("chartState");
-      console.log("saved", savedState);
       if (savedState) {
         const parsedState = JSON.parse(savedState);
 
@@ -260,7 +259,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       }
 
       const observer = new MutationObserver((mutations) => {
-        console.log("DOM mutation detected");
         saveState();
       });
 
@@ -291,7 +289,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
     import("../../../../../public/static/charting_library").then(
       ({ widget: Widget }) => {
-        console.log("asset?.symbol", asset?.symbol);
         const widgetOptions: WidgetOptions = {
           symbol: formatSymbol(asset?.symbol),
           datafeed: Datafeed(asset, ws, setIsChartLoading) as never,
@@ -380,9 +377,9 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           !areLinesMissing &&
           currentInterval === chart.resolution()
         ) {
-          console.log(
-            "Positions unchanged and interval is the same, skipping update"
-          );
+          // console.log(
+          //   "Positions unchanged and interval is the same, skipping update"
+          // );
           return;
         }
 
@@ -447,9 +444,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           }
         });
         setChartLines(newChartLines);
-      } catch (e) {
-        console.log("e", e);
-      }
+      } catch (e) {}
   }, [orderPositions, orders?.rows?.length, asset?.symbol]);
 
   useEffect(() => {

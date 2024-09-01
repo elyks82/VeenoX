@@ -59,7 +59,6 @@ export const Deposit = () => {
     availableWithdraw,
     unsettledPnL,
   } = useWithdraw();
-  console.log("unsettledPnL", unsettledPnL);
   const {
     dst,
     balance,

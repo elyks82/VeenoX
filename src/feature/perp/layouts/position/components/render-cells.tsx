@@ -264,12 +264,10 @@ const renderAdditionalCells = (
                 };
 
                 try {
-                  console.log("Submitting order:", cancelOrder);
                   await onSubmit(cancelOrder);
                   triggerAlert("Success", "Position is successfully closed");
                   setOrderPositions(["closed"]);
                 } catch (e) {
-                  console.log("Error closing position:", e);
                   triggerAlert(
                     "Error",
                     "Failed to close position. Please try again."

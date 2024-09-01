@@ -18,15 +18,13 @@ export const TPSLModal = ({ order }: any) => {
   const [error, setError] = useState([""]);
   const [loading, setLoading] = useState(false);
   const { TPSLOpenOrder, setTPSLOpenOrder } = useGeneralContext();
-  console.log("order", TPSLOpenOrder.symbol);
   const position = {
-    symbol: TPSLOpenOrder.symbol, // La paire de trading
-    average_open_price: TPSLOpenOrder.average_open_price, // Le prix moyen d'entrée
-    position_qty: TPSLOpenOrder.position_qty, // Quantité négative pour une position courte
+    symbol: TPSLOpenOrder.symbol,
+    average_open_price: TPSLOpenOrder.average_open_price,
+    position_qty: TPSLOpenOrder.position_qty,
     tp_trigger_price: TPSLOpenOrder.tp_trigger_price,
     sl_trigger_price: TPSLOpenOrder.sl_trigger_price,
     quantity: String(Math.abs(TPSLOpenOrder.position_qty)),
-    // Autres données éventuelles...
   };
   const [algoOrder, { setValue, submit, errors }] = useTPSLOrder(position, {
     defaultOrder: TPSLOpenOrder.algo_order,
@@ -37,10 +35,6 @@ export const TPSLModal = ({ order }: any) => {
   ] = useOrderStream(TPSLOpenOrder);
   const { setOrderPositions } = useGeneralContext();
 
-  //   console.log(
-  //     "orde SSr",
-  //     positions.rows?.find((entry) => entry)
-  //   );
   const handleSubmit = async () => {
     setLoading(true);
     if (errors) {
@@ -88,6 +82,7 @@ export const TPSLModal = ({ order }: any) => {
     if (error) setError([""]);
     setValue(field, value);
   };
+
   return (
     <Dialog open={TPSLOpenOrder}>
       <DialogContent

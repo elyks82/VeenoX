@@ -35,7 +35,6 @@ export const Position = ({ asset }: PositionProps) => {
     left: string;
   }>({ width: "20%", left: "0%" });
   const [data, proxy, state] = usePositionStream();
-  console.log("state", data, state);
   const [orders, { cancelOrder }] = useOrderStream({ symbol: asset.symbol });
   const {
     totalCollateral,
@@ -54,8 +53,6 @@ export const Position = ({ asset }: PositionProps) => {
       setOrderPositions(data?.rows as any);
     }
   }, [data?.rows]);
-
-  console.log(orderPositions);
 
   useEffect(() => {
     const updateUnderline = () => {

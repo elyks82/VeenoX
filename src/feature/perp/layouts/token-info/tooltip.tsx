@@ -107,7 +107,6 @@ export const PairSelector = ({ params }: FavoriteProps) => {
                 100;
               const isUp = token.change > 0;
               const isActivePair = pathname.includes(token.symbol);
-              console.log("`/perp/${token.symbol}`", `/perp/${token.symbol}`);
               return (
                 <tbody
                   key={token.symbol}

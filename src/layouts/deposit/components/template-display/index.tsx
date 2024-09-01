@@ -202,7 +202,6 @@ TemplateDisplayProps) => {
               const newValue = filterAllowedCharacters(e.target.value);
               setAmount(newValue as any);
               setQuantity(newValue.toString());
-              console.log("newValue", newValue);
             }}
           />
           <div className="flex items-center">
