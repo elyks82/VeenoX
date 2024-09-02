@@ -379,23 +379,20 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
         const areLinesMissing = Object.keys(chartLines).length === 0;
 
+        // On vérifie simplement si les positions ont changé ou si les lignes sont manquantes
         if (
           !hasPositionsChanged &&
           !areLinesMissing &&
-          currentInterval === chart.resolution()
+          Object.keys(chartLines).length === relevantPositions.length
         ) {
-          // console.log(
-          //   "Positions unchanged and interval is the same, skipping update"
-          // );
+          console.log("No changes detected, skipping update");
           return;
         }
 
-        (prevPositionsRef.current as any) = relevantPositions;
+        prevPositionsRef.current = relevantPositions;
 
-        if (Object.keys(chartLines)?.length > 0)
-          Object.entries(chartLines).forEach(([id, line]) => {
-            line.remove();
-          });
+        // On supprime toutes les lignes existantes
+        Object.values(chartLines).forEach((line: any) => line.remove());
 
         const newChartLines: { [key: string]: any } = {};
 
@@ -450,16 +447,12 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             newChartLines[slLineId] = slLine;
           }
         });
+
         setChartLines(newChartLines);
-      } catch (e) {}
-  }, [
-    order?.sl_trigger_price,
-    order?.tp_trigger_price,
-    order?.average_open_price,
-    ,
-    orders?.rows?.length,
-    asset?.symbol,
-  ]);
+      } catch (e) {
+        console.error("Error updating chart lines:", e);
+      }
+  }, [relevantPositions, asset?.symbol, chartLines]);
 
   useEffect(() => {
     if (chartRef.current && isChartReady) {
