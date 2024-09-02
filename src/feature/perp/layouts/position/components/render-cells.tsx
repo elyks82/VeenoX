@@ -39,7 +39,6 @@ export const RenderCells = ({
 
   return (
     <>
-      <PosterModal order={order} />
       {renderCommonCells(order)}
       {renderAdditionalCells(
         order,
@@ -203,7 +202,10 @@ const renderAdditionalCells = (
             } font-medium`
           )}
         >
-          {getFormattedAmount(trade.unrealized_pnl)}
+          <div className="flex items-center gap-2.5 w-full h-full justify-end">
+            {getFormattedAmount(trade.unrealized_pnl)}
+            <PosterModal order={trade} />{" "}
+          </div>
         </td>
         <td className={tdStyle}>
           <div className="flex flex-col w-full h-full  text-white">

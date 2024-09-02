@@ -5,12 +5,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/lib/shadcn/dialog";
-import { formatSymbol, getFormattedDate } from "@/utils/misc";
+import {
+  formatSymbol,
+  getFormattedAmount,
+  getFormattedDate,
+} from "@/utils/misc";
 import { useEffect, useRef, useState } from "react";
+import { FaShareAlt } from "react-icons/fa";
 
 export const PosterModal = ({ order }: any) => {
+  console.log(order);
   const [imageUrl, setImageUrl] = useState(null);
   const [selectedImage, setSelectedImage] = useState("/poster/4.webp");
+  const [showAmount, setShowAmount] = useState(false);
   const data = {
     side: order.position_qty > 0 ? "LONG" : "SHORT",
     symbol: formatSymbol(order.symbol),
@@ -19,6 +26,7 @@ export const PosterModal = ({ order }: any) => {
     markPrice: order.mark_price,
     time: getFormattedDate(order.timestamp),
     amount: order.position_qty,
+    unrealized_pnl: order.unrealized_pnl,
   };
   const canvasRef = useRef(null);
 
@@ -91,19 +99,41 @@ export const PosterModal = ({ order }: any) => {
         100
       );
 
-      ctx.font = "bold 105px Poppins";
+      ctx.font = "bold 90px Poppins";
       const pnlPercentage = (
         ((data.markPrice - data.price) / data.price) *
         100 *
         (data.side === "LONG" ? 1 : -1)
       ).toFixed(2);
+
       ctx.fillStyle =
         Number(pnlPercentage) > 0 ? "rgb(14 203 129)" : "rgb(234 57 67)";
+
+      const baseX = 50;
+      const baseY = 240;
+
       ctx.fillText(
         `${Number(pnlPercentage) > 0 ? "+" : ""}${pnlPercentage}%`,
-        50,
-        240
+        baseX,
+        baseY
       );
+
+      const pnlPercentageWidth = ctx.measureText(
+        `${Number(pnlPercentage) > 0 ? "+" : ""}${pnlPercentage}%`
+      ).width;
+
+      if (showAmount) {
+        ctx.font = "50px Poppins";
+        const pnl = getFormattedAmount(data.unrealized_pnl);
+        ctx.fillStyle = "rgb(255,255,255)";
+
+        const amountText = `( $${pnl} )`;
+        const amountWidth = ctx.measureText(amountText).width;
+
+        const amountX = baseX + pnlPercentageWidth + 20;
+
+        ctx.fillText(amountText, amountX, 230);
+      }
 
       const drawBicolorText = (
         label1: string,
@@ -199,7 +229,7 @@ export const PosterModal = ({ order }: any) => {
     };
 
     drawPoster();
-  }, [data, selectedImage]);
+  }, [data, selectedImage, showAmount]);
 
   const downloadImage = () => {
     if (!imageUrl) return;
@@ -212,16 +242,18 @@ export const PosterModal = ({ order }: any) => {
   return (
     <Dialog>
       <DialogTrigger>
-        <button>Preview</button>
+        <button>
+          <FaShareAlt className="text-white text-sm" />
+        </button>
       </DialogTrigger>
       <DialogContent
         className="max-w-[700px] w-[90%] h-auto max-h-[90vh] flex flex-col gap-0 overflow-auto"
         close={() => {}}
       >
         <DialogHeader>
-          <DialogTitle className="pb-5">Trading Poster</DialogTitle>
+          <DialogTitle className="pb-5">Flex your trade</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col">
           <canvas ref={canvasRef} style={{ display: "none" }} />
           {imageUrl && (
             <>
@@ -232,8 +264,11 @@ export const PosterModal = ({ order }: any) => {
               />
             </>
           )}
-          <div className="flex items-center flex-wrap gap-2 mt-5">
-            {Array.from({ length: 10 }).map((_, index) => (
+          <p className="text-sm text-white mt-5 mb-2 text-start">
+            Select an image:{" "}
+          </p>
+          <div className="flex items-center flex-wrap gap-2 ">
+            {Array.from({ length: 8 }).map((_, index) => (
               <button
                 className={`border cursor-pointer ${
                   selectedImage === `/poster/${index + 1}.webp`
@@ -244,11 +279,18 @@ export const PosterModal = ({ order }: any) => {
                 key={index}
               >
                 <img
-                  className="h-[65px] w-[65px]"
+                  className="h-[50px] w-[50px]"
                   src={`/poster/${index + 1}.webp`}
                 />
               </button>
             ))}
+          </div>
+          <div className="flex items-center">
+            <p>Show Amount:</p>
+            <button
+              onClick={() => setShowAmount((prev) => !prev)}
+              className="h-4 w-4 border border-borderColor-DARK "
+            ></button>
           </div>
           <button
             onClick={downloadImage}
