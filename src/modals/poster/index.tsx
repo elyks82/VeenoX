@@ -312,7 +312,7 @@ export const PosterModal = ({ order }: any) => {
                 Overlay:
               </p>
               <div className="flex items-center flex-wrap gap-2 w-fit min-w-fit">
-                {Array.from({ length: 8 }).map((_, index) => (
+                {Array.from({ length: 9 }).map((_, index) => (
                   <button
                     className={`border cursor-pointer ${
                       selectedImage === `/poster/${index + 1}.webp`
@@ -320,13 +320,21 @@ export const PosterModal = ({ order }: any) => {
                         : "border-borderColor"
                     } rounded p-2`}
                     onClick={() =>
-                      setSelectedImage(`/poster/${index + 1}.webp`)
+                      setSelectedImage(
+                        index + 1 === 10
+                          ? "/poster/10.png"
+                          : `/poster/${index + 1}.webp`
+                      )
                     }
                     key={index}
                   >
                     <img
                       className="h-[48px] w-[48px]"
-                      src={`/poster/${index + 1}.webp`}
+                      src={
+                        index + 1 === 10
+                          ? "/poster/10.png"
+                          : `/poster/${index + 1}.webp`
+                      }
                     />
                   </button>
                 ))}
