@@ -7,8 +7,8 @@ import {
   getFormattedAmount,
   getFormattedDate,
 } from "@/utils/misc";
-import { useOrderEntry, usePoster } from "@orderly.network/hooks";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useOrderEntry } from "@orderly.network/hooks";
+import { Dispatch, SetStateAction } from "react";
 import { TPSLModal } from "./tp-sl-modal";
 
 const tdStyle = `text-xs px-2.5 py-4 text-white whitespace-nowrap font-normal border-y border-borderColor text-end`;
@@ -27,22 +27,6 @@ export const RenderCells = ({
 }: any) => {
   const { TPSLOpenOrder, setTPSLOpenOrder, setOrderPositions } =
     useGeneralContext();
-  const { ref, toDataURL, toBlob, download, copy } = usePoster({
-    backgroundColor: "#0b8c70",
-    backgroundImg: "/logo/veeno.png",
-    color: "rgba(255, 255, 255, 0.98)",
-    profitColor: "rgb(0,181,159)",
-    fontFamily: "Poppins, Inter, sans-serif",
-    lossColor: "rgb(255,103,194)",
-    brandColor: "rgb(0,181,159)",
-  });
-
-  const [imagePreview, setImagePreview] = useState(null);
-  const handlePreview = () => {
-    const imageUrl = toDataURL();
-    setImagePreview(imageUrl as never);
-  };
-
   const { onSubmit } = useOrderEntry(
     {
       symbol: order.symbol,
@@ -101,7 +85,6 @@ const renderAdditionalCells = (
   if (section === Sections.FILLED) {
     return (
       <>
-        <img src={toBlob} />
         <td className={tdStyle}>{trade.type}</td>
         <td
           className={cn(

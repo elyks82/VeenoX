@@ -8,8 +8,7 @@ import {
 import { formatSymbol, getFormattedDate } from "@/utils/misc";
 import { useEffect, useRef, useState } from "react";
 
-export const PosterModal = ({ order }) => {
-  console.log("order", order);
+export const PosterModal = ({ order }: any) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [selectedImage, setSelectedImage] = useState("/poster/4.webp");
   const data = {
@@ -24,7 +23,7 @@ export const PosterModal = ({ order }) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas: any = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext("2d");
@@ -34,7 +33,6 @@ export const PosterModal = ({ order }) => {
     canvas.height = 675;
 
     const drawPoster = async () => {
-      // Fond
       const gradient = ctx.createLinearGradient(
         0,
         0,
@@ -47,7 +45,6 @@ export const PosterModal = ({ order }) => {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Grille
       ctx.strokeStyle = "rgb(17,17,17)";
       ctx.lineWidth = 1;
       for (let i = 0; i < canvas.width; i += 200) {
@@ -108,7 +105,15 @@ export const PosterModal = ({ order }) => {
         240
       );
 
-      const drawBicolorText = (label1, value1, label2, value2, x1, x2, y) => {
+      const drawBicolorText = (
+        label1: string,
+        value1: string,
+        label2: string,
+        value2: string,
+        x1: number,
+        x2: number,
+        y: number
+      ) => {
         ctx.font = "20px Poppins";
         ctx.fillStyle = "rgba(255,255,255,0.6)";
         ctx.fillText(label1, x1, y);
@@ -129,7 +134,7 @@ export const PosterModal = ({ order }) => {
         "Open price: ",
         data.price.toString(),
         "Opened at: ",
-        data.time,
+        data.time as string,
         x1,
         x2,
         320
@@ -209,7 +214,10 @@ export const PosterModal = ({ order }) => {
       <DialogTrigger>
         <button>Preview</button>
       </DialogTrigger>
-      <DialogContent className="max-w-[700px] w-[90%] h-auto max-h-[90vh] flex flex-col gap-0 overflow-auto">
+      <DialogContent
+        className="max-w-[700px] w-[90%] h-auto max-h-[90vh] flex flex-col gap-0 overflow-auto"
+        close={() => {}}
+      >
         <DialogHeader>
           <DialogTitle className="pb-5">Trading Poster</DialogTitle>
         </DialogHeader>
@@ -236,7 +244,7 @@ export const PosterModal = ({ order }) => {
                 key={index}
               >
                 <img
-                  className="h-[100px] w-[100px]"
+                  className="h-[65px] w-[65px]"
                   src={`/poster/${index + 1}.webp`}
                 />
               </button>
