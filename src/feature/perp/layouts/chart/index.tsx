@@ -379,7 +379,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
         const areLinesMissing = Object.keys(chartLines).length === 0;
 
-        // On vérifie simplement si les positions ont changé ou si les lignes sont manquantes
         if (
           !hasPositionsChanged &&
           !areLinesMissing &&
@@ -389,9 +388,8 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           return;
         }
 
-        prevPositionsRef.current = relevantPositions;
+        (prevPositionsRef as any).current = relevantPositions;
 
-        // On supprime toutes les lignes existantes
         Object.values(chartLines).forEach((line: any) => line.remove());
 
         const newChartLines: { [key: string]: any } = {};
