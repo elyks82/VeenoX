@@ -12,6 +12,7 @@ export const PosterModal = ({ order }: any) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [selectedImage, setSelectedImage] = useState("/poster/4.webp");
   const [showAmount, setShowAmount] = useState(false);
+  const displays = ["ROI & PnL", "ROI", "PnL"];
   const [pnlDisplay, setPnlDisplay] = useState("ROI");
   const data = {
     side: order.position_qty > 0 ? "LONG" : "SHORT",
@@ -286,8 +287,9 @@ export const PosterModal = ({ order }: any) => {
             <div className="flex flex-col ml-5">
               <p>PnL display:</p>
               <div className="flex items-center gap-3">
-                {["ROI & PnL", "ROI", "PnL"].map((type) => (
+                {displays.map((type) => (
                   <button
+                    key={type}
                     onClick={() => setPnlDisplay(type)}
                     className="flex items-center justify-between mb-2  mt-2"
                   >
@@ -314,6 +316,7 @@ export const PosterModal = ({ order }: any) => {
               <div className="flex items-center flex-wrap gap-2 w-fit min-w-fit">
                 {Array.from({ length: 9 }).map((_, index) => (
                   <button
+                    key={index}
                     className={`border cursor-pointer ${
                       selectedImage === `/poster/${index + 1}.webp`
                         ? "border-base_color"
@@ -326,7 +329,6 @@ export const PosterModal = ({ order }: any) => {
                           : `/poster/${index + 1}.webp`
                       )
                     }
-                    key={index}
                   >
                     <img
                       className="h-[48px] w-[48px]"
