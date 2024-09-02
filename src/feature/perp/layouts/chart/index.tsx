@@ -356,6 +356,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     order?.sl_trigger_price,
     order?.tp_trigger_price,
     order?.average_open_price,
+    orders?.rows?.length,
     asset?.symbol,
   ]);
 
@@ -451,7 +452,14 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         });
         setChartLines(newChartLines);
       } catch (e) {}
-  }, [orderPositions, orders?.rows?.length, asset?.symbol]);
+  }, [
+    order?.sl_trigger_price,
+    order?.tp_trigger_price,
+    order?.average_open_price,
+    ,
+    orders?.rows?.length,
+    asset?.symbol,
+  ]);
 
   useEffect(() => {
     if (chartRef.current && isChartReady) {
@@ -461,6 +469,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     order?.sl_trigger_price,
     order?.tp_trigger_price,
     order?.average_open_price,
+    orders?.rows?.length,
     updatePositions,
     params?.perp,
     asset?.symbol,
