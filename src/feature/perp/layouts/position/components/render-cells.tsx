@@ -1,5 +1,6 @@
 import { useGeneralContext } from "@/context";
 import { triggerAlert } from "@/lib/toaster";
+import { PosterModal } from "@/modals/poster";
 import { cn } from "@/utils/cn";
 import {
   formatSymbol,
@@ -34,8 +35,6 @@ export const RenderCells = ({
     fontFamily: "Poppins, Inter, sans-serif",
     lossColor: "rgb(255,103,194)",
     brandColor: "rgb(0,181,159)",
-
-    // ...
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -56,6 +55,7 @@ export const RenderCells = ({
 
   return (
     <>
+      <PosterModal order={order} />
       {renderCommonCells(order)}
       {renderAdditionalCells(
         order,
@@ -101,6 +101,7 @@ const renderAdditionalCells = (
   if (section === Sections.FILLED) {
     return (
       <>
+        <img src={toBlob} />
         <td className={tdStyle}>{trade.type}</td>
         <td
           className={cn(

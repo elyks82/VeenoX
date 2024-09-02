@@ -223,19 +223,21 @@ export const Position = ({ asset }: PositionProps) => {
                 (activeSection > 0 && !orders?.length)
               ) {
                 return (
-                  <div
+                  <tr
                     key={i}
                     className="flex flex-col justify-center text-xs text-white items-center absolute h-[260px] left-1/2"
                   >
-                    <Image
-                      src="/empty/no-result.svg"
-                      height={50}
-                      width={100}
-                      alt="Empty position image"
-                      className="mt-2"
-                    />
-                    <p className="mt-2">{noOrderMessage}</p>
-                  </div>
+                    <div className="flex items-center justify-center w-full h-full">
+                      <Image
+                        src="/empty/no-result.svg"
+                        height={50}
+                        width={100}
+                        alt="Empty position image"
+                        className="mt-2"
+                      />
+                      <p className="mt-2">{noOrderMessage}</p>{" "}
+                    </div>
+                  </tr>
                 );
               }
               return (
@@ -250,16 +252,18 @@ export const Position = ({ asset }: PositionProps) => {
             })}
             {(!orders?.length && activeSection !== Sections.POSITION) ||
             (activeSection === Sections.POSITION && !data?.rows?.length) ? (
-              <div className="flex flex-col justify-center text-xs text-white items-center absolute h-[260px] left-1/2">
-                <Image
-                  src="/empty/no-result.svg"
-                  height={50}
-                  width={100}
-                  alt="Empty position image"
-                  className="mt-2"
-                />
-                <p className="mt-2">{noOrderMessage}</p>
-              </div>
+              <tr className="flex flex-col justify-center text-xs text-white items-center absolute h-[260px] left-1/2">
+                <div className="flex flex-col justify-center items-center">
+                  <Image
+                    src="/empty/no-result.svg"
+                    height={50}
+                    width={100}
+                    alt="Empty position image"
+                    className="mt-2"
+                  />
+                  <p className="mt-2">{noOrderMessage}</p>{" "}
+                </div>
+              </tr>
             ) : null}
           </tbody>
         </table>
