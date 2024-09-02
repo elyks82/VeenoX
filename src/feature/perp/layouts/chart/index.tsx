@@ -120,6 +120,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const chartRef = useRef<any>(null);
   const prevPositionsRef = useRef("");
   const [currentInterval, setCurrentInterval] = useState<string>("");
+  const order = orders?.rows?.find((entry) => entry.symbol === asset?.symbol);
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -351,7 +352,12 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         (position: any) => position.symbol === asset?.symbol
       ) || []
     );
-  }, [orders?.rows, asset?.symbol]);
+  }, [
+    order?.sl_trigger_price,
+    order?.tp_trigger_price,
+    order?.average_open_price,
+    asset?.symbol,
+  ]);
 
   const updatePositions = useCallback(() => {
     const chart = chartRef.current;
@@ -452,7 +458,9 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       updatePositions();
     }
   }, [
-    orderPositions,
+    order?.sl_trigger_price,
+    order?.tp_trigger_price,
+    order?.average_open_price,
     updatePositions,
     params?.perp,
     asset?.symbol,
