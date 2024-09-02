@@ -96,7 +96,7 @@ export const PosterModal = ({ order }: any) => {
       );
 
       const baseX = 50;
-      const baseY = 240;
+      const baseY = 225;
 
       const pnlPercentage = (
         ((data.markPrice - data.price) / data.price) *
@@ -135,7 +135,7 @@ export const PosterModal = ({ order }: any) => {
 
         const amountX = baseX + pnlPercentageWidth + 20;
 
-        ctx.fillText(amountText, amountX, 230);
+        ctx.fillText(amountText, amountX, 225);
       }
 
       const drawBicolorText = (
@@ -147,21 +147,21 @@ export const PosterModal = ({ order }: any) => {
         x2: number,
         y: number
       ) => {
-        ctx.font = "20px Poppins";
+        ctx.font = "24px Poppins";
         ctx.fillStyle = "rgba(255,255,255,0.6)";
         ctx.fillText(label1, x1, y);
         ctx.fillText(label2, x2, y);
 
-        ctx.font = "24px Poppins";
+        ctx.font = "26px Poppins";
         ctx.fillStyle = "rgb(255,255,255)";
-        ctx.fillText(value1, x1, y + 34);
-        ctx.fillText(value2, x2, y + 34);
+        ctx.fillText(value1, x1, y + 42);
+        ctx.fillText(value2, x2, y + 42);
       };
 
       const x1 = 50;
       const x2 = 280;
 
-      const ySpacing = 40;
+      const ySpacing = 55;
 
       drawBicolorText(
         "Open price: ",
@@ -170,7 +170,7 @@ export const PosterModal = ({ order }: any) => {
         data.time as string,
         x1,
         x2,
-        320
+        300
       );
 
       drawBicolorText(
@@ -180,7 +180,7 @@ export const PosterModal = ({ order }: any) => {
         data.amount.toString(),
         x1,
         x2,
-        370 + ySpacing
+        350 + ySpacing
       );
 
       ctx.font = "bold 42px Poppins";
