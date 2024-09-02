@@ -2,7 +2,11 @@ import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
-import { usePositionStream, useWS } from "@orderly.network/hooks";
+import {
+  useOrderStream,
+  usePositionStream,
+  useWS,
+} from "@orderly.network/hooks";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bar,
@@ -122,6 +126,22 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [currentInterval, setCurrentInterval] = useState<string>("");
   const order = orders?.rows?.find((entry) => entry.symbol === asset?.symbol);
 
+  const [ordersData] = useOrderStream({ symbol: asset?.symbol });
+
+  const pendingPosition = useMemo(() => {
+    return (
+      ordersData?.filter(
+        (entry) =>
+          entry.total_executed_quantity < entry.quantity &&
+          entry.type === "LIMIT" &&
+          entry.status !== "COMPLETED" &&
+          entry.status !== "FILLED" &&
+          entry.status !== "CANCELLED"
+      ) || []
+    );
+  }, [ordersData]);
+
+  console.log("ordersDataordersData", pendingPosition);
   const saveChartState = useCallback(
     (chart: any) => {
       if (!isInitialLoadComplete) {
@@ -378,7 +398,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           });
 
         const areLinesMissing = Object.keys(chartLines).length === 0;
-
+        console.log("orderorder", orders);
         if (
           !hasPositionsChanged &&
           !areLinesMissing &&
@@ -446,6 +466,25 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           }
         });
 
+        if ((pendingPosition?.length as number) > 0) {
+          pendingPosition.forEach((entry) => {
+            const pendingLineId = `pending_${entry?.order_id}`;
+            const pendingLine = chart
+              .createOrderLine()
+              .setText("Limit order")
+              .setPrice(entry?.price || 150)
+              .setLineWidth(1)
+              .setQuantity("")
+              .setBodyTextColor("#000")
+              .setBodyBackgroundColor("#1c5e57")
+              .setBodyBorderColor("#1c5e57")
+              .setBodyTextColor("#FFF")
+              .setLineColor("#1c5e57")
+              .setLineStyle(1);
+            newChartLines[pendingLineId] = pendingLine;
+          });
+        }
+
         setChartLines(newChartLines);
       } catch (e) {
         console.error("Error updating chart lines:", e);
@@ -461,10 +500,10 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     order?.tp_trigger_price,
     order?.average_open_price,
     orders?.rows?.length,
-    updatePositions,
     params?.perp,
     asset?.symbol,
     isChartReady,
+    pendingPosition,
   ]);
 
   useEffect(() => {
