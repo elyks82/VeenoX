@@ -204,7 +204,7 @@ const renderAdditionalCells = (
         >
           <div className="flex items-center gap-2.5 w-full h-full justify-end">
             {getFormattedAmount(trade.unrealized_pnl)}
-            <PosterModal order={trade} />{" "}
+            <PosterModal order={trade} />
           </div>
         </td>
         <td className={tdStyle}>

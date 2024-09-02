@@ -1,10 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/lib/shadcn/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/lib/shadcn/dialog";
 import {
   formatSymbol,
   getFormattedAmount,
@@ -18,6 +12,7 @@ export const PosterModal = ({ order }: any) => {
   const [imageUrl, setImageUrl] = useState(null);
   const [selectedImage, setSelectedImage] = useState("/poster/4.webp");
   const [showAmount, setShowAmount] = useState(false);
+  const [pnlDisplay, setPnlDisplay] = useState("ROI");
   const data = {
     side: order.position_qty > 0 ? "LONG" : "SHORT",
     symbol: formatSymbol(order.symbol),
@@ -99,32 +94,39 @@ export const PosterModal = ({ order }: any) => {
         100
       );
 
-      ctx.font = "bold 90px Poppins";
+      const baseX = 50;
+      const baseY = 240;
+
       const pnlPercentage = (
         ((data.markPrice - data.price) / data.price) *
         100 *
         (data.side === "LONG" ? 1 : -1)
       ).toFixed(2);
+      const pnl = getFormattedAmount(data.unrealized_pnl);
 
-      ctx.fillStyle =
-        Number(pnlPercentage) > 0 ? "rgb(14 203 129)" : "rgb(234 57 67)";
+      if (
+        pnlDisplay === "ROI & PnL" ||
+        pnlDisplay === "ROI" ||
+        pnlDisplay === "PnL"
+      ) {
+        ctx.font = "bold 90px Poppins";
+        ctx.fillStyle =
+          Number(pnlPercentage) > 0 ? "rgb(14 203 129)" : "rgb(234 57 67)";
 
-      const baseX = 50;
-      const baseY = 240;
-
-      ctx.fillText(
-        `${Number(pnlPercentage) > 0 ? "+" : ""}${pnlPercentage}%`,
-        baseX,
-        baseY
-      );
-
+        ctx.fillText(
+          `${Number(pnlPercentage) > 0 ? "+" : ""}${
+            pnlDisplay === "PnL" ? `${pnl}$` : `${pnlPercentage}%`
+          }`,
+          baseX,
+          baseY
+        );
+      }
       const pnlPercentageWidth = ctx.measureText(
         `${Number(pnlPercentage) > 0 ? "+" : ""}${pnlPercentage}%`
       ).width;
 
-      if (showAmount) {
+      if (pnlDisplay === "ROI & PnL") {
         ctx.font = "50px Poppins";
-        const pnl = getFormattedAmount(data.unrealized_pnl);
         ctx.fillStyle = "rgb(255,255,255)";
 
         const amountText = `( $${pnl} )`;
@@ -239,6 +241,14 @@ export const PosterModal = ({ order }: any) => {
     link.click();
   };
 
+  const message = {
+    symbol: order.symbol,
+    entryPrice: order.average_open_price,
+    markPrice: order.mark_price,
+    pnl: order.unrealized_pnl,
+    imageUrl,
+  };
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -247,57 +257,90 @@ export const PosterModal = ({ order }: any) => {
         </button>
       </DialogTrigger>
       <DialogContent
-        className="max-w-[700px] w-[90%] h-auto max-h-[90vh] flex flex-col gap-0 overflow-auto"
+        className="max-w-[1050px] w-[90%] h-auto max-h-[90vh] flex flex-col gap-0 overflow-auto"
         close={() => {}}
       >
-        <DialogHeader>
-          <DialogTitle className="pb-5">Flex your trade</DialogTitle>
-        </DialogHeader>
         <div className="flex flex-col">
-          <canvas ref={canvasRef} style={{ display: "none" }} />
-          {imageUrl && (
-            <>
-              <img
-                src={imageUrl}
-                alt="Generated Trading Poster"
-                style={{ maxWidth: "100%", height: "auto" }}
-              />
-            </>
-          )}
-          <p className="text-sm text-white mt-5 mb-2 text-start">
-            Select an image:{" "}
-          </p>
-          <div className="flex items-center flex-wrap gap-2 ">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <button
-                className={`border cursor-pointer ${
-                  selectedImage === `/poster/${index + 1}.webp`
-                    ? "border-base_color"
-                    : "border-borderColor"
-                } rounded p-2`}
-                onClick={() => setSelectedImage(`/poster/${index + 1}.webp`)}
-                key={index}
-              >
+          <div className="flex ">
+            <div className="border border-borderColor-DARK rounded-lg">
+              <canvas ref={canvasRef} style={{ display: "none" }} />
+              {imageUrl ? (
                 <img
-                  className="h-[50px] w-[50px]"
-                  src={`/poster/${index + 1}.webp`}
+                  src={imageUrl}
+                  alt="Generated Trading Poster"
+                  style={{ maxWidth: "760px", height: "auto" }}
+                  className="rounded-lg"
                 />
+              ) : (
+                <div className="max-w-[760px] w-[760px] h-[427px] bg-[#1B1D22] rounded-lg flex items-center justify-center">
+                  <img
+                    src={"/loader/loader.gif"}
+                    alt="Generated Trading Poster"
+                    style={{ maxWidth: "100px", height: "auto" }}
+                    className="rounded-lg"
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col ml-5">
+              <p>PnL display:</p>
+              <div className="flex items-center gap-3">
+                {["ROI & PnL", "ROI", "PnL"].map((type) => (
+                  <button
+                    onClick={() => setPnlDisplay(type)}
+                    className="flex items-center justify-between mb-2  mt-2"
+                  >
+                    <div
+                      className={`w-[15px] p-0.5 h-[15px] rounded border ${
+                        pnlDisplay === type
+                          ? "border-base_color"
+                          : "border-[rgba(255,255,255,0.3)]"
+                      } transition-all duration-100 ease-in-out`}
+                    >
+                      <div
+                        className={`w-full h-full rounded-[1px] bg-base_color ${
+                          pnlDisplay === type ? "opacity-100" : "opacity-0"
+                        } transition-all duration-100 ease-in-out`}
+                      />
+                    </div>
+                    <p className="ml-2 text-[13px] text-font-80">{type}</p>
+                  </button>
+                ))}
+              </div>
+              <p className="text-sm text-white font-medium mb-2 text-start mt-2.5">
+                Overlay:
+              </p>
+              <div className="flex items-center flex-wrap gap-2 w-fit min-w-fit">
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <button
+                    className={`border cursor-pointer ${
+                      selectedImage === `/poster/${index + 1}.webp`
+                        ? "border-base_color"
+                        : "border-borderColor"
+                    } rounded p-2`}
+                    onClick={() =>
+                      setSelectedImage(`/poster/${index + 1}.webp`)
+                    }
+                    key={index}
+                  >
+                    <img
+                      className="h-[48px] w-[48px]"
+                      src={`/poster/${index + 1}.webp`}
+                    />
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={downloadImage}
+                className="mt-4 px-4 py-2 text-sm bg-base_color text-white rounded hover:bg-base_color transition-colors"
+              >
+                Download
               </button>
-            ))}
+              {/* <TwitterShareButton message={message} /> */}
+            </div>
           </div>
-          <div className="flex items-center">
-            <p>Show Amount:</p>
-            <button
-              onClick={() => setShowAmount((prev) => !prev)}
-              className="h-4 w-4 border border-borderColor-DARK "
-            ></button>
-          </div>
-          <button
-            onClick={downloadImage}
-            className="mt-4 px-4 py-2 bg-base_color text-white rounded hover:bg-base_color transition-colors"
-          >
-            Télécharger le poster
-          </button>
         </div>
       </DialogContent>
     </Dialog>
