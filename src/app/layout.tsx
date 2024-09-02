@@ -14,7 +14,7 @@ import { cookieToInitialState } from "wagmi";
 import "./globals.css";
 
 const OrderlyProvider = dynamic(() => import("../lib/orderly/"), {
-  ssr: false,
+  ssr: true,
 });
 
 const inter = Inter({
@@ -37,6 +37,12 @@ export default function RootLayout({
   const initialState = cookieToInitialState(config, headers().get("cookie"));
   return (
     <html lang="en">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className={inter.className}>
         <WagmiProvider initialState={initialState}>
           <OrderlyProvider>

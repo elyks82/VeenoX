@@ -26,9 +26,7 @@ export const EnableTrading = () => {
           setIsSuccess(false);
         }, 1000);
       }, 3000);
-    } catch (e) {
-      console.log("error", e);
-    }
+    } catch (e) {}
   };
   return (
     <Dialog open={isEnableTradingModalOpen}>

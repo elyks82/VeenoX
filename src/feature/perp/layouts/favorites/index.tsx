@@ -20,7 +20,6 @@ export const Favorites = ({ props }: FavoriteProps) => {
         <div className="h-full flex items-center whitespace-nowrap overflow-x-scroll no-scrollbar">
           {favorites.map((item, index) => {
             const change = get24hChange(item["24h_close"], item["24h_open"]);
-            console.log("item", item);
             return (
               <button
                 key={index}

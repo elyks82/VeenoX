@@ -202,7 +202,7 @@ export const Orderbook = ({
                           );
                       })}
 
-                      <div
+                      <td
                         className="absolute left-0 h-[90%] max-h-[30px] bg-red-opacity-10 z-0 transition-all duration-150 ease-linear"
                         style={{ width: `${asksWidth[i]}%` }}
                       />
@@ -261,7 +261,7 @@ export const Orderbook = ({
                           );
                       })}
 
-                      <div
+                      <td
                         className="absolute left-0 h-[90%] bg-green-opacity-10 z-0 transition-all duration-150 ease-linear"
                         style={{ width: `${bidsWidth[i]}%` }}
                       />

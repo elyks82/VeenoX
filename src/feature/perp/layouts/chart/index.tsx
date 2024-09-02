@@ -3,7 +3,7 @@ import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
 import { formatSymbol } from "@/utils/misc";
 import { usePositionStream, useWS } from "@orderly.network/hooks";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bar,
   ChartingLibraryWidgetOptions,
@@ -120,6 +120,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const chartRef = useRef<any>(null);
   const prevPositionsRef = useRef("");
   const [currentInterval, setCurrentInterval] = useState<string>("");
+  const order = orders?.rows?.find((entry) => entry.symbol === asset?.symbol);
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -182,7 +183,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const loadSavedState = async (chart: any) => {
     return new Promise<void>((resolve) => {
       const savedState = localStorage.getItem("chartState");
-      console.log("saved", savedState);
       if (savedState) {
         const parsedState = JSON.parse(savedState);
 
@@ -260,7 +260,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       }
 
       const observer = new MutationObserver((mutations) => {
-        console.log("DOM mutation detected");
         saveState();
       });
 
@@ -291,7 +290,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
     import("../../../../../public/static/charting_library").then(
       ({ widget: Widget }) => {
-        console.log("asset?.symbol", asset?.symbol);
         const widgetOptions: WidgetOptions = {
           symbol: formatSymbol(asset?.symbol),
           datafeed: Datafeed(asset, ws, setIsChartLoading) as never,
@@ -348,15 +346,23 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     );
   }, [asset, mobile, ws, setupChangeListeners]);
 
+  const relevantPositions = useMemo(() => {
+    return (
+      orders?.rows?.filter(
+        (position: any) => position.symbol === asset?.symbol
+      ) || []
+    );
+  }, [
+    order?.sl_trigger_price,
+    order?.tp_trigger_price,
+    order?.average_open_price,
+    asset?.symbol,
+  ]);
+
   const updatePositions = useCallback(() => {
     const chart = chartRef.current;
     if (chart)
       try {
-        const relevantPositions =
-          orders?.rows?.filter(
-            (position: any) => position.symbol === asset?.symbol
-          ) || [];
-
         const hasPositionsChanged =
           relevantPositions.length !== prevPositionsRef.current.length ||
           relevantPositions.some((newPos: any, index: number) => {
@@ -377,9 +383,9 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           !areLinesMissing &&
           currentInterval === chart.resolution()
         ) {
-          console.log(
-            "Positions unchanged and interval is the same, skipping update"
-          );
+          // console.log(
+          //   "Positions unchanged and interval is the same, skipping update"
+          // );
           return;
         }
 
@@ -400,7 +406,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             .createOrderLine()
             .setText("Open Price")
             .setPrice(position?.average_open_price || 150)
-            .setLineWidth(2)
+            .setLineWidth(1)
             .setQuantity(position?.position_qty)
             .setBodyTextColor("#000")
             .setBodyBackgroundColor("#836EF9")
@@ -417,7 +423,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
               .createOrderLine()
               .setText("Take Profit")
               .setPrice(position.tp_trigger_price || 150)
-              .setLineWidth(2)
+              .setLineWidth(1)
               .setQuantity("")
               .setBodyTextColor("#000")
               .setBodyBackgroundColor("#427af4")
@@ -433,7 +439,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
               .createOrderLine()
               .setText("Stop Loss")
               .setPrice(position?.sl_trigger_price || 150)
-              .setLineWidth(2)
+              .setLineWidth(1)
               .setQuantity("")
               .setBodyTextColor("#000")
               .setBodyBackgroundColor("#F5921A")
@@ -444,17 +450,17 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           }
         });
         setChartLines(newChartLines);
-      } catch (e) {
-        console.log("e", e);
-      }
-  }, [orders?.rows, asset?.symbol]);
+      } catch (e) {}
+  }, [orderPositions, orders?.rows?.length, asset?.symbol]);
 
   useEffect(() => {
     if (chartRef.current && isChartReady) {
       updatePositions();
     }
   }, [
-    orders?.rows,
+    order?.sl_trigger_price,
+    order?.tp_trigger_price,
+    order?.average_open_price,
     updatePositions,
     params?.perp,
     asset?.symbol,

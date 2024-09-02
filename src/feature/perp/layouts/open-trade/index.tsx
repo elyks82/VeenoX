@@ -168,7 +168,6 @@ export const OpenTrade = ({
       if (errors?.total?.message) triggerAlert("Error", errors?.total?.message);
       if (errors?.order_quantity?.message)
         triggerAlert("Error", errors?.order_quantity?.message);
-      console.log("errors", errors);
       return;
     }
     try {
@@ -177,9 +176,7 @@ export const OpenTrade = ({
       triggerAlert("Success", "Order has been executed.");
       setOrderPositions(val as any);
       setValues(defaultValues);
-    } catch (err) {
-      console.log("errerrerrerr", err);
-    }
+    } catch (err) {}
   };
 
   const getStyleFromType = () => {

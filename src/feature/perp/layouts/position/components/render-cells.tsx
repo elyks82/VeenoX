@@ -1,13 +1,14 @@
 import { useGeneralContext } from "@/context";
 import { triggerAlert } from "@/lib/toaster";
+import { PosterModal } from "@/modals/poster";
 import { cn } from "@/utils/cn";
 import {
   formatSymbol,
   getFormattedAmount,
   getFormattedDate,
 } from "@/utils/misc";
-import { useOrderEntry, usePoster } from "@orderly.network/hooks";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useOrderEntry } from "@orderly.network/hooks";
+import { Dispatch, SetStateAction } from "react";
 import { TPSLModal } from "./tp-sl-modal";
 
 const tdStyle = `text-xs px-2.5 py-4 text-white whitespace-nowrap font-normal border-y border-borderColor text-end`;
@@ -24,25 +25,8 @@ export const RenderCells = ({
   activeSection,
   closePendingOrder,
 }: any) => {
-  const { isTPSLOpen, setIsTPSLOpen, setOrderPositions } = useGeneralContext();
-  const { ref, toDataURL, toBlob, download, copy } = usePoster({
-    backgroundColor: "#0b8c70",
-    backgroundImg: "/logo/veeno.png",
-    color: "rgba(255, 255, 255, 0.98)",
-    profitColor: "rgb(0,181,159)",
-    fontFamily: "Poppins, Inter, sans-serif",
-    lossColor: "rgb(255,103,194)",
-    brandColor: "rgb(0,181,159)",
-
-    // ...
-  });
-
-  const [imagePreview, setImagePreview] = useState(null);
-  const handlePreview = () => {
-    const imageUrl = toDataURL();
-    setImagePreview(imageUrl as never);
-  };
-
+  const { TPSLOpenOrder, setTPSLOpenOrder, setOrderPositions } =
+    useGeneralContext();
   const { onSubmit } = useOrderEntry(
     {
       symbol: order.symbol,
@@ -60,11 +44,11 @@ export const RenderCells = ({
         order,
         activeSection,
         closePendingOrder,
-        setIsTPSLOpen,
+        setTPSLOpenOrder,
         setOrderPositions,
         onSubmit
       )}
-      {isTPSLOpen ? <TPSLModal order={order} /> : null}
+      {TPSLOpenOrder ? <TPSLModal order={order} /> : null}
     </>
   );
 };
@@ -93,7 +77,7 @@ const renderAdditionalCells = (
   trade: any,
   section: Sections,
   closePendingOrder: Function,
-  setIsTPSLOpen: Dispatch<SetStateAction<boolean>>,
+  setTPSLOpenOrder: Dispatch<SetStateAction<boolean>>,
   setOrderPositions: any,
   onSubmit: any
 ) => {
@@ -218,7 +202,10 @@ const renderAdditionalCells = (
             } font-medium`
           )}
         >
-          {getFormattedAmount(trade.unrealized_pnl)}
+          <div className="flex items-center gap-2.5 w-full h-full justify-end">
+            {getFormattedAmount(trade.unrealized_pnl)}
+            <PosterModal order={trade} />
+          </div>
         </td>
         <td className={tdStyle}>
           <div className="flex flex-col w-full h-full  text-white">
@@ -240,7 +227,7 @@ const renderAdditionalCells = (
         <td className={cn(tdStyle, "pr-5")}>
           <div className="w-full h-full justify-end items-center flex">
             <button
-              onClick={() => setIsTPSLOpen(true)}
+              onClick={() => setTPSLOpenOrder(trade)}
               className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
             h-[30px] px-2.5 rounded flex items-center
         "
@@ -263,12 +250,10 @@ const renderAdditionalCells = (
                 };
 
                 try {
-                  console.log("Submitting order:", cancelOrder);
                   await onSubmit(cancelOrder);
                   triggerAlert("Success", "Position is successfully closed");
-                  setOrderPositions([]);
+                  setOrderPositions(["closed"]);
                 } catch (e) {
-                  console.log("Error closing position:", e);
                   triggerAlert(
                     "Error",
                     "Failed to close position. Please try again."
@@ -277,7 +262,7 @@ const renderAdditionalCells = (
               }}
               className="h-[30px] w-fit px-2.5 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
             >
-              Close {trade.symbol}
+              Close
             </button>
           </div>
         </td>

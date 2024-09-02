@@ -160,9 +160,7 @@ export const Datafeed = (
         if (unsubscribe) unsubscribe();
         sockets.delete(`${symbolInfo.name}@kline_${timeframe}`);
       };
-    } catch (e) {
-      // console.log("Erreur dans subscribeBars", e);
-    }
+    } catch (e) {}
   },
   unsubscribeBars: () => {},
   getMarks: () => ({}),

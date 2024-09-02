@@ -25,8 +25,8 @@ interface GeneralContextProps {
   setIsEnableTradingModalOpen: Dispatch<SetStateAction<boolean>>;
   isDeposit: boolean;
   setIsDeposit: Dispatch<SetStateAction<boolean>>;
-  isTPSLOpen: boolean;
-  setIsTPSLOpen: Dispatch<SetStateAction<boolean>>;
+  TPSLOpenOrder: any;
+  setTPSLOpenOrder: Dispatch<SetStateAction<any>>;
   orderPositions: Inputs[];
   setOrderPositions: Dispatch<SetStateAction<Inputs[]>>;
 }
@@ -57,7 +57,7 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isEnableTradingModalOpen, setIsEnableTradingModalOpen] =
     useState(false);
   const [orderPositions, setOrderPositions] = useState([]);
-  const [isTPSLOpen, setIsTPSLOpen] = useState(false);
+  const [TPSLOpenOrder, setTPSLOpenOrder] = useState(null);
   const value = useMemo(
     () => ({
       showMobileTradeCreator,
@@ -74,8 +74,8 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
       setIsEnableTradingModalOpen,
       isDeposit,
       setIsDeposit,
-      isTPSLOpen,
-      setIsTPSLOpen,
+      TPSLOpenOrder,
+      setTPSLOpenOrder,
       orderPositions,
       setOrderPositions,
     }),
@@ -87,7 +87,7 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
       isChartLoading,
       isEnableTradingModalOpen,
       isDeposit,
-      isTPSLOpen,
+      TPSLOpenOrder,
       orderPositions,
     ]
   );
