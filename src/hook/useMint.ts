@@ -1,30 +1,22 @@
-import { NFT_SOULBOUND_ABI } from "@/utils/veenox";
+import { config } from "@/lib/wallet-connect/config";
+import { NFT_SOULBOUND_ABI, NFT_SOULBOUND_ADDRESS } from "@/utils/veenox";
 import axios from "axios";
 import { useCallback, useState } from "react";
-import { createPublicClient, createWalletClient, custom, http } from "viem";
-import { sepolia } from "viem/chains";
-import { useAccount } from "wagmi";
+import { simulateContract, writeContract } from "viem/actions";
+import { useAccount, useClient, useWalletClient } from "wagmi";
 
-const JWT = "";
-
-const contractAddress = "0xf8e81D47203A594245E36C48e151709F0C19fBe8";
+const JWT = "..";
+const contractAddress = NFT_SOULBOUND_ADDRESS;
 
 export const useTradePosterContract = () => {
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
   const [isMintLoading, setIsMintLoading] = useState(false);
   const [isMintSuccess, setIsMintSuccess] = useState(false);
   const [mintError, setMintError] = useState(null);
+  const publicClient = useClient({ config });
+  const walletClient = useWalletClient();
 
-  const publicClient = createPublicClient({
-    chain: sepolia,
-    transport: http(),
-  });
-
-  const walletClient = createWalletClient({
-    chain: sepolia,
-    transport: custom(window.ethereum),
-  });
-
+  console.log("publicClient", publicClient);
   const uploadImageToPinata = async (imageData) => {
     const formData = new FormData();
     const blob = await fetch(imageData).then((r) => r.blob());
@@ -39,7 +31,7 @@ export const useTradePosterContract = () => {
       cidVersion: 0,
     });
     formData.append("pinataOptions", pinataOptions);
-    console.log("PINATA");
+
     try {
       const res = await axios.post(
         "https://api.pinata.cloud/pinning/pinFileToIPFS",
@@ -52,7 +44,6 @@ export const useTradePosterContract = () => {
           },
         }
       );
-      console.log(" res.data.IpfsHash", res.data.IpfsHash);
       return res.data.IpfsHash;
     } catch (error) {
       console.log("Erreur lors de l'upload de l'image sur Pinata:", error);
@@ -75,15 +66,16 @@ export const useTradePosterContract = () => {
 
   const mintToken = useCallback(
     async (imageData, tradeData) => {
-      console.log("metadataRes", tradeData);
+      if (!walletClient || !address) {
+        throw new Error("Client or address not properly initialized");
+      }
+
       setIsMintLoading(true);
       setMintError(null);
+
       try {
-        console.log("trade", tradeData);
         const imageCID = await uploadImageToPinata(imageData);
-        console.log("imageCID", imageCID);
         const metadata = createMetadata(imageCID, tradeData);
-        console.log("metadata", metadata);
 
         const metadataRes = await axios.post(
           "https://api.pinata.cloud/pinning/pinJSONToIPFS",
@@ -95,25 +87,19 @@ export const useTradePosterContract = () => {
             },
           }
         );
-
-        console.log("metadataRes", metadataRes);
-
         const tokenURI = `ipfs://${metadataRes.data.IpfsHash}`;
-        console.log("tokenURI", tokenURI);
-        const { request } = await publicClient.simulateContract({
-          address: contractAddress,
+        const { request } = await simulateContract(publicClient, {
+          account: address,
+          address: "0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8",
           abi: NFT_SOULBOUND_ABI,
           functionName: "mintTradePoster",
           args: [address, tokenURI],
-          account: address,
         });
-        console.log("Minting successful. request", request);
-        const hash = await walletClient.writeContract(request);
+        await writeContract(publicClient, request);
 
-        const receipt = await publicClient.waitForTransactionReceipt({ hash });
-
+        console.log("transaction", transaction);
+        const receipt = await transaction.wait();
         setIsMintSuccess(true);
-        console.log("Minting successful. Transaction hash:", hash);
         return receipt;
       } catch (error) {
         console.log("Erreur lors du minting:", error);
@@ -123,7 +109,7 @@ export const useTradePosterContract = () => {
         setIsMintLoading(false);
       }
     },
-    [address, contractAddress, publicClient, walletClient]
+    [address, walletClient]
   );
 
   return {

@@ -261,7 +261,6 @@ export const PosterModal = ({ order }: any) => {
       alert("Please connect your wallet first.");
       return;
     }
-    console.log("I TRY");
     try {
       const imageData = canvasRef.current.toDataURL("image/png");
       const tradeData = {

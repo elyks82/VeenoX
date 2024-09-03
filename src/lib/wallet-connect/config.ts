@@ -1,3 +1,4 @@
+import { createClient } from "viem";
 import { createConfig, http } from "wagmi";
 import {
   arbitrum,
@@ -22,14 +23,8 @@ const chains = [
 ] as const;
 export const config = createConfig({
   chains,
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-    [arbitrum.id]: http(),
-    [optimism.id]: http(),
-    [base.id]: http(),
-    [polygon.id]: http(),
-    [bsc.id]: http(),
-    [arbitrumSepolia.id]: http(),
+
+  client({ chain }) {
+    return createClient({ chain, transport: http() });
   },
 });
