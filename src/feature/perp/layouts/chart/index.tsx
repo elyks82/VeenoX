@@ -141,7 +141,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     );
   }, [ordersData]);
 
-  console.log("ordersDataordersData", pendingPosition);
   const saveChartState = useCallback(
     (chart: any) => {
       if (!isInitialLoadComplete) {
@@ -398,7 +397,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           });
 
         const areLinesMissing = Object.keys(chartLines).length === 0;
-        console.log("orderorder", orders);
         if (
           !hasPositionsChanged &&
           !areLinesMissing &&

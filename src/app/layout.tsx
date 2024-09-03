@@ -4,6 +4,7 @@ import { config } from "@/lib/wallet-connect/config";
 import WagmiProvider from "@/lib/wallet-connect/provider";
 import { Providers } from "@/provider/wrapper";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import dotenv from "dotenv";
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { Inter } from "next/font/google";
@@ -12,6 +13,7 @@ import NextTopLoader from "nextjs-toploader";
 import "react-toastify/dist/ReactToastify.css";
 import { cookieToInitialState } from "wagmi";
 import "./globals.css";
+dotenv.config();
 
 const OrderlyProvider = dynamic(() => import("../lib/orderly/"), {
   ssr: true,

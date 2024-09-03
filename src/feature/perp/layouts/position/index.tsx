@@ -98,6 +98,24 @@ export const Position = ({ asset }: PositionProps) => {
     return true;
   };
 
+  // const {
+  //   freeCollateral,
+  //   markPrice,
+  //   maxQty,
+  //   estLiqPrice,
+  //   estLeverage,
+  //   onSubmit,
+  //   helper: { calculate, validator },
+  // } = useOrderEntry(
+  //   {
+  //     symbol: asset.symbol,
+  //     side: .direction as OrderSide,
+  //     order_type: values.type as any,
+  //     order_quantity: values.quantity,
+  //   },
+  //   { watchOrderbook: true }
+  // );
+
   const getPnLChange = () => {
     const arr =
       data?.rows?.map((row) => ({

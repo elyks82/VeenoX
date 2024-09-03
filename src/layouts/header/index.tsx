@@ -110,14 +110,9 @@ export const Header = () => {
         <Link href="/">
           <div className="flex items-center gap-2">
             <img
-              src="/logo/v.png"
+              src="/veenox/veenox-text.png"
               alt="Veeno Logo"
-              className="h-[30px] w-[30px] max-w-[25px] max-h-[25px] sm:max-w-[30px] sm:max-h-[30px]"
-            />
-            <img
-              src="/test.png"
-              height={30}
-              className="h-[20px] max-h-[20px] invert opacity-90"
+              className="h-[30px] w-auto max-w-auto max-h-[25px] sm:max-w-auto sm:max-h-[30px]"
             />
 
             <nav className="ml-5 h-full hidden lg:flex">

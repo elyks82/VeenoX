@@ -1,3 +1,4 @@
+import { useTradePosterContract } from "@/hook/useMint";
 import { Dialog, DialogContent, DialogTrigger } from "@/lib/shadcn/dialog";
 import {
   formatSymbol,
@@ -6,6 +7,7 @@ import {
 } from "@/utils/misc";
 import { useEffect, useRef, useState } from "react";
 import { FaShareAlt } from "react-icons/fa";
+import { useAccount } from "wagmi";
 
 export const PosterModal = ({ order }: any) => {
   console.log(order);
@@ -17,7 +19,7 @@ export const PosterModal = ({ order }: any) => {
   const data = {
     side: order.position_qty > 0 ? "LONG" : "SHORT",
     symbol: formatSymbol(order.symbol),
-    leverage: 20,
+    leverage: 47,
     price: order.average_open_price,
     markPrice: order.mark_price,
     time: getFormattedDate(order.timestamp),
@@ -116,7 +118,7 @@ export const PosterModal = ({ order }: any) => {
 
         ctx.fillText(
           `${Number(pnlPercentage) > 0 ? "+" : ""}${
-            pnlDisplay === "PnL" ? `${pnl}$` : `${pnlPercentage}%`
+            pnlDisplay === "PnL" ? `${pnl}$` : `${Number(pnlPercentage) * 47}%`
           }`,
           baseX,
           baseY
@@ -250,6 +252,31 @@ export const PosterModal = ({ order }: any) => {
     imageUrl,
   };
 
+  const { mintToken, isMintLoading, isMintSuccess, mintError } =
+    useTradePosterContract();
+  const { address } = useAccount();
+
+  const handleMint = async () => {
+    if (!address) {
+      alert("Please connect your wallet first.");
+      return;
+    }
+    console.log("I TRY");
+    try {
+      const imageData = canvasRef.current.toDataURL("image/png");
+      const tradeData = {
+        id: Date.now(),
+        pair: "BTC/USD",
+        profit: "5",
+        date: new Date().toISOString().split("T")[0],
+      };
+      console.log("I TRY", imageData);
+      await mintToken(imageData, tradeData);
+    } catch (error) {
+      console.error("Error during minting:", error);
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -347,6 +374,9 @@ export const PosterModal = ({ order }: any) => {
                 className="mt-4 px-4 py-2 text-sm bg-base_color text-white rounded hover:bg-base_color transition-colors"
               >
                 Download
+              </button>
+              <button className="" onClick={handleMint}>
+                MINT
               </button>
               {/* <TwitterShareButton message={message} /> */}
             </div>
