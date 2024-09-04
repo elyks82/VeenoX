@@ -11,7 +11,7 @@ import { useOrderEntry } from "@orderly.network/hooks";
 import { Dispatch, SetStateAction } from "react";
 import { TPSLModal } from "./tp-sl-modal";
 
-const tdStyle = `text-xs px-2.5 py-4 text-white whitespace-nowrap font-normal border-y border-borderColor text-end`;
+const tdStyle = `text-xs px-2.5 py-3 text-white whitespace-nowrap font-normal border-y border-borderColor text-end`;
 enum Sections {
   POSITION = 0,
   PENDING = 1,

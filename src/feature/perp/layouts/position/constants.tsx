@@ -24,6 +24,7 @@ export const thead = {
     "Reduce",
     "Hidden",
     "Order time",
+    "Order",
   ],
   2: [
     "Symbol",

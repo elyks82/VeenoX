@@ -92,11 +92,32 @@ export const Position = ({ asset }: PositionProps) => {
   const filterSide = (entry: any) => {
     if (activeSection === 1)
       return (
-        entry?.total_executed_quantity !== entry?.quantity &&
+        entry.total_executed_quantity < entry.quantity &&
+        entry.type === "LIMIT" &&
+        entry.status !== "COMPLETED" &&
+        entry.status !== "FILLED" &&
         entry.status !== "CANCELLED"
       );
     return true;
   };
+
+  // const {
+  //   freeCollateral,
+  //   markPrice,
+  //   maxQty,
+  //   estLiqPrice,
+  //   estLeverage,
+  //   onSubmit,
+  //   helper: { calculate, validator },
+  // } = useOrderEntry(
+  //   {
+  //     symbol: asset.symbol,
+  //     side: .direction as OrderSide,
+  //     order_type: values.type as any,
+  //     order_quantity: values.quantity,
+  //   },
+  //   { watchOrderbook: true }
+  // );
 
   const getPnLChange = () => {
     const arr =
@@ -163,30 +184,32 @@ export const Position = ({ asset }: PositionProps) => {
           />
         </div>
       </div>
-      <div className="p-2.5 flex items-center gap-5">
-        {/* <p>unsettledPnL: {data?.aggregated.unsettledPnL}</p> */}
-        <div>
-          <p className="text-xs text-font-60 mb-[3px]">Unreal. PnL</p>
-          <p
-            className={`text-base  font-medium ${
-              data?.aggregated.unrealPnL === 0
-                ? "text-white"
-                : data?.aggregated.unrealPnL > 0
-                ? "text-green"
-                : "text-red"
-            }`}
-          >
-            {getFormattedAmount(data?.aggregated.unrealPnL)} (
-            {getTokenPercentage(pnl_change)}%)
-          </p>
+      {activeSection === Sections.POSITION ? (
+        <div className="p-2.5 flex items-center gap-5">
+          {/* <p>unsettledPnL: {data?.aggregated.unsettledPnL}</p> */}
+          <div>
+            <p className="text-xs text-font-60 mb-[3px]">Unreal. PnL</p>
+            <p
+              className={`text-base  font-medium ${
+                data?.aggregated.unrealPnL === 0
+                  ? "text-white"
+                  : data?.aggregated.unrealPnL > 0
+                  ? "text-green"
+                  : "text-red"
+              }`}
+            >
+              {getFormattedAmount(data?.aggregated.unrealPnL)} (
+              {getTokenPercentage(pnl_change)}%)
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-font-60 mb-[3px]">Notional</p>
+            <p className="text-base text-white font-medium">
+              {getFormattedAmount(data?.aggregated.notional)}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-xs text-font-60 mb-[3px]">Notional</p>
-          <p className="text-base text-white font-medium">
-            {getFormattedAmount(data?.aggregated.notional)}
-          </p>
-        </div>
-      </div>
+      ) : null}
       <div className="overflow-x-scroll h-[300px] overflow-y-scroll w-full no-scrollbar">
         <table className="w-full ">
           <thead>

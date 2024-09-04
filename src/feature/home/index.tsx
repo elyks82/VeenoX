@@ -26,7 +26,7 @@ export const Home = () => {
         <div className="h-full w-full mx-auto flex items-center z-10">
           <div className="w-full flex items-center">
             <motion.div className="flex flex-col w-fit">
-              <motion.h1
+              <motion.div
                 variants={{
                   hidden: {
                     opacity: 0,
@@ -43,8 +43,8 @@ export const Home = () => {
                 className="overflow-hidden block relative whitespace-nowrap
                 text-7xl font-bold w-auto text-white uppercase"
               >
-                Veeno <span className=" text-base_color -ml-5">X </span>
-              </motion.h1>
+                <img src="/veenox/veenox-text.png" className="h-[100px]" />
+              </motion.div>
               <motion.div
                 className="flex items-center"
                 initial="initial"

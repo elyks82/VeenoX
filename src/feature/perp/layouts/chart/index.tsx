@@ -123,6 +123,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [isChartReady, setIsChartReady] = useState(false);
   const chartRef = useRef<any>(null);
   const prevPositionsRef = useRef("");
+  const prevPendingRef = useRef("");
   const [currentInterval, setCurrentInterval] = useState<string>("");
   const order = orders?.rows?.find((entry) => entry.symbol === asset?.symbol);
 
@@ -141,7 +142,10 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     );
   }, [ordersData]);
 
-  console.log("ordersDataordersData", pendingPosition);
+  const activeTokenPendingPosition = useMemo(() => {
+    return pendingPosition.find((entry) => entry.symbol === asset?.symbol);
+  }, [pendingPosition]);
+
   const saveChartState = useCallback(
     (chart: any) => {
       if (!isInitialLoadComplete) {
@@ -398,7 +402,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           });
 
         const areLinesMissing = Object.keys(chartLines).length === 0;
-        console.log("orderorder", orders);
+        console.log(
+          "relevantPositions",
+          relevantPositions.length,
+          Object.keys(chartLines).length
+        );
         if (
           !hasPositionsChanged &&
           !areLinesMissing &&
@@ -408,7 +416,14 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           return;
         }
 
+        console.log(
+          "I render",
+          Object.keys(chartLines).length === relevantPositions.length,
+          !hasPositionsChanged,
+          !areLinesMissing
+        );
         (prevPositionsRef as any).current = relevantPositions;
+        (prevPendingRef as any).current = activeTokenPendingPosition;
 
         Object.values(chartLines).forEach((line: any) => line.remove());
 
@@ -493,6 +508,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
   useEffect(() => {
     if (chartRef.current && isChartReady) {
+      console.log("I render");
       updatePositions();
     }
   }, [
@@ -503,7 +519,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     params?.perp,
     asset?.symbol,
     isChartReady,
-    pendingPosition,
   ]);
 
   useEffect(() => {
