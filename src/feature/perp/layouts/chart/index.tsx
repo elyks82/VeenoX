@@ -397,14 +397,15 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           });
 
         const areLinesMissing = Object.keys(chartLines).length === 0;
-        if (
-          !hasPositionsChanged &&
-          !areLinesMissing &&
-          Object.keys(chartLines).length === relevantPositions.length
-        ) {
+        if (!hasPositionsChanged && !areLinesMissing) {
           console.log("No changes detected, skipping update");
           return;
         }
+        console.log(
+          "yo i dont return",
+          Object.keys(chartLines).length,
+          relevantPositions.length
+        );
 
         (prevPositionsRef as any).current = relevantPositions;
 
