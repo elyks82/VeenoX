@@ -92,7 +92,10 @@ export const Position = ({ asset }: PositionProps) => {
   const filterSide = (entry: any) => {
     if (activeSection === 1)
       return (
-        entry?.total_executed_quantity !== entry?.quantity &&
+        entry.total_executed_quantity < entry.quantity &&
+        entry.type === "LIMIT" &&
+        entry.status !== "COMPLETED" &&
+        entry.status !== "FILLED" &&
         entry.status !== "CANCELLED"
       );
     return true;

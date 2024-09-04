@@ -408,8 +408,8 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         );
 
         (prevPositionsRef as any).current = relevantPositions;
-
-        Object.values(chartLines).forEach((line: any) => line.remove());
+        if (Object.keys(chartLines).length)
+          Object.values(chartLines).forEach((line: any) => line.remove());
 
         const newChartLines: { [key: string]: any } = {};
 
