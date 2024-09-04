@@ -70,6 +70,9 @@ const chainsImage = {
   137: "/assets/MATIC.png",
   534352: "/assets/SCROLL.png",
   59144: "/assets/LINEA.png",
+  255: "/assets/KROMA.jpg",
+  43114: "/assets/AVAX.png",
+  34443: "/assets/MODE.png",
 };
 
 export const getImageFromChainId = (id: ChainsImageType): string => {

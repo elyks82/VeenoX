@@ -2,20 +2,27 @@
 import CryptoFearAndGreedChart from "@/components/fear-greed";
 import { Tooltip as CustomTooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
+import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/lib/shadcn/tooltip";
+import {
+  ChainsImageType,
+  getImageFromChainId,
+  supportedChains,
+} from "@/utils/network";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { FaCheck } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";
 import { MdContentCopy } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount, useConnect, useSwitchChain } from "wagmi";
 import { Deposit } from "../deposit";
 import { EnableTrading } from "../enable-trading";
 import { ConnectWallet } from "../wallet-connect";
@@ -34,7 +41,7 @@ export const Header = () => {
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { account, state } = useOrderlyAccount();
-  const { address, isDisconnected, isConnecting, chain, isConnected } =
+  const { address, isDisconnected, isConnecting, chain, chainId, isConnected } =
     useAccount();
   const { connect, connectors } = useConnect();
   const { isEnableTradingModalOpen, setIsEnableTradingModalOpen } =
@@ -104,6 +111,14 @@ export const Header = () => {
   };
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const { switchChain } = useSwitchChain();
+  const { isDeposit } = useGeneralContext();
+  console.log("chainId", chainId);
+  const chainLogo =
+    supportedChains.find((entry) => entry.label === (chain?.name as string))
+      ?.icon || getImageFromChainId(chainId as ChainsImageType);
+
+  console.log("chainLogo", chainLogo);
   return (
     <header className="flex items-center justify-between h-[60px] px-2.5 border-b border-borderColor">
       <div className="flex items-center gap-5">
@@ -151,18 +166,74 @@ export const Header = () => {
           </TooltipProvider>
 
           <Deposit />
-          <button
-            className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
+
+          {/* {supportedChains
+              ?.filter((item) => item.network !== "testnet")
+              .map((supportedChain, i) => (
+                <button
+                  key={i}
+                  className="flex items-center py-1 flex-nowrap"
+                  onClick={() =>
+                    switchChain({
+                      chainId: parseInt(supportedChain.id, 16),
+                    })
+                  }
+                ></button> */}
+          <Popover>
+            <PopoverTrigger className="h-full min-w-fit">
+              <button
+                className="text-white bg-secondary border border-base_color text-bold font-poppins text-xs
             h-[30px] sm:h-[35px] px-2 rounded sm:rounded-md mr-2.5 flex items-center
         "
-          >
-            <img
-              src="https://cdn.prod.website-files.com/64c26cc84790d118b80c38c9/6529c7409cc925522834f61b_monad-logo-mark-white-rgb.svg"
-              alt="monad logo"
-              className="h-[15px] w-[15px] sm:h-[20px] sm:w-[20px]"
-            />
-            <IoChevronDown className="ml-1.5" />
-          </button>
+              >
+                <Image
+                  src={chainLogo}
+                  width={20}
+                  height={20}
+                  className="object-cover rounded-full"
+                  alt="Chain logo"
+                />
+                <IoChevronDown className="ml-1" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              sideOffset={3}
+              className="flex flex-col px-3 py-2 rounded z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
+            >
+              {supportedChains
+                ?.filter((item) => item.network !== "testnet")
+                .map((supportedChain, i) => (
+                  <button
+                    key={i}
+                    className="flex items-center py-1 flex-nowrap"
+                    onClick={() =>
+                      switchChain({
+                        chainId: parseInt(supportedChain.id, 16),
+                      })
+                    }
+                  >
+                    <Image
+                      src={supportedChain.icon}
+                      width={18}
+                      height={18}
+                      className="h-5 w-5 object-cover rounded-full mr-2"
+                      alt="Chain logo"
+                    />
+                    <p
+                      className={`w-full text-start font-medium text-[13px] ${
+                        parseInt(supportedChain.id, 16) === chainId
+                          ? "text-white"
+                          : "text-font-60"
+                      } `}
+                    >
+                      {supportedChain.label === "OP Mainnet"
+                        ? "Optimism"
+                        : supportedChain.label}
+                    </p>
+                  </button>
+                ))}
+            </PopoverContent>
+          </Popover>
           <ConnectWallet />
           {/* {!isDisconnected ? ( */}
           <CustomTooltip isOpen={isTooltipOpen}>
