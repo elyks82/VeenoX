@@ -204,38 +204,20 @@ export const PosterModal = ({ order }: any) => {
       };
       newImg.src = "/veenox/veenox-text.png";
 
-      //   const text1 = "DISCORD.GG/VEENOX";
-      //   const text2 = "X.COM/VEENOX_XYZ";
+      const text2 = "X.COM/VEENOX_XYZ";
 
-      //   const text1Width = ctx.measureText(text1).width;
-      //   const text2Width = ctx.measureText(text2).width;
+      const text2Width = ctx.measureText(text2).width;
 
-      //   const initialX = 280;
-      //   const initialY = canvas.height - 55;
+      const initialX = 280;
+      const initialY = canvas.height - 75;
 
-      //   ctx.fillText(text1, initialX, initialY);
-      //   ctx.fillText(text2, initialX + text1Width + 20, initialY);
+      ctx.fillText(text2, initialX + 20, initialY);
 
-      //   const x = canvas.width - 220;
-      //   const y = canvas.height - 82;
-      //   const width = 160;
-      //   const height = 40;
-      //   const radius = 5;
-
-      //   ctx.fillStyle = "#836EF9";
-      //   ctx.beginPath();
-      //   ctx.moveTo(x + radius, y);
-      //   ctx.arcTo(x + width, y, x + width, y + height, radius);
-      //   ctx.arcTo(x + width, y + height, x, y + height, radius);
-      //   ctx.arcTo(x, y + height, x, y, radius);
-      //   ctx.arcTo(x, y, x + width, y, radius);
-      //   ctx.closePath();
-      //   ctx.fill();
-
-      //   ctx.fillStyle = "#FFFFFF";
-      //   ctx.font = "20px Poppins";
-      //   ctx.textAlign = "center";
-      //   ctx.fillText("veenox.xyz", canvas.width - 140, canvas.height - 57);
+      const x = canvas.width - 220;
+      const y = canvas.height - 82;
+      const width = 160;
+      const height = 40;
+      const radius = 5;
 
       const img = new Image();
       img.onload = () => {
