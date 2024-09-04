@@ -138,7 +138,7 @@ export const PosterModal = ({ order }: any) => {
 
         const amountX = baseX + pnlPercentageWidth + 20;
 
-        ctx.fillText(amountText, amountX, 225);
+        ctx.fillText(amountText, amountX, 214);
       }
 
       const drawBicolorText = (
