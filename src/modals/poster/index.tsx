@@ -1,4 +1,3 @@
-import { useTradePosterContract } from "@/hook/useMint";
 import { Dialog, DialogContent, DialogTrigger } from "@/lib/shadcn/dialog";
 import {
   formatSymbol,
@@ -7,7 +6,6 @@ import {
 } from "@/utils/misc";
 import { useEffect, useRef, useState } from "react";
 import { FaShareAlt } from "react-icons/fa";
-import { useAccount } from "wagmi";
 
 export const PosterModal = ({ order }: any) => {
   console.log(order);
@@ -252,29 +250,28 @@ export const PosterModal = ({ order }: any) => {
     imageUrl,
   };
 
-  const { mintToken, isMintLoading, isMintSuccess, mintError } =
-    useTradePosterContract();
-  const { address } = useAccount();
+  // const { mintToken, isMintLoading, isMintSuccess, mintError } =
+  //   useTradePosterContract();
+  // const { address } = useAccount();
 
-  const handleMint = async () => {
-    if (!address) {
-      alert("Please connect your wallet first.");
-      return;
-    }
-    try {
-      const imageData = canvasRef.current.toDataURL("image/png");
-      const tradeData = {
-        id: Date.now(),
-        pair: "BTC/USD",
-        profit: "5",
-        date: new Date().toISOString().split("T")[0],
-      };
-      console.log("I TRY", imageData);
-      await mintToken(imageData, tradeData);
-    } catch (error) {
-      console.error("Error during minting:", error);
-    }
-  };
+  // const handleMint = async () => {
+  //   if (!address) {
+  //     alert("Please connect your wallet first.");
+  //     return;
+  //   }
+  //   try {
+  //     const imageData = canvasRef.current.toDataURL("image/png");
+  //     const tradeData = {
+  //       id: Date.now(),
+  //       pair: "BTC/USD",
+  //       profit: "5",
+  //       date: new Date().toISOString().split("T")[0],
+  //     };
+  //     await mintToken(imageData, tradeData);
+  //   } catch (error) {
+  //     console.error("Error during minting:", error);
+  //   }
+  // };
 
   return (
     <Dialog>
@@ -374,9 +371,9 @@ export const PosterModal = ({ order }: any) => {
               >
                 Download
               </button>
-              <button className="" onClick={handleMint}>
-                MINT
-              </button>
+              {/* <button className="" onClick={handleMint}> */}
+              {/* MINT
+              </button> */}
               {/* <TwitterShareButton message={message} /> */}
             </div>
           </div>
