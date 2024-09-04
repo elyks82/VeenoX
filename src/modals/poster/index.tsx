@@ -8,12 +8,13 @@ import { useEffect, useRef, useState } from "react";
 import { FaShareAlt } from "react-icons/fa";
 
 export const PosterModal = ({ order }: any) => {
-  console.log(order);
   const [imageUrl, setImageUrl] = useState(null);
   const [selectedImage, setSelectedImage] = useState("/poster/4.webp");
   const [showAmount, setShowAmount] = useState(false);
   const displays = ["ROI & PnL", "ROI", "PnL"];
+  const positions = ["Open price", "Opened at", "Mark price", "Quantity"];
   const [pnlDisplay, setPnlDisplay] = useState("ROI");
+  const [positionsDisplay, setPositionsDisplay] = useState(positions);
   const data = {
     side: order.position_qty > 0 ? "LONG" : "SHORT",
     symbol: formatSymbol(order.symbol),
@@ -49,7 +50,7 @@ export const PosterModal = ({ order }: any) => {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.strokeStyle = "rgb(17,17,17)";
+      ctx.strokeStyle = "#836EF930";
       ctx.lineWidth = 1;
       for (let i = 0; i < canvas.width; i += 200) {
         ctx.beginPath();
@@ -116,7 +117,9 @@ export const PosterModal = ({ order }: any) => {
 
         ctx.fillText(
           `${Number(pnlPercentage) > 0 ? "+" : ""}${
-            pnlDisplay === "PnL" ? `${pnl}$` : `${Number(pnlPercentage) * 47}%`
+            pnlDisplay === "PnL"
+              ? `${pnl}$`
+              : `${(Number(pnlPercentage) * 47).toFixed(2)}%`
           }`,
           baseX,
           baseY
@@ -135,27 +138,27 @@ export const PosterModal = ({ order }: any) => {
 
         const amountX = baseX + pnlPercentageWidth + 20;
 
-        ctx.fillText(amountText, amountX, 225);
+        ctx.fillText(amountText, amountX, 214);
       }
 
       const drawBicolorText = (
-        label1: string,
-        value1: string,
-        label2: string,
-        value2: string,
-        x1: number,
-        x2: number,
-        y: number
+        label1?: string,
+        value1?: string,
+        label2?: string,
+        value2?: string,
+        x1?: number,
+        x2?: number,
+        y?: number
       ) => {
         ctx.font = "24px Poppins";
         ctx.fillStyle = "rgba(255,255,255,0.6)";
-        ctx.fillText(label1, x1, y);
-        ctx.fillText(label2, x2, y);
+        if (label1) ctx.fillText(label1, x1, y);
+        if (label2) ctx.fillText(label2, x2, y);
 
         ctx.font = "26px Poppins";
         ctx.fillStyle = "rgb(255,255,255)";
-        ctx.fillText(value1, x1, y + 42);
-        ctx.fillText(value2, x2, y + 42);
+        if (label1) ctx.fillText(value1, x1, (y as number) + 42);
+        if (label2) ctx.fillText(value2, x2, (y as number) + 42);
       };
 
       const x1 = 50;
@@ -163,65 +166,58 @@ export const PosterModal = ({ order }: any) => {
 
       const ySpacing = 55;
 
+      const includeOpenPrice = positionsDisplay.includes("Open price");
+      const includeOpenedAt = positionsDisplay.includes("Opened at");
+      const includeMarkPrice = positionsDisplay.includes("Mark price");
+      const includeQty = positionsDisplay.includes("Quantity");
+
       drawBicolorText(
-        "Open price: ",
-        data.price.toString(),
-        "Opened at: ",
-        data.time as string,
+        includeOpenPrice ? "Open price: " : undefined,
+        includeOpenPrice ? data.price.toString() : undefined,
+        includeOpenedAt ? "Opened at: " : undefined,
+        includeOpenedAt ? (data.time as string) : undefined,
         x1,
         x2,
         300
       );
 
       drawBicolorText(
-        "Mark price: ",
-        data.markPrice.toString(),
-        "Quantity: ",
-        data.amount.toString(),
+        includeMarkPrice ? "Mark price: " : undefined,
+        includeMarkPrice ? data.markPrice.toString() : undefined,
+        includeQty ? "Quantity: " : undefined,
+        includeQty ? data.amount.toString() : undefined,
         x1,
         x2,
-        350 + ySpacing
+        !includeOpenPrice && !includeOpenedAt ? 300 : 350 + ySpacing
       );
 
-      ctx.font = "bold 42px Poppins";
-      ctx.fillStyle = "#ffffff";
-      ctx.fillText("VEENOX", 50, canvas.height - 44);
+      const newImg = new Image();
+      newImg.onload = () => {
+        // Dessiner le logo en bas à gauche du canvas
+        const logoWidth = 200;
+        const logoHeight = 70;
+        const logoX = 50;
+        const logoY = canvas.height - logoHeight - 50;
+        ctx.drawImage(newImg, logoX, logoY, logoWidth, logoHeight);
 
-      ctx.font = "18px Poppins";
-      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        setImageUrl(canvas.toDataURL());
+      };
+      newImg.src = "/veenox/veenox-text.png";
 
-      //   const text1 = "DISCORD.GG/VEENOX";
-      //   const text2 = "X.COM/VEENOX_XYZ";
+      const text2 = "X.COM/VEENOX_XYZ";
 
-      //   const text1Width = ctx.measureText(text1).width;
-      //   const text2Width = ctx.measureText(text2).width;
+      const text2Width = ctx.measureText(text2).width;
 
-      //   const initialX = 280;
-      //   const initialY = canvas.height - 55;
+      const initialX = 280;
+      const initialY = canvas.height - 75;
 
-      //   ctx.fillText(text1, initialX, initialY);
-      //   ctx.fillText(text2, initialX + text1Width + 20, initialY);
+      ctx.fillText(text2, initialX + 20, initialY);
 
-      //   const x = canvas.width - 220;
-      //   const y = canvas.height - 82;
-      //   const width = 160;
-      //   const height = 40;
-      //   const radius = 5;
-
-      //   ctx.fillStyle = "#836EF9";
-      //   ctx.beginPath();
-      //   ctx.moveTo(x + radius, y);
-      //   ctx.arcTo(x + width, y, x + width, y + height, radius);
-      //   ctx.arcTo(x + width, y + height, x, y + height, radius);
-      //   ctx.arcTo(x, y + height, x, y, radius);
-      //   ctx.arcTo(x, y, x + width, y, radius);
-      //   ctx.closePath();
-      //   ctx.fill();
-
-      //   ctx.fillStyle = "#FFFFFF";
-      //   ctx.font = "20px Poppins";
-      //   ctx.textAlign = "center";
-      //   ctx.fillText("veenox.xyz", canvas.width - 140, canvas.height - 57);
+      const x = canvas.width - 220;
+      const y = canvas.height - 82;
+      const width = 160;
+      const height = 40;
+      const radius = 5;
 
       const img = new Image();
       img.onload = () => {
@@ -333,6 +329,40 @@ export const PosterModal = ({ order }: any) => {
                   </button>
                 ))}
               </div>
+              <p>Position display:</p>
+              <div className="flex items-center gap-3 flex-wrap  mb-2  mt-2">
+                {positions.map((type: string) => (
+                  <button
+                    key={type}
+                    onClick={() => {
+                      if (positionsDisplay.includes(type))
+                        setPositionsDisplay((prev) =>
+                          prev.filter((entry) => entry !== type)
+                        );
+                      else setPositionsDisplay((prev) => [...prev, type]);
+                    }}
+                    className="flex items-center justify-between"
+                  >
+                    <div
+                      className={`w-[15px] p-0.5 h-[15px] rounded border ${
+                        positionsDisplay.includes(type)
+                          ? "border-base_color"
+                          : "border-[rgba(255,255,255,0.3)]"
+                      } transition-all duration-100 ease-in-out`}
+                    >
+                      <div
+                        className={`w-full h-full rounded-[1px] bg-base_color ${
+                          positionsDisplay.includes(type)
+                            ? "opacity-100"
+                            : "opacity-0"
+                        } transition-all duration-100 ease-in-out`}
+                      />
+                    </div>
+                    <p className="ml-2 text-[13px] text-font-80">{type}</p>
+                  </button>
+                ))}
+              </div>
+
               <p className="text-sm text-white font-medium mb-2 text-start mt-2.5">
                 Overlay:
               </p>

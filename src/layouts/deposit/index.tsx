@@ -191,7 +191,7 @@ export const Deposit = () => {
           }}
         >
           <button
-            className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
+            className="text-white bg-secondary border border-base_color text-bold font-poppins text-xs
             h-[30px] sm:h-[35px] px-2.5 rounded sm:rounded-md mr-2.5 flex items-center
         "
           >
