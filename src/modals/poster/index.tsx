@@ -50,7 +50,7 @@ export const PosterModal = ({ order }: any) => {
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.strokeStyle = "rgb(17,17,17)";
+      ctx.strokeStyle = "#836EF930";
       ctx.lineWidth = 1;
       for (let i = 0; i < canvas.width; i += 200) {
         ctx.beginPath();
