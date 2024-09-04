@@ -116,7 +116,9 @@ export const PosterModal = ({ order }: any) => {
 
         ctx.fillText(
           `${Number(pnlPercentage) > 0 ? "+" : ""}${
-            pnlDisplay === "PnL" ? `${pnl}$` : `${Number(pnlPercentage) * 47}%`
+            pnlDisplay === "PnL"
+              ? `${pnl}$`
+              : `${(Number(pnlPercentage) * 47).toFixed(2)}%`
           }`,
           baseX,
           baseY
@@ -183,12 +185,18 @@ export const PosterModal = ({ order }: any) => {
         350 + ySpacing
       );
 
-      ctx.font = "bold 42px Poppins";
-      ctx.fillStyle = "#ffffff";
-      ctx.fillText("VEENOX", 50, canvas.height - 44);
+      const newImg = new Image();
+      newImg.onload = () => {
+        // Dessiner le logo en bas à gauche du canvas
+        const logoWidth = 200;
+        const logoHeight = 70;
+        const logoX = 50;
+        const logoY = canvas.height - logoHeight - 50;
+        ctx.drawImage(newImg, logoX, logoY, logoWidth, logoHeight);
 
-      ctx.font = "18px Poppins";
-      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        setImageUrl(canvas.toDataURL());
+      };
+      newImg.src = "/veenox/veenox-text.png";
 
       //   const text1 = "DISCORD.GG/VEENOX";
       //   const text2 = "X.COM/VEENOX_XYZ";
