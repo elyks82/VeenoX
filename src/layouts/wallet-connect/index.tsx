@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/lib/shadcn/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { addressSlicer } from "@/utils/misc";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { useEffect, useState } from "react";
@@ -145,27 +146,58 @@ export const ConnectWallet = () => {
     <div className="w-fit h-fit relative">
       <Dialog open={isWalletConnectorOpen}>
         <DialogTrigger>
-          <div
-            onClick={() => {
-              if (address) {
-                setIsDisconnectOpen((prev) => !prev);
-                return;
-              }
-              setIsWalletConnectorOpen(true);
-            }}
-            className="text-white bg-base_color border border-borderColor-DARK text-bold font-poppins text-xs
+          <Popover open={isDisconnectOpen}>
+            <PopoverTrigger
+              className="h-full min-w-fit"
+              onClick={() => setIsDisconnectOpen((prev) => !prev)}
+            >
+              <div
+                className="text-white bg-base_color border border-borderColor-DARK text-bold font-poppins text-xs
         h-[30px] sm:h-[35px] px-2 sm:px-2.5 flex items-center justify-center rounded sm:rounded-md 
         "
-          >
-            {isDisconnected || isConnecting ? (
-              "Connect"
-            ) : (
-              <span className="flex items-center w-full h-full">
-                <p>{addressSlicer(address)}</p>
-                <IoChevronDown className="ml-1" />
-              </span>
-            )}
-          </div>
+              >
+                {isDisconnected || isConnecting ? (
+                  "Connect"
+                ) : (
+                  <span className="flex items-center w-full h-full">
+                    <p>{addressSlicer(address)}</p>
+                    <IoChevronDown
+                      className={`ml-1 ${
+                        isDisconnectOpen ? "rotate-180" : ""
+                      } transition-all duration-150 ease-in-out`}
+                    />
+                  </span>
+                )}
+              </div>
+            </PopoverTrigger>
+            <PopoverContent
+              sideOffset={3}
+              className="flex flex-col px-3 py-2 rounded z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
+            >
+              <div
+                className="flex items-center cursor-pointer text-white text-xs"
+                onClick={handleCopy}
+              >
+                <p className="mr-2">{addressSlicer(address)}</p>
+                {isCopied ? (
+                  <FaCheck className="text-green" />
+                ) : (
+                  <MdContentCopy className="text-white" />
+                )}
+              </div>
+              <div className="h-[1px] mb-1.5 mt-2.5 bg-borderColor w-full rounded" />
+              <button
+                className="text-font-80 flex items-center justify-center hover:text-base_color transition-all duration-100 ease-in-out text-bold font-poppins text-sm"
+                onClick={() => {
+                  setIsDisconnectOpen(false);
+                  disconnect();
+                }}
+              >
+                <IoPowerSharp className="text-red mr-2" />
+                Disconnect
+              </button>
+            </PopoverContent>
+          </Popover>
         </DialogTrigger>
         <DialogContent
           close={() => setIsWalletConnectorOpen(false)}
@@ -253,36 +285,6 @@ export const ConnectWallet = () => {
           )}
         </DialogContent>
       </Dialog>
-      <div
-        className={`absolute p-2.5 px-3 right-0 shadow-2xl z-[105] top-[110%] bg-secondary border border-borderColor rounded ${
-          isDisconnectOpen
-            ? "opacity-100 scale-100"
-            : "pointer-events-none opacity-0 scale-75"
-        } transition-all duration-150 ease-in-out`}
-      >
-        <div
-          className="flex items-center cursor-pointer text-white text-xs"
-          onClick={handleCopy}
-        >
-          <p className="mr-2">{addressSlicer(address)}</p>
-          {isCopied ? (
-            <FaCheck className="text-green" />
-          ) : (
-            <MdContentCopy className="text-white" />
-          )}
-        </div>
-        <div className="h-[1px] mb-2 mt-2.5 bg-borderColor w-full rounded" />
-        <button
-          className="text-font-80 flex items-center justify-center hover:text-base_color transition-all duration-100 ease-in-out text-bold font-poppins text-sm"
-          onClick={() => {
-            setIsDisconnectOpen(false);
-            disconnect();
-          }}
-        >
-          <IoPowerSharp className="text-red mr-2" />
-          Disconnect
-        </button>
-      </div>
     </div>
   );
 };
