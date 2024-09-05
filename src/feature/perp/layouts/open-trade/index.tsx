@@ -275,11 +275,11 @@ export const OpenTrade = ({
 
   const [maxLeverage] = useLeverage();
 
-  function percentageToValue(percentage: number) {
-    return (percentage / 100) * maxQty;
+  function percentageToValue(percentage: number | undefined) {
+    return ((percentage as number) / 100) * newMaxQty;
   }
   function toPercentage(value: number) {
-    const percentage = (value / maxQty) * 100;
+    const percentage = (value / newMaxQty) * 100;
     return percentage;
   }
 
@@ -303,10 +303,6 @@ export const OpenTrade = ({
 
   const [data] = usePositionStream();
 
-  // useEffect(() => {
-  //   if (values.type === "Market")
-  //     setValues((prev) => ({ ...prev, price: markPrices[asset.symbol] }));
-  // }, [values.type]);
   const [sliderValue, setSliderValue] = useState(toPercentage(newMaxQty));
 
   const handleInputErrors = (boolean: boolean, name: string) => {
@@ -318,6 +314,7 @@ export const OpenTrade = ({
 
   useEffect(() => {
     if (newMaxQty) {
+      console.log("I change value");
       setValues((prev) => ({
         ...prev,
         quantity: newMaxQty.toString(),
@@ -562,12 +559,7 @@ export const OpenTrade = ({
                 handleInputErrors(false, "input_quantity");
                 const newQuantity = percentageToValue(value[0]);
 
-                const adjustedQuantity = Math.min(
-                  Math.max(newQuantity, currentAsset?.base_min),
-                  currentAsset?.base_max
-                );
-
-                handleValueChange("quantity", adjustedQuantity.toString());
+                handleValueChange("quantity", newQuantity.toString());
               }}
               isBuy={values.direction === "BUY"}
             />
@@ -576,10 +568,30 @@ export const OpenTrade = ({
                 name="quantity"
                 className="w-[30px] text-white text-sm h-[30px]"
                 type="number"
+                min={0}
+                max={100}
+                onChange={(e) => {
+                  if (!e.target.value) {
+                    setSliderValue(0);
+                    const newQuantity = percentageToValue(undefined);
+                    handleValueChange("quantity", newQuantity.toString());
+                    return;
+                  }
+                  if (
+                    parseFloat(e.target.value) >= 0 &&
+                    parseFloat(e.target.value) <= 100
+                  ) {
+                    const newQuantity = percentageToValue(
+                      parseInt(e.target.value)
+                    );
+                    handleValueChange("quantity", newQuantity.toString());
+                    setSliderValue(Number(e.target.value));
+                  }
+                }}
                 value={
-                  Number(toPercentage(values.quantity as never))
+                  toPercentage(values.quantity as never)
                     .toFixed(0)
-                    .toString() || 0
+                    .toString() || "0"
                 }
               />
               <p className="text-font-80">%</p>
