@@ -12,7 +12,7 @@ import {
   useAccountInstance,
   useCollateral,
   useLeverage,
-  useMarginRatio,
+  useMaxQty,
   useOrderEntry,
   useAccount as useOrderlyAccount,
   usePositionStream,
@@ -108,9 +108,6 @@ export const OpenTrade = ({
     },
   });
 
-  // const { data: markPrices }: { data: Record<string, number> } =
-  //   useMarkPricesStream();
-  // console.log("markPrices");
   const [isTokenQuantity, setIsTokenQuantity] = useState(true);
   const [values, setValues] = useState(defaultValues);
   const [inputErrors, setInputErrors] = useState({
@@ -118,8 +115,6 @@ export const OpenTrade = ({
     input_price_max: false,
     input_price_min: false,
   });
-  const { marginRatio, mmr } = useMarginRatio();
-  console.log("marginRatio", marginRatio);
   const {
     freeCollateral,
     markPrice,
@@ -127,6 +122,7 @@ export const OpenTrade = ({
     estLiqPrice,
     estLeverage,
     onSubmit,
+
     helper: { calculate, validator },
   } = useOrderEntry(
     {
@@ -137,6 +133,8 @@ export const OpenTrade = ({
     },
     { watchOrderbook: true }
   );
+
+  const newMaxQty = useMaxQty(asset?.symbol, values.direction as OrderSide);
 
   // const isAlgoOrder = values?.algo_order_id !== undefined;
 
@@ -157,76 +155,9 @@ export const OpenTrade = ({
     });
   const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
-  const calculateInitialMarginRequired = (quantity: number, price: number) => {
-    const positionSize = quantity * price;
-    return positionSize * currentAsset?.base_imr;
-  };
-
-  const calculateMaintenanceMarginRequired = (
-    quantity: number,
-    price: number
-  ) => {
-    const positionSize = quantity * price;
-    return positionSize * currentAsset?.base_mmr;
-  };
-
-  const [initialMarginRequired, setInitialMarginRequired] = useState(0);
-  const [maintenanceMarginRequired, setMaintenanceMarginRequired] = useState(0);
-
-  useEffect(() => {
-    const quantity = Number(values.quantity) || 0;
-    const price = Number(values.price) || markPrice;
-    const initialMargin = calculateInitialMarginRequired(quantity, price);
-    const maintenanceMargin = calculateMaintenanceMarginRequired(
-      quantity,
-      price
-    );
-    setInitialMarginRequired(initialMargin);
-    setMaintenanceMarginRequired(maintenanceMargin);
-  }, [
-    values.quantity,
-    values.price,
-    markPrice,
-    currentAsset?.base_imr,
-    currentAsset?.base_mmr,
-  ]);
-
-  const hasSufficientMargin = () => {
-    return freeCollateral >= initialMarginRequired;
-  };
-  const isValidQuantity = (quantity: number, price: number) => {
-    return (
-      quantity >= currentAsset?.base_min &&
-      quantity <= currentAsset?.base_max &&
-      quantity * price >= currentAsset?.min_notional
-    );
-  };
-
   const submitForm = async () => {
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
-
-    if (!hasSufficientMargin()) {
-      triggerAlert(
-        "Error",
-        `Insufficient margin. You need at least ${getFormattedAmount(
-          initialMarginRequired
-        )} USDC to open this position.`
-      );
-      return;
-    }
-    if (
-      !isValidQuantity(
-        Number(values.quantity),
-        Number(values.price) || markPrice
-      )
-    ) {
-      triggerAlert(
-        "Error",
-        "Invalid quantity. Please check min/max limits and min notional value."
-      );
-      return;
-    }
 
     const errors = await getValidationErrors(
       values,
@@ -248,7 +179,7 @@ export const OpenTrade = ({
     if (Number(values.quantity || 0) >= currentAsset?.base_max) {
       triggerAlert(
         "Error",
-        `Max Quantity ${currentAsset?.base_max} ${currentAsset?.symbol}`
+        `Invalid quantity. Max quantity ${currentAsset?.base_max} ${currentAsset?.symbol}`
       );
       return;
     }
@@ -256,7 +187,7 @@ export const OpenTrade = ({
     if (Number(values.quantity || 0) <= currentAsset?.base_min) {
       triggerAlert(
         "Error",
-        `Min Quantity ${currentAsset?.base_min} ${currentAsset?.symbol}`
+        `Invalid quantity. Min quantity ${currentAsset?.base_min} ${currentAsset?.symbol}`
       );
       return;
     }
@@ -359,25 +290,17 @@ export const OpenTrade = ({
     return formatted;
   };
   const handleValueChange = (name: string, value: string) => {
-    if (name === "quantity") {
-      const numValue = Number(value);
-      const price = Number(values.price) || markPrice;
-      if (!isValidQuantity(numValue, price)) {
-        if (numValue < currentAsset?.base_min)
-          value = currentAsset?.base_min.toString();
-        else if (numValue > currentAsset?.base_max)
-          value = currentAsset?.base_max.toString();
-        else if (numValue * price < currentAsset?.min_notional)
-          value = (currentAsset?.min_notional / price).toString();
-      }
-      const initialMargin = calculateInitialMarginRequired(numValue, price);
-      if (initialMargin > freeCollateral) {
-        // Ajuster la quantité en fonction du freeCollateral
-        const maxAllowedQty = freeCollateral / (price * currentAsset?.base_imr);
-        value = Math.min(maxAllowedQty, currentAsset?.base_max).toString();
-      }
-    }
-    setValues((prev) => ({ ...prev, [name]: value === "" ? "" : value }));
+    setValues((prev) => ({
+      ...prev,
+      [name]:
+        value === ""
+          ? ""
+          : Number(value) === 0 || name !== "quantity"
+          ? value
+          : getFormattedAmount(value),
+    }));
+
+    if (name === "quantity") setSliderValue(toPercentage(Number(value)));
   };
 
   const [data] = usePositionStream();
@@ -386,7 +309,7 @@ export const OpenTrade = ({
   //   if (values.type === "Market")
   //     setValues((prev) => ({ ...prev, price: markPrices[asset.symbol] }));
   // }, [values.type]);
-  const [sliderValue, setSliderValue] = useState(toPercentage(maxQty));
+  const [sliderValue, setSliderValue] = useState(toPercentage(newMaxQty));
 
   const handleInputErrors = (boolean: boolean, name: string) => {
     setInputErrors((prev) => ({
@@ -396,16 +319,14 @@ export const OpenTrade = ({
   };
 
   useEffect(() => {
-    console.log("maxLeverage", maxLeverage, maxQty);
-    if (maxQty) {
+    if (newMaxQty) {
       setValues((prev) => ({
         ...prev,
-        quantity: maxQty.toString(),
+        quantity: newMaxQty.toString(),
       }));
       setSliderValue(100);
     }
-  }, [maxQty !== 0, maxLeverage]);
-  console.log(maxLeverage);
+  }, [newMaxQty !== 0, maxLeverage, values.direction]);
 
   return (
     <section className="h-full w-full text-white">
@@ -576,12 +497,15 @@ export const OpenTrade = ({
                   handleInputErrors(true, "input_quantity");
                 } else {
                   handleValueChange("quantity", e.target.value);
-
                   handleInputErrors(false, "input_quantity");
                 }
               }}
               type="number"
-              value={getFormattedAmount(values.quantity).toString()}
+              value={
+                parseFloat(values.quantity as string) === 0
+                  ? values.quantity
+                  : getFormattedAmount(values.quantity).toString()
+              }
             />
             <button
               className="rounded text-[12px] flex items-center
@@ -630,11 +554,7 @@ export const OpenTrade = ({
             {getSymbolForPair()}
           </p>
 
-          <div
-            className={`mt-2 flex items-center ${
-              freeCollateral < 1 ? "opacity-50" : ""
-            }`}
-          >
+          <div className={`mt-2 flex items-center `}>
             <Slider
               value={[sliderValue]}
               max={100}
@@ -642,39 +562,22 @@ export const OpenTrade = ({
               onValueChange={(value) => {
                 setSliderValue(value[0]);
                 handleInputErrors(false, "input_quantity");
-                const newValue = percentageToValue(value[0]);
-                const price = Number(values.price) || markPrice;
-                if (isValidQuantity(newValue, price)) {
-                  const initialMargin = calculateInitialMarginRequired(
-                    newValue,
-                    price
-                  );
-                  if (initialMargin <= freeCollateral) {
-                    handleValueChange("quantity", newValue.toString());
-                  } else {
-                    const maxAllowedQty =
-                      freeCollateral / (price * currentAsset?.base_imr);
-                    handleValueChange(
-                      "quantity",
-                      Math.min(maxAllowedQty, currentAsset?.ase_max).toString()
-                    );
-                    setSliderValue(
-                      (Math.min(maxAllowedQty, currentAsset?.base_max) /
-                        currentAsset?.base_max) *
-                        100
-                    );
-                  }
-                }
+                const newQuantity = percentageToValue(value[0]);
+
+                const adjustedQuantity = Math.min(
+                  Math.max(newQuantity, currentAsset?.base_min),
+                  currentAsset?.base_max
+                );
+
+                handleValueChange("quantity", adjustedQuantity.toString());
               }}
               isBuy={values.direction === "BUY"}
-              disabled={!hasSufficientMargin()}
             />
             <div className="w-[57px] px-2 flex items-center justify-center ml-4 h-fit bg-terciary border border-borderColor-DARK rounded">
               <input
                 name="quantity"
                 className="w-[30px] text-white text-sm h-[30px]"
                 type="number"
-                disabled={freeCollateral < 1}
                 value={
                   Number(toPercentage(values.quantity as never))
                     .toFixed(0)
