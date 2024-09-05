@@ -12,9 +12,10 @@ import { addressSlicer } from "@/utils/misc";
 import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import { useEffect, useState } from "react";
 import { FaCheck } from "react-icons/fa6";
-import { IoChevronDown } from "react-icons/io5";
+import { IoChevronDown, IoPowerSharp } from "react-icons/io5";
+import { MdContentCopy } from "react-icons/md";
 import { TfiWallet } from "react-icons/tfi";
-import { useAccount, useConnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { getActiveStep } from "./constant";
 
 export enum AccountStatusEnum {
@@ -36,7 +37,9 @@ export const ConnectWallet = () => {
     useConnect();
   const { isWalletConnectorOpen, setIsWalletConnectorOpen } =
     useGeneralContext();
+  const [isDisconnectOpen, setIsDisconnectOpen] = useState(false);
   const [activeConnector, setActiveConnector] = useState<string | null>(null);
+  const { disconnect } = useDisconnect();
 
   //  useEffect(() => {
   //    if () return;
@@ -144,7 +147,10 @@ export const ConnectWallet = () => {
         <DialogTrigger>
           <div
             onClick={() => {
-              if (address) return;
+              if (address) {
+                setIsDisconnectOpen((prev) => !prev);
+                return;
+              }
               setIsWalletConnectorOpen(true);
             }}
             className="text-white bg-base_color border border-borderColor-DARK text-bold font-poppins text-xs
@@ -247,6 +253,36 @@ export const ConnectWallet = () => {
           )}
         </DialogContent>
       </Dialog>
+      <div
+        className={`absolute p-2.5 px-3 right-0 shadow-2xl z-[105] top-[110%] bg-secondary border border-borderColor rounded ${
+          isDisconnectOpen
+            ? "opacity-100 scale-100"
+            : "pointer-events-none opacity-0 scale-75"
+        } transition-all duration-150 ease-in-out`}
+      >
+        <div
+          className="flex items-center cursor-pointer text-white text-xs"
+          onClick={handleCopy}
+        >
+          <p className="mr-2">{addressSlicer(address)}</p>
+          {isCopied ? (
+            <FaCheck className="text-green" />
+          ) : (
+            <MdContentCopy className="text-white" />
+          )}
+        </div>
+        <div className="h-[1px] mb-2 mt-2.5 bg-borderColor w-full rounded" />
+        <button
+          className="text-font-80 flex items-center justify-center hover:text-base_color transition-all duration-100 ease-in-out text-bold font-poppins text-sm"
+          onClick={() => {
+            setIsDisconnectOpen(false);
+            disconnect();
+          }}
+        >
+          <IoPowerSharp className="text-red mr-2" />
+          Disconnect
+        </button>
+      </div>
     </div>
   );
 };
