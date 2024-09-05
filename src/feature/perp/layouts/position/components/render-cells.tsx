@@ -9,6 +9,7 @@ import {
 } from "@/utils/misc";
 import { useOrderEntry } from "@orderly.network/hooks";
 import { Dispatch, SetStateAction } from "react";
+import { EditModal } from "./edit-modal";
 import { TPSLModal } from "./tp-sl-modal";
 
 const tdStyle = `text-xs px-2.5 py-3 text-white whitespace-nowrap font-normal border-y border-borderColor text-end`;
@@ -25,8 +26,13 @@ export const RenderCells = ({
   activeSection,
   closePendingOrder,
 }: any) => {
-  const { TPSLOpenOrder, setTPSLOpenOrder, setOrderPositions } =
-    useGeneralContext();
+  const {
+    TPSLOpenOrder,
+    setTPSLOpenOrder,
+    setOrderPositions,
+    editPendingPositionOpen,
+    setEditPendingPositionOpen,
+  } = useGeneralContext();
   const { onSubmit } = useOrderEntry(
     {
       symbol: order.symbol,
@@ -46,9 +52,11 @@ export const RenderCells = ({
         closePendingOrder,
         setTPSLOpenOrder,
         setOrderPositions,
-        onSubmit
+        onSubmit,
+        setEditPendingPositionOpen
       )}
       {TPSLOpenOrder ? <TPSLModal order={order} /> : null}
+      {editPendingPositionOpen ? <EditModal /> : null}
     </>
   );
 };
@@ -79,7 +87,8 @@ const renderAdditionalCells = (
   closePendingOrder: Function,
   setTPSLOpenOrder: Dispatch<SetStateAction<boolean>>,
   setOrderPositions: any,
-  onSubmit: any
+  onSubmit: any,
+  setEditPendingPositionOpen: Dispatch<SetStateAction<boolean>>
 ) => {
   if (section === Sections.FILLED) {
     return (
@@ -164,6 +173,15 @@ const renderAdditionalCells = (
             className="h-[30px] w-fit px-2 text-xs text-white bg-terciary border-borderColor-DARK rounded"
           >
             Close
+          </button>
+          <button
+            onClick={() => {
+              setEditPendingPositionOpen(trade);
+              setOrderPositions([]);
+            }}
+            className="h-[30px] w-fit px-2 text-xs text-white bg-terciary border-borderColor-DARK rounded"
+          >
+            Edit
           </button>
         </td>
       </>

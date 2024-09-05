@@ -192,13 +192,12 @@ export const OpenTrade = ({
     }
     try {
       const val = getInput(values, asset.symbol, currentAsset?.base_tick);
-      console.log("val", rangeInfo?.min);
       await onSubmit(val);
       triggerAlert("Success", "Order has been executed.");
       setOrderPositions(val as any);
       setValues({
         ...defaultValues,
-        quantity: maxQty.toString(),
+        quantity: newMaxQty.toString(),
         direction: values.direction,
       });
       setSliderValue(100);
