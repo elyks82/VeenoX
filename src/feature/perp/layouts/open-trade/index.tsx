@@ -166,7 +166,6 @@ export const OpenTrade = ({
       currentAsset?.base_tick
     );
     if (errors && Object.keys(errors)?.length > 0) {
-      console.log("error", errors);
       if (errors?.total?.message) {
         triggerAlert("Error", errors?.total?.message);
         return;
@@ -698,7 +697,7 @@ export const OpenTrade = ({
         >
           {buttonStatus?.title}
         </button>
-        <div className="flex items-center justify-between mt-2">
+        {/* <div className="flex items-center justify-between mt-2">
           <p className="text-xs text-font-60">Initial Margin Ratio</p>
           <p className="text-xs text-white font-medium">
             {(currentAsset?.base_imr * 100).toFixed(2)}%
@@ -724,7 +723,7 @@ export const OpenTrade = ({
           <p className="text-xs text-white font-medium">
             {currentAsset?.min_notional} {currentAsset?.quote}
           </p>
-        </div>
+        </div> */}
         <div className="pt-4 border-t border-borderColor hidden md:block">
           <div className="pb-4 mb-4">
             <div className="flex items-center justify-between">
