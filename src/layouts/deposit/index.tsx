@@ -156,7 +156,9 @@ export const Deposit = () => {
               );
             }, 2000);
           }
-        } catch (e) {}
+        } catch (err) {
+          triggerAlert("Error", (err as any)?.error?.message);
+        }
       }
     } else {
       switchChain({ chainId: 42161 }); // Default switch to Arbitrum

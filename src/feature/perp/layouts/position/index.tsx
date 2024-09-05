@@ -164,14 +164,14 @@ export const Position = ({ asset }: PositionProps) => {
 
   return (
     <div className="w-full">
-      <div className="w-full flex justify-between items-center border-b border-borderColor ">
+      <div className="w-full flex justify-between items-center border-b border-borderColor-DARK">
         <div className="flex items-center relative">
           {sections.map((section, index) => (
             <button
               key={index}
               ref={(el) => (buttonRefs.current[index] = el) as any}
-              className={`text-xs sm:text-sm text-white font-medium p-2.5 ${
-                activeSection === index ? "font-bikd" : ""
+              className={`text-xs sm:text-[13px] p-2.5 ${
+                activeSection === index ? "text-white" : "text-font-60"
               }`}
               onClick={() => setActiveSection(index)}
             >
@@ -179,7 +179,7 @@ export const Position = ({ asset }: PositionProps) => {
             </button>
           ))}
           <div
-            className="h-0.5 w-[20%] absolute bottom-0 bg-white transition-all duration-200 ease-in-out"
+            className="h-[1px] w-[20%] absolute bottom-[-1px] bg-base_color transition-all duration-200 ease-in-out"
             style={{ width: underlineStyle.width, left: underlineStyle.left }}
           />
         </div>
@@ -224,7 +224,11 @@ export const Position = ({ asset }: PositionProps) => {
                       isFirst ? "text-start pl-5" : "text-end "
                     } ${
                       isLast ? "pr-5" : ""
-                    } px-2.5 py-2.5 text-font-80 whitespace-nowrap font-normal border-y border-borderColor`}
+                    } px-2.5 py-2 text-font-60 whitespace-nowrap ${
+                      activeSection === Sections.POSITION
+                        ? "border-y"
+                        : "border-b"
+                    } font-normal border-borderColor-DARK`}
                   >
                     {title}
                   </th>
