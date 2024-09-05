@@ -2,14 +2,14 @@ export const thead = {
   0: [
     "Symbol",
     "Quantity",
-    "Avg. open",
+    "Entry price",
     "Mark price",
-    "Liq. price",
-    "Unreal. PnL",
+    "PnL",
     "TP / SL",
+    "Liq. price",
     "Est. total",
     "Margin",
-    "Settle Price",
+    "Notional",
     "Order",
   ],
   1: [

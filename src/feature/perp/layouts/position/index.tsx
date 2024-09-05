@@ -220,10 +220,8 @@ export const Position = ({ asset }: PositionProps) => {
                 return (
                   <th
                     key={i}
-                    className={`text-xs ${
-                      isFirst ? "text-start pl-5" : "text-end "
-                    } ${
-                      isLast ? "pr-5" : ""
+                    className={`text-xs ${isFirst ? "pl-5" : ""} ${
+                      isLast ? "pr-5 text-end" : "text-start"
                     } px-2.5 py-2 text-font-60 whitespace-nowrap ${
                       activeSection === Sections.POSITION
                         ? "border-y"
