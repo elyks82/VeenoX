@@ -29,6 +29,8 @@ interface GeneralContextProps {
   setTPSLOpenOrder: Dispatch<SetStateAction<any>>;
   orderPositions: Inputs[];
   setOrderPositions: Dispatch<SetStateAction<Inputs[]>>;
+  editPendingPositionOpen: any;
+  setEditPendingPositionOpen: Dispatch<SetStateAction<any>>;
 }
 
 const INITIAL_TRADE_INFO = {
@@ -56,6 +58,7 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isDeposit, setIsDeposit] = useState(true);
   const [isEnableTradingModalOpen, setIsEnableTradingModalOpen] =
     useState(false);
+  const [editPendingPositionOpen, setEditPendingPositionOpen] = useState(null);
   const [orderPositions, setOrderPositions] = useState([]);
   const [TPSLOpenOrder, setTPSLOpenOrder] = useState(null);
   const value = useMemo(
@@ -78,6 +81,8 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
       setTPSLOpenOrder,
       orderPositions,
       setOrderPositions,
+      editPendingPositionOpen,
+      setEditPendingPositionOpen,
     }),
     [
       showMobileTradeCreator,
@@ -89,6 +94,7 @@ export const GeneralProvider: FC<PropsWithChildren> = ({ children }) => {
       isDeposit,
       TPSLOpenOrder,
       orderPositions,
+      editPendingPositionOpen,
     ]
   );
 

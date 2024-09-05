@@ -238,7 +238,6 @@ export const TPSLModal = ({ order }: any) => {
           </p>
         ) : null}
 
-        {/* Ajoutez d'autres champs pour TP, SL, etc. */}
         <div className="flex items-center w-full gap-2.5 mt-5">
           <button
             className="border-base_color border w-full rounded flex items-center justify-center h-[40px] text-sm text-white"

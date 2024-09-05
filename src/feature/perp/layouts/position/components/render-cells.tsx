@@ -9,6 +9,7 @@ import {
 } from "@/utils/misc";
 import { useOrderEntry } from "@orderly.network/hooks";
 import { Dispatch, SetStateAction } from "react";
+import { EditModal } from "./edit-modal";
 import { TPSLModal } from "./tp-sl-modal";
 
 const tdStyle = `text-xs px-2.5 py-3 text-white whitespace-nowrap font-normal border-y border-borderColor text-end`;
@@ -25,8 +26,13 @@ export const RenderCells = ({
   activeSection,
   closePendingOrder,
 }: any) => {
-  const { TPSLOpenOrder, setTPSLOpenOrder, setOrderPositions } =
-    useGeneralContext();
+  const {
+    TPSLOpenOrder,
+    setTPSLOpenOrder,
+    setOrderPositions,
+    editPendingPositionOpen,
+    setEditPendingPositionOpen,
+  } = useGeneralContext();
   const { onSubmit } = useOrderEntry(
     {
       symbol: order.symbol,
@@ -46,9 +52,11 @@ export const RenderCells = ({
         closePendingOrder,
         setTPSLOpenOrder,
         setOrderPositions,
-        onSubmit
+        onSubmit,
+        setEditPendingPositionOpen
       )}
       {TPSLOpenOrder ? <TPSLModal order={order} /> : null}
+      {editPendingPositionOpen ? <EditModal /> : null}
     </>
   );
 };
@@ -79,7 +87,8 @@ const renderAdditionalCells = (
   closePendingOrder: Function,
   setTPSLOpenOrder: Dispatch<SetStateAction<boolean>>,
   setOrderPositions: any,
-  onSubmit: any
+  onSubmit: any,
+  setEditPendingPositionOpen: Dispatch<SetStateAction<boolean>>
 ) => {
   if (section === Sections.FILLED) {
     return (
@@ -156,15 +165,28 @@ const renderAdditionalCells = (
           {getFormattedDate(trade?.created_time)}
         </td>
         <td className={cn(tdStyle, "pr-5")}>
-          <button
-            onClick={() => {
-              closePendingOrder(trade.order_id);
-              setOrderPositions([]);
-            }}
-            className="h-[30px] w-fit px-2 text-xs text-white bg-terciary border-borderColor-DARK rounded"
-          >
-            Close
-          </button>
+          <div className="flex items-center justify-end w-full h-full">
+            <button
+              onClick={() => {
+                setEditPendingPositionOpen(trade);
+                setOrderPositions([]);
+              }}
+              className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
+              h-[30px] px-2.5 rounded flex items-center
+          "
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => {
+                closePendingOrder(trade.order_id);
+                setOrderPositions([]);
+              }}
+              className="h-[30px] w-fit px-2.5 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
+            >
+              Close
+            </button>{" "}
+          </div>
         </td>
       </>
     );

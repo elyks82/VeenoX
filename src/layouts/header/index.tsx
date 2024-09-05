@@ -1,6 +1,5 @@
 "use client";
 import CryptoFearAndGreedChart from "@/components/fear-greed";
-import { Tooltip as CustomTooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import {
@@ -18,9 +17,7 @@ import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { FaCheck } from "react-icons/fa6";
 import { IoChevronDown } from "react-icons/io5";
-import { MdContentCopy } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { useAccount, useConnect, useSwitchChain } from "wagmi";
 import { Deposit } from "../deposit";
@@ -118,7 +115,6 @@ export const Header = () => {
     supportedChains.find((entry) => entry.label === (chain?.name as string))
       ?.icon || getImageFromChainId(chainId as ChainsImageType);
 
-  console.log("chainLogo", chainLogo);
   return (
     <header className="flex items-center justify-between h-[60px] px-2.5 border-b border-borderColor">
       <div className="flex items-center gap-5">
@@ -187,7 +183,7 @@ export const Header = () => {
         "
               >
                 <Image
-                  src={chainLogo}
+                  src={chainLogo || "/assets/ARB.png"}
                   width={20}
                   height={20}
                   className="object-cover rounded-full"
@@ -234,33 +230,15 @@ export const Header = () => {
                 ))}
             </PopoverContent>
           </Popover>
+
           <ConnectWallet />
-          {/* {!isDisconnected ? ( */}
-          <CustomTooltip isOpen={isTooltipOpen}>
-            <div className="flex items-center  text-sm" onClick={handleCopy}>
-              {/* <p>{addressSlicer(address)}</p> */}
-              <button className="ml-2 ">
-                {isCopied ? (
-                  <FaCheck className="text-green-600" />
-                ) : (
-                  <MdContentCopy className="text-white" />
-                )}
-              </button>
-            </div>
-            <button
-              className="text-white text-bold font-poppins text-sm mt-2"
-              // onClick={handleDisconnect}
-            >
-              Disconnect
-            </button>
-          </CustomTooltip>
+
           <button
             className="lg:hidden flex items-center justify-center"
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
           >
             <RxHamburgerMenu className="text-white ml-3 text-xl" />
           </button>
-          {/* ) : null} */}
         </div>
       </div>
 

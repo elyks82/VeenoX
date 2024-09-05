@@ -1,18 +1,18 @@
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
-import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
 import {
   formatQuantity,
-  formatSymbol,
   getFormattedAmount,
   getTokenPercentage,
 } from "@/utils/misc";
 import {
   useAccountInstance,
   useCollateral,
+  useLeverage,
+  useMaxQty,
   useOrderEntry,
   useAccount as useOrderlyAccount,
   usePositionStream,
@@ -70,6 +70,7 @@ export const OpenTrade = ({
   const accountInstance = useAccountInstance();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
   const { state } = useOrderlyAccount();
+
   const [isSettleLoading, setIsSettleLoading] = useState(false);
   const {
     setIsEnableTradingModalOpen,
@@ -107,9 +108,6 @@ export const OpenTrade = ({
     },
   });
 
-  // const { data: markPrices }: { data: Record<string, number> } =
-  //   useMarkPricesStream();
-  // console.log("markPrices");
   const [isTokenQuantity, setIsTokenQuantity] = useState(true);
   const [values, setValues] = useState(defaultValues);
   const [inputErrors, setInputErrors] = useState({
@@ -124,6 +122,7 @@ export const OpenTrade = ({
     estLiqPrice,
     estLeverage,
     onSubmit,
+
     helper: { calculate, validator },
   } = useOrderEntry(
     {
@@ -134,6 +133,8 @@ export const OpenTrade = ({
     },
     { watchOrderbook: true }
   );
+
+  const newMaxQty = useMaxQty(asset?.symbol, values.direction as OrderSide);
 
   // const isAlgoOrder = values?.algo_order_id !== undefined;
 
@@ -162,21 +163,47 @@ export const OpenTrade = ({
       values,
       asset.symbol,
       validator,
-      currentAsset.base_tick
+      currentAsset?.base_tick
     );
     if (errors && Object.keys(errors)?.length > 0) {
-      if (errors?.total?.message) triggerAlert("Error", errors?.total?.message);
+      if (errors?.total?.message) {
+        triggerAlert("Error", errors?.total?.message);
+        return;
+      }
       if (errors?.order_quantity?.message)
         triggerAlert("Error", errors?.order_quantity?.message);
       return;
     }
+
+    if (Number(values.quantity || 0) >= currentAsset?.base_max) {
+      triggerAlert(
+        "Error",
+        `Invalid quantity. Max quantity ${currentAsset?.base_max} ${currentAsset?.symbol}`
+      );
+      return;
+    }
+
+    if (Number(values.quantity || 0) <= currentAsset?.base_min) {
+      triggerAlert(
+        "Error",
+        `Invalid quantity. Min quantity ${currentAsset?.base_min} ${currentAsset?.symbol}`
+      );
+      return;
+    }
     try {
-      const val = getInput(values, asset.symbol, currentAsset.base_tick);
+      const val = getInput(values, asset.symbol, currentAsset?.base_tick);
       await onSubmit(val);
       triggerAlert("Success", "Order has been executed.");
       setOrderPositions(val as any);
-      setValues(defaultValues);
-    } catch (err) {}
+      setValues({
+        ...defaultValues,
+        quantity: newMaxQty.toString(),
+        direction: values.direction,
+      });
+      setSliderValue(100);
+    } catch (err) {
+      console.log("err", err);
+    }
   };
 
   const getStyleFromType = () => {
@@ -246,6 +273,8 @@ export const OpenTrade = ({
   };
   const buttonStatus = getButtonStatus();
 
+  const [maxLeverage] = useLeverage();
+
   function percentageToValue(percentage: number) {
     return (percentage / 100) * maxQty;
   }
@@ -259,8 +288,17 @@ export const OpenTrade = ({
     return formatted;
   };
   const handleValueChange = (name: string, value: string) => {
-    setSliderValue(toPercentage(Number(value)));
-    setValues((prev) => ({ ...prev, [name]: value === "" ? "" : value }));
+    setValues((prev) => ({
+      ...prev,
+      [name]:
+        value === ""
+          ? ""
+          : Number(value) === 0 || name !== "quantity"
+          ? value
+          : getFormattedAmount(value),
+    }));
+
+    if (name === "quantity") setSliderValue(toPercentage(Number(value)));
   };
 
   const [data] = usePositionStream();
@@ -269,7 +307,7 @@ export const OpenTrade = ({
   //   if (values.type === "Market")
   //     setValues((prev) => ({ ...prev, price: markPrices[asset.symbol] }));
   // }, [values.type]);
-  const [sliderValue, setSliderValue] = useState(toPercentage(maxQty));
+  const [sliderValue, setSliderValue] = useState(toPercentage(newMaxQty));
 
   const handleInputErrors = (boolean: boolean, name: string) => {
     setInputErrors((prev) => ({
@@ -279,14 +317,14 @@ export const OpenTrade = ({
   };
 
   useEffect(() => {
-    if (maxQty) {
+    if (newMaxQty) {
       setValues((prev) => ({
         ...prev,
-        quantity: maxQty.toString(),
+        quantity: newMaxQty.toString(),
       }));
       setSliderValue(100);
     }
-  }, [maxQty]);
+  }, [newMaxQty !== 0, maxLeverage, values.direction]);
 
   return (
     <section className="h-full w-full text-white">
@@ -457,30 +495,26 @@ export const OpenTrade = ({
                   handleInputErrors(true, "input_quantity");
                 } else {
                   handleValueChange("quantity", e.target.value);
-
                   handleInputErrors(false, "input_quantity");
                 }
               }}
               type="number"
               value={
-                isTokenQuantity
-                  ? getFormattedAmount(values.quantity).toString()
-                  : getFormattedAmount(
-                      (Number(values.quantity) as number) * markPrice
-                    ).toString()
+                parseFloat(values.quantity as string) === 0
+                  ? values.quantity
+                  : getFormattedAmount(values.quantity).toString()
               }
             />
-            <Popover>
-              <PopoverTrigger className="h-full min-w-fit">
-                <button
-                  className="rounded text-[12px] flex items-center
+            <button
+              className="rounded text-[12px] flex items-center
              justify-center min-w-[50px] pl-1 text-white font-medium h-[24px] ml-1 w-fit pr-2"
-                >
-                  <p className="px-2 text-white text-sm">
-                    {isTokenQuantity ? getSymbolForPair() : "USDC"}
-                  </p>
-                  <IoChevronDown className="text-white text-xs " />
-                </button>
+            >
+              <p className="px-2 text-white text-sm">{getSymbolForPair()}</p>
+              <IoChevronDown className="text-white text-xs " />
+            </button>
+            {/* <Popover>
+              <PopoverTrigger className="h-full min-w-fit">
+              
               </PopoverTrigger>
               <PopoverContent
                 sideOffset={0}
@@ -505,7 +539,7 @@ export const OpenTrade = ({
                   USDC
                 </button>
               </PopoverContent>
-            </Popover>
+            </Popover> */}
           </div>
           <p
             className={`text-red w-full text-xs mt-1 mb-1.5 pointer-events-none ${
@@ -514,14 +548,11 @@ export const OpenTrade = ({
                 : "opacity-0 absolute"
             }`}
           >
-            Quantity can&apos;t exceed{" "}
-            {isTokenQuantity
-              ? getFormattedAmount(maxQty)
-              : getFormattedAmount(maxQty * markPrice)}{" "}
-            {isTokenQuantity ? getSymbolForPair() : "USDC"}
+            Quantity can&apos;t exceed {getFormattedAmount(maxQty)}{" "}
+            {getSymbolForPair()}
           </p>
 
-          <div className="mt-2 flex items-center">
+          <div className={`mt-2 flex items-center `}>
             <Slider
               value={[sliderValue]}
               max={100}
@@ -529,8 +560,14 @@ export const OpenTrade = ({
               onValueChange={(value) => {
                 setSliderValue(value[0]);
                 handleInputErrors(false, "input_quantity");
-                const newValue = percentageToValue(value[0]).toString();
-                handleValueChange("quantity", newValue);
+                const newQuantity = percentageToValue(value[0]);
+
+                const adjustedQuantity = Math.min(
+                  Math.max(newQuantity, currentAsset?.base_min),
+                  currentAsset?.base_max
+                );
+
+                handleValueChange("quantity", adjustedQuantity.toString());
               }}
               isBuy={values.direction === "BUY"}
             />
@@ -659,6 +696,33 @@ export const OpenTrade = ({
         >
           {buttonStatus?.title}
         </button>
+        {/* <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-font-60">Initial Margin Ratio</p>
+          <p className="text-xs text-white font-medium">
+            {(currentAsset?.base_imr * 100).toFixed(2)}%
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-font-60">Maintenance Margin Ratio</p>
+          <p className="text-xs text-white font-medium">
+            {(currentAsset?.base_mmr * 100).toFixed(2)}%
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-font-60">Max Quantity</p>
+          <p className="text-xs text-white font-medium">
+            {currentAsset?.base_max} {currentAsset?.base}
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-font-60">Min Notional</p>
+          <p className="text-xs text-white font-medium">
+            {currentAsset?.min_notional} {currentAsset?.quote}
+          </p>
+        </div> */}
         <div className="pt-4 border-t border-borderColor hidden md:block">
           <div className="pb-4 mb-4">
             <div className="flex items-center justify-between">
