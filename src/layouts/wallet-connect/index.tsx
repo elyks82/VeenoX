@@ -171,8 +171,8 @@ export const ConnectWallet = () => {
               </div>
             </PopoverTrigger>
             <PopoverContent
-              sideOffset={3}
-              className="flex flex-col px-3 py-2 rounded z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
+              sideOffset={12}
+              className="flex flex-col px-3 py-2 rounded z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-secondary shadow-xl"
             >
               <div
                 className="flex items-center cursor-pointer text-white text-xs"

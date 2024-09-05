@@ -40,6 +40,7 @@ export const Header = () => {
   const { account, state } = useOrderlyAccount();
   const { address, isDisconnected, isConnecting, chain, chainId, isConnected } =
     useAccount();
+  const [isHoverChain, setIsHoverChain] = useState<string | null>(null);
   const { connect, connectors } = useConnect();
   const { isEnableTradingModalOpen, setIsEnableTradingModalOpen } =
     useGeneralContext();
@@ -160,21 +161,7 @@ export const Header = () => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-
           <Deposit />
-
-          {/* {supportedChains
-              ?.filter((item) => item.network !== "testnet")
-              .map((supportedChain, i) => (
-                <button
-                  key={i}
-                  className="flex items-center py-1 flex-nowrap"
-                  onClick={() =>
-                    switchChain({
-                      chainId: parseInt(supportedChain.id, 16),
-                    })
-                  }
-                ></button> */}
           <Popover>
             <PopoverTrigger className="h-full min-w-fit">
               <button
@@ -193,46 +180,70 @@ export const Header = () => {
               </button>
             </PopoverTrigger>
             <PopoverContent
-              sideOffset={3}
-              className="flex flex-col px-3 py-2 rounded z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
+              sideOffset={12}
+              className="flex flex-col px-5 py-4 rounded z-[102] w-fit whitespace-nowrap bg-secondary border border-borderColor shadow-xl"
             >
-              {supportedChains
-                ?.filter((item) => item.network !== "testnet")
-                .map((supportedChain, i) => (
-                  <button
-                    key={i}
-                    className="flex items-center py-1 flex-nowrap"
-                    onClick={() =>
-                      switchChain({
-                        chainId: parseInt(supportedChain.id, 16),
-                      })
-                    }
-                  >
-                    <Image
-                      src={supportedChain.icon}
-                      width={18}
-                      height={18}
-                      className="h-5 w-5 object-cover rounded-full mr-2"
-                      alt="Chain logo"
-                    />
-                    <p
-                      className={`w-full text-start font-medium text-[13px] ${
-                        parseInt(supportedChain.id, 16) === chainId
-                          ? "text-white"
-                          : "text-font-60"
-                      } `}
+              <div className="flex items-center">
+                {supportedChains
+                  ?.filter((item) => item.network !== "testnet")
+                  .map((supportedChain, i) => (
+                    <button
+                      key={i}
+                      className="flex flex-col justify-center items-center py-1 flex-nowrap"
+                      onMouseEnter={() => {
+                        if (supportedChain?.id) {
+                          setIsHoverChain(supportedChain.id);
+                        }
+                      }}
+                      onMouseLeave={() => setIsHoverChain(null)}
+                      onClick={() =>
+                        switchChain({
+                          chainId: parseInt(supportedChain.id, 16),
+                        })
+                      }
                     >
-                      {supportedChain.label === "OP Mainnet"
-                        ? "Optimism"
-                        : supportedChain.label}
-                    </p>
-                  </button>
-                ))}
+                      <div
+                        className={`h-10 w-10 ${
+                          i === 1 ? "mx-6" : ""
+                        } p-2 rounded bg-terciary ${
+                          parseInt(supportedChain.id, 16) === chainId
+                            ? "border-base_color"
+                            : "border-borderColor"
+                        } border transition-all duration-100 ease-in-out`}
+                      >
+                        <Image
+                          src={supportedChain.icon}
+                          width={18}
+                          height={18}
+                          className={`h-full w-full object-cover rounded-full mr-2 ${
+                            parseInt(supportedChain.id, 16) === chainId ||
+                            isHoverChain === supportedChain.id
+                              ? ""
+                              : "grayscale"
+                          } transition-all duration-100 ease-in-out`}
+                          alt="Chain logo"
+                        />{" "}
+                      </div>
+                      <p
+                        className={`text-center mt-2 text-xs ${
+                          parseInt(supportedChain.id, 16) === chainId ||
+                          isHoverChain === supportedChain.id
+                            ? "text-white"
+                            : "text-font-60"
+                        } transition-all duration-100 ease-in-out`}
+                      >
+                        {supportedChain.label === "OP Mainnet"
+                          ? "Optimism"
+                          : supportedChain.label === "Arbitrum One"
+                          ? "Arbitrum"
+                          : supportedChain.label}
+                      </p>
+                    </button>
+                  ))}{" "}
+              </div>
             </PopoverContent>
           </Popover>
-
           <ConnectWallet />
-
           <button
             className="lg:hidden flex items-center justify-center"
             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
@@ -241,7 +252,6 @@ export const Header = () => {
           </button>
         </div>
       </div>
-
       <MobileModal
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen((prev) => !prev)}

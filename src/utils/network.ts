@@ -6,7 +6,10 @@ export function isTestnet(chain: ConnectedChain | null): boolean {
   return !["0xa4b1", "0xa"].includes(chain.id);
 }
 
-type SupportedChain = Chain & { network: "mainnet" | "testnet"; icon: string };
+type SupportedChain = Chain & {
+  network: "mainnet" | "testnet";
+  icon: string;
+} & { id: string };
 
 export const supportedChains: SupportedChain[] = [
   {
