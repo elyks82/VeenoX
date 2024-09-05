@@ -25,6 +25,7 @@ import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import { Oval } from "react-loader-spinner";
 import "rsuite/Slider/styles/index.css";
+import { useAccount } from "wagmi";
 import { Leverage } from "./components/leverage";
 
 type OpenTradeProps = {
@@ -70,7 +71,7 @@ export const OpenTrade = ({
   const accountInstance = useAccountInstance();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
   const { state } = useOrderlyAccount();
-
+  const { address } = useAccount();
   const [isSettleLoading, setIsSettleLoading] = useState(false);
   const {
     setIsEnableTradingModalOpen,
@@ -202,7 +203,7 @@ export const OpenTrade = ({
       });
       setSliderValue(100);
     } catch (err) {
-      console.log("err", err);
+      triggerAlert("Error", "The margin will be insufficient after");
     }
   };
 
@@ -496,6 +497,7 @@ export const OpenTrade = ({
                 }
               }}
               type="number"
+              disabled={!freeCollateral || !address}
               value={
                 parseFloat(values.quantity as string) === 0
                   ? values.quantity
@@ -570,6 +572,7 @@ export const OpenTrade = ({
                 type="number"
                 min={0}
                 max={100}
+                disabled={!freeCollateral || !address}
                 onChange={(e) => {
                   if (!e.target.value) {
                     setSliderValue(0);
@@ -605,18 +608,15 @@ export const OpenTrade = ({
               <span className="text-font-60">USDC</span>
             </p>
           </div>
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between mt-2 border-b border-borderColor pb-3">
             <p className="text-xs text-font-60">Account leverage</p>
             <p className="text-xs text-white font-medium">
               {estLeverage || "--"}x
             </p>
           </div>
-          <div className="flex items-center justify-between mt-2 border-b border-borderColor-DARK pb-4">
-            <p className="text-xs text-font-60">Fees</p>
-            <p className="text-xs text-white font-medium">0.00% / 0.03%</p>
-          </div>
+
           <button
-            className="text-xs text-white mt-4 flex items-center justify-between w-full"
+            className="text-xs text-white mt-3 flex items-center justify-between w-full"
             onClick={() => {
               setValues((prev) => ({
                 ...prev,
@@ -736,7 +736,7 @@ export const OpenTrade = ({
           </p>
         </div> */}
         <div className="pt-4 border-t border-borderColor hidden md:block">
-          <div className="pb-4 mb-4">
+          <div className="pb-4 ">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-font-60 mb-[3px]">Total value ($)</p>
@@ -801,6 +801,18 @@ export const OpenTrade = ({
               </button>
             </div>
           </div>
+        </div>
+        <div className="flex items-center justify-between border-t border-borderColor pt-4">
+          <p className="text-xs text-font-60">Margin Required</p>
+          <p className="text-xs text-white font-medium">{"N/A"}</p>
+        </div>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-font-60">Slippage</p>
+          <p className="text-xs text-white font-medium">Est: 0% / Max: 8%</p>
+        </div>
+        <div className="flex items-center justify-between mt-2 pb-4">
+          <p className="text-xs text-font-60">Fees</p>
+          <p className="text-xs text-white font-medium">0.030% / 0.030%</p>
         </div>
       </div>
     </section>
