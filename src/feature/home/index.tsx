@@ -1,4 +1,5 @@
 "use client";
+import { HeroParallax } from "@/components/hero-parralax";
 import { motion, useAnimation, useInView } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -119,6 +120,7 @@ export const Home = () => {
           />
         </div>
       </div>{" "}
+      <HeroParallax />
       <div className="w-full h-fit flex flex-col items-center bg-[#1e2126]">
         <div className="w-[90%] max-w-[1350px]">
           <div className="py-[10vh] flex items-center gap-20 justify-between w-full ">
