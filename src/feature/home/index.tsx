@@ -1,13 +1,20 @@
 "use client";
 import { BackgroundBeamsWithCollision } from "@/components/background-home";
+import { Card, Carousel } from "@/components/caroussel";
+import { HeroParallax } from "@/components/hero-parralax";
 import {
+  motion,
   useAnimation,
   useInView,
   useScroll,
   useTransform,
 } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { Row } from "./components/row";
 // @ts-ignore
+import { gridContent } from "./constant.ts";
 
 type BoxProps = {
   children: React.ReactNode;
@@ -107,10 +114,59 @@ export const Home = () => {
     };
   };
 
+  const test = [
+    {
+      src: "/veenox/trading-platform.png",
+      title: "Unified Orderbook & Liquidity",
+      category: "PERP",
+      content: <p className="text-white">{gridContent[0].description}</p>,
+      description: gridContent[0].description,
+    },
+    {
+      src: "/veenox/trading-platform.png",
+      title: "Most Competitive Fees",
+      category: "PERP",
+      content: <p className="text-white">{gridContent[1].description}</p>,
+      description: gridContent[1].description,
+    },
+    {
+      src: "/veenox/trading-platform.png",
+      title: "Ready-to-use Liquidity",
+      category: "PERP",
+      content: <p className="text-white">{gridContent[2].description}</p>,
+      description: gridContent[2].description,
+    },
+    {
+      src: "/veenox/trading-platform.png",
+      title: "One-Click Trading Experience",
+      category: "PERP",
+      content: <p className="text-white">{gridContent[3].description}</p>,
+      description: gridContent[3].description,
+    },
+    {
+      src: "/veenox/trading-platform.png",
+      title: "CEX-Level Performance",
+      category: "PERP",
+      content: <p className="text-white">{gridContent[4].description}</p>,
+      description: gridContent[4].description,
+    },
+    {
+      src: "/veenox/trading-platform.png",
+      title: "Lowest ",
+      category: "PERP",
+      content: <p className="text-white">{gridContent[5].description}</p>,
+      description: gridContent[5].description,
+    },
+  ];
+
+  const cards = test.map((card, index) => (
+    <Card key={card.src} card={card} index={index} />
+  ));
+
   return (
     <div className="flex flex-col bg-secondary" ref={ref}>
       <BackgroundBeamsWithCollision>
-        {/* <div className="w-full flex items-center justify-center">
+        <div className="w-full flex items-center justify-center">
           <motion.div className="flex flex-col w-fit">
             <motion.div
               variants={{
@@ -184,15 +240,9 @@ export const Home = () => {
               </Link>
             </motion.button>
           </motion.div>
-        </div> */}
-        <p
-          className="overflow-hidden block relative whitespace-nowrap
-                text-7xl font-bold w-auto text-white uppercase text-center"
-        >
-          Build in progress
-        </p>
+        </div>
       </BackgroundBeamsWithCollision>
-      {/* <div className="w-full relative border-t border-borderColor">
+      <div className="w-full relative border-t border-borderColor">
         <div className="w-[90%] max-w-[1200px] mx-auto relative flex flex-col items-center justify-center my-[10%]">
           <h2
             className="overflow-hidden block relative whitespace-nowrap
@@ -205,43 +255,20 @@ export const Home = () => {
           <Row isEven />
         </div>
       </div>
-      <div
-        className="w-[90%] max-w-[1200px] mx-auto flex flex-col items-center justify-center mt-[5%] mb-[15%]"
-        ref={cardRef}
-      >
-        <motion.h2
-          style={{ opacity: scrollYFirst }}
-          className="overflow-hidden block relative whitespace-nowrap
-              text-6xl font-bold mb-2 w-auto mr-auto  text-white"
+      <div className="w-full mb-[10%]">
+        <div
+          className="w-[90%] max-w-[1200px] mx-auto flex flex-col items-center justify-center mt-[5%] mb-[7%]"
+          ref={cardRef}
         >
-          Level up trading experience
-        </motion.h2>
-        <div className="flex w-full justify-between flex-wrap mt-[50px]">
-          {gridContent.map((content, i) => {
-            const { translate, position, delay, scrollYProgress } =
-              getAnimationStyle(i);
-            return (
-              <div
-                key={i}
-                className={`${
-                  i === gridContent?.length - 1 ? "w-full" : "w-[49%]"
-                } min-h-[170px] py-8 px-10 rounded-xl mb-[20px] border border-borderColor`}
-              >
-                <img
-                  src={content.image}
-                  className="w-[50px] h-[50px] rounded-full"
-                  alt={content.title + "image"}
-                />
-                <p className="text-xl mt-5 text-white font-bold">
-                  {content.title}
-                </p>
-                <p className="text-base mt-2 text-font-60">
-                  {content.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+          <motion.h2
+            style={{ opacity: scrollYFirst }}
+            className="overflow-hidden block relative whitespace-nowrap
+              text-6xl font-bold mb-10 w-auto mx-auto text-center text-white"
+          >
+            Level up trading experience
+          </motion.h2>
+          <Carousel items={cards} />
+        </div>{" "}
       </div>
       <HeroParallax />
 
@@ -358,7 +385,7 @@ export const Home = () => {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };
