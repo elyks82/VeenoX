@@ -1,9 +1,37 @@
 "use client";
 import { HeroParallax } from "@/components/hero-parralax";
-import { motion, useAnimation, useInView } from "framer-motion";
+import {
+  motion,
+  useAnimation,
+  useInView,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { Card } from "./components/card";
+import { Row } from "./components/row";
+import { gridContent } from "./constant.ts";
+
+type BoxProps = {
+  children: React.ReactNode;
+  className?: string;
+  isOdd?: boolean;
+};
+
+const Box: React.FC<BoxProps> = ({ children, className, isOdd = false }) => (
+  <div
+    className={`bg-terciary p-4 h-[350px] rounded-[40px] border border-borderColor shadow-lg shadow-[rgba(0,0,0,0.2)] ${className}`}
+    style={{
+      backgroundImage: isOdd
+        ? "linear-gradient(45deg, rgba(43,47,54,1) 27%, #1B1D22 100%)"
+        : "linear-gradient(135deg, #1B1D22 27%, rgba(43,47,54,1) 100%)",
+    }}
+  >
+    {children}
+  </div>
+);
 
 export const Home = () => {
   const ref = useRef<HTMLHeadingElement>(null);
@@ -16,6 +44,74 @@ export const Home = () => {
     }
   }, [isInView]);
 
+  const springConfig = { stiffness: 100, damping: 10, bounce: 0 };
+  const cardRef = useRef(null);
+
+  const { scrollYProgress: scrollYFirst } = useScroll({
+    target: cardRef,
+    offset: ["0 1", "0.5 1"],
+  });
+  const { scrollYProgress: scrollYSec } = useScroll({
+    target: cardRef,
+    offset: ["0.1 1", "0.6 1"],
+  });
+  const { scrollYProgress: scrollYThird } = useScroll({
+    target: cardRef,
+    offset: ["0.25 1", "0.75 1"],
+  });
+
+  const translateYFirst = useTransform(scrollYFirst, [0, 1], [150, 0]);
+  const translateYSec = useTransform(scrollYSec, [0, 1], [150, 0]);
+  const translateYThird = useTransform(scrollYThird, [0, 1], [150, 0]);
+
+  const translateXFirst = useTransform(scrollYFirst, [0, 1], [150, 0]);
+  const translateXSec = useTransform(scrollYSec, [0, 1], [150, 0]);
+  const translateXThird = useTransform(scrollYThird, [0, 1], [150, 0]);
+
+  const getAnimationStyle = (i: number) => {
+    if (i === 0)
+      return {
+        position: "translateY",
+        translate: translateYFirst,
+        delay: 0,
+        scrollYProgress: scrollYFirst,
+      };
+    else if (i === 1)
+      return {
+        position: "translateY",
+        translate: translateYSec,
+        delay: 0.5,
+        scrollYProgress: scrollYSec,
+      };
+    else if (i === 2)
+      return {
+        position: "translateY",
+        translate: translateYThird,
+        delay: 1,
+        scrollYProgress: scrollYThird,
+      };
+    else if (i === 3)
+      return {
+        position: "translateY",
+        translate: translateXFirst,
+        delay: 1.5,
+        scrollYProgress: scrollYFirst,
+      };
+    else if (i === 4)
+      return {
+        position: "translateY",
+        translate: translateYSec,
+        delay: 2,
+        scrollYProgress: scrollYSec,
+      };
+    return {
+      position: "translateY",
+      translate: translateXThird,
+      delay: 2.5,
+      scrollYProgress: scrollYThird,
+    };
+  };
+
   return (
     <div className="flex flex-col bg-secondary" ref={ref}>
       <div className="w-full h-[40px] border-b border-borderColor flex items-center justify-center">
@@ -23,103 +119,157 @@ export const Home = () => {
           You are on a Preview version, The current design is temporary.
         </p>
       </div>
-      <div className="h-fit pt-[7%] pb-[10%] relative flex items-center w-[90%] max-w-[1350px] mx-auto">
-        <div className="h-full w-full mx-auto flex items-center z-10">
-          <div className="w-full flex items-center">
-            <motion.div className="flex flex-col w-fit">
-              <motion.div
-                variants={{
-                  hidden: {
-                    opacity: 0,
-                    y: 10,
-                  },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                  },
-                }}
-                initial="hidden"
-                animate={mainControls}
-                transition={{ duration: 0.3, delay: 0.3 }}
-                className="overflow-hidden block relative whitespace-nowrap
+      <div className="w-full bg-cover bg-end bg-no-repeat backdrop-filter ">
+        <div className="h-fit pt-[7%] pb-[10%] relative flex items-center w-[90%] max-w-[1350px] mx-auto">
+          <div className="h-full w-full mx-auto flex items-center z-10">
+            <div className="w-full flex items-center">
+              <motion.div className="flex flex-col w-fit">
+                <motion.div
+                  variants={{
+                    hidden: {
+                      opacity: 0,
+                      y: 10,
+                    },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                    },
+                  }}
+                  initial="hidden"
+                  animate={mainControls}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                  className="overflow-hidden block relative whitespace-nowrap
                 text-7xl font-bold w-auto text-white uppercase"
-              >
-                <img src="/veenox/veenox-text.png" className="h-[100px]" />
+                >
+                  <img src="/veenox/veenox-text.png" className="h-[100px]" />
+                </motion.div>
+                <motion.div
+                  className="flex items-center"
+                  initial="initial"
+                  whileHover="hovered"
+                  variants={{
+                    initial: {
+                      opacity: 0,
+                      y: 10,
+                    },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                    },
+                  }}
+                  animate={mainControls}
+                  transition={{ duration: 0.3, delay: 0.6 }}
+                >
+                  <p className="text-lg text-font-80 font-normal mt-5 max-w-[600px]">
+                    Experience a new era of trading with Veeno, the pioneering
+                    decentralized exchange on Monad. Enjoy an intuitive user
+                    interface and benefit from the{" "}
+                    <span className="text-white font-bold">lowest fees</span> in
+                    the market, powered by Orderly Network for seamless and
+                    cost-effective trading.
+                  </p>
+                </motion.div>
+                <motion.button
+                  variants={{
+                    hidden: {
+                      opacity: 0,
+                      y: 10,
+                    },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                    },
+                  }}
+                  initial="hidden"
+                  animate={mainControls}
+                  transition={{
+                    duration: 0.3,
+                    delay: 0.9,
+                  }}
+                  className="mt-[40px] rounded  text-white text-lg mr-auto cursor-pointer bg-base_color"
+                >
+                  <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
+                    <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
+                      Access preview{" "}
+                    </div>
+                  </Link>
+                </motion.button>
               </motion.div>
-              <motion.div
-                className="flex items-center"
-                initial="initial"
-                whileHover="hovered"
-                variants={{
-                  initial: {
-                    opacity: 0,
-                    y: 10,
-                  },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                  },
-                }}
-                animate={mainControls}
-                transition={{ duration: 0.3, delay: 0.6 }}
-              >
-                <p className="text-lg text-font-80 font-normal mt-5 max-w-[600px]">
-                  Experience a new era of trading with Veeno, the pioneering
-                  decentralized exchange on Monad. Enjoy an intuitive user
-                  interface and benefit from the{" "}
-                  <span className="text-white font-bold">lowest fees</span> in
-                  the market, powered by Orderly Network for seamless and
-                  cost-effective trading.
-                </p>
-              </motion.div>
-              <motion.button
-                variants={{
-                  hidden: {
-                    opacity: 0,
-                    y: 10,
-                  },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                  },
-                }}
-                initial="hidden"
-                animate={mainControls}
-                transition={{
-                  duration: 0.3,
-                  delay: 0.9,
-                }}
-                className="mt-[40px] rounded  text-white text-lg mr-auto cursor-pointer bg-base_color"
-              >
-                <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
-                  <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
-                    Access preview{" "}
-                  </div>
-                </Link>
-              </motion.button>
-            </motion.div>
+            </div>
+            <motion.img
+              initial="initial"
+              variants={{
+                initial: {
+                  opacity: 0,
+                },
+                visible: {
+                  opacity: 1,
+                },
+              }}
+              animate={mainControls}
+              transition={{ duration: 0.3, delay: 0.1 }}
+              src="/logo/veeno-purple.png"
+              className="h-[640px] z-[0]"
+              style={{
+                transform: "rotateZ(15deg)",
+              }}
+              // animate-float-y
+            />
           </div>
-          <motion.img
-            initial="initial"
-            variants={{
-              initial: {
-                opacity: 0,
-              },
-              visible: {
-                opacity: 1,
-              },
-            }}
-            animate={mainControls}
-            transition={{ duration: 0.3, delay: 0.1 }}
-            src="/logo/veeno-purple.png"
-            className="h-[640px] z-[0]"
-            style={{
-              transform: "rotateZ(15deg)",
-            }}
-            // animate-float-y
-          />
+        </div>{" "}
+      </div>
+
+      <div className="w-[90%] mx-auto flex flex-col items-center justify-center my-[10%]">
+        <motion.h2
+          style={{ opacity: scrollYFirst }}
+          className="overflow-hidden block relative whitespace-nowrap
+              text-6xl font-bold text-center mb-2 w-auto  text-white"
+        >
+          Powerful trading tools
+        </motion.h2>
+        <Row isEven />
+        <Row />
+        <Row isEven />
+      </div>
+      <div
+        className="w-[90%] mx-auto flex flex-col items-center justify-center my-[10%]"
+        ref={cardRef}
+      >
+        <motion.h2
+          style={{ opacity: scrollYFirst }}
+          className="overflow-hidden block relative whitespace-nowrap
+              text-6xl font-bold text-center mb-2 w-auto  text-white"
+        >
+          Level up your <br />
+          trading experience
+        </motion.h2>
+        <motion.p
+          style={{ opacity: scrollYSec }}
+          className="text-lg text-font-60 font-normal text-center mt-5 max-w-[800px]"
+        >
+          Non KYC DEX, Trade our perpetual futures contracts with the lowest
+          fees, deep liquidity and in your favorite chain
+        </motion.p>
+        <div className="grid grid-cols-3 gap-6  w-full mt-[50px] max-w-[1000px]">
+          {gridContent.map((content, i) => {
+            const { translate, position, delay, scrollYProgress } =
+              getAnimationStyle(i);
+            return (
+              <Card
+                className="col-span-1"
+                isOdd={i % 2 !== 0}
+                description={content.description}
+                title={content.title}
+                image={content.image}
+                translate={translate}
+                position={position}
+                delay={delay}
+                scrollYProgress={scrollYProgress}
+              />
+            );
+          })}
         </div>
-      </div>{" "}
+      </div>
       <HeroParallax />
       <div className="w-full h-fit flex flex-col items-center bg-[#1e2126]">
         <div className="w-[90%] max-w-[1350px]">

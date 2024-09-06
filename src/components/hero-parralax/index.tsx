@@ -9,14 +9,10 @@ import {
   useTransform,
 } from "framer-motion";
 import Link from "next/link";
-import React, { useState } from "react";
-
-type HeroParallaxProps = {};
+import React from "react";
 
 export const HeroParallax = () => {
   const { data } = useMarketsStream();
-  console.log("data", data);
-
   const ref = React.useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -54,7 +50,7 @@ export const HeroParallax = () => {
       ref={ref}
       className="h-[230vh] py-40 overflow-hidden  antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d]"
     >
-      <Header />
+      <Header assetsNumber={data?.length} />
       <motion.div
         style={{
           rotateX,
@@ -68,7 +64,7 @@ export const HeroParallax = () => {
             ?.sort((a, b) => b["24h_amount"] - a["24h_amount"])
             ?.filter((_, i) => i < 8)
             .map((asset) => (
-              <MemeCard
+              <AssetCard
                 asset={asset}
                 translate={translateX}
                 key={asset.symbol}
@@ -80,7 +76,7 @@ export const HeroParallax = () => {
             ?.sort((a, b) => b["24h_amount"] - a["24h_amount"])
             ?.filter((_, i) => i >= 8 && i < 16)
             .map((asset) => (
-              <MemeCard
+              <AssetCard
                 asset={asset}
                 translate={translateXReverse}
                 key={asset.symbol}
@@ -92,7 +88,7 @@ export const HeroParallax = () => {
             ?.sort((a, b) => b["24h_amount"] - a["24h_amount"])
             ?.filter((_, i) => i >= 16 && i < 24)
             .map((asset) => (
-              <MemeCard
+              <AssetCard
                 asset={asset}
                 translate={translateX}
                 key={asset.symbol}
@@ -104,7 +100,7 @@ export const HeroParallax = () => {
   );
 };
 
-export const Header = () => {
+export const Header = ({ assetsNumber }: { assetsNumber: number }) => {
   return (
     <div className="max-w-7xl relative mx-auto py-20 md:py-40 px-4 w-full z-10 left-0 top-0">
       <h1 className="text-2xl md:text-7xl font-bold text-white font-gramatika">
@@ -113,21 +109,22 @@ export const Header = () => {
         trading journey now
       </h1>
       <p className="max-w-2xl text-base md:text-xl mt-8 text-white font-hoves-pro-bold">
-        Explore our Top Volume Perpetual Contract Markets
+        Dive into the world of high-volume perpetual trading with access to{" "}
+        {assetsNumber} diverse assets. Experience seamless, professional-grade
+        trading on our cutting-edge platform designed for both novice and expert
+        traders alike.
       </p>
     </div>
   );
 };
 
-export const MemeCard = ({
+export const AssetCard = ({
   asset,
   translate,
 }: {
   asset: any;
   translate: MotionValue<number>;
 }) => {
-  const [hasError, setHasError] = useState(false);
-
   const getPercentageChange = (): number => {
     const change =
       (asset?.["24h_close"] - asset?.["24h_open"]) / asset?.["24h_open"];
@@ -220,10 +217,6 @@ export const MemeCard = ({
           </div>
         </div>
       </Link>
-      {/* <div className="absolute inset-0 h-full p-5 w-full opacity-0 group-hover/product:opacity-80 bg-background-dark-purple pointer-events-none rounded-2xl transition-all duration-300"></div> */}
-      {/* <h2 className="absolute bottom-4 left-4 opacity-0 group-hover/product:opacity-100 text-white max-w-[90%] text-base font-gramatika">
-        {meme.title}
-      </h2> */}
     </motion.div>
   );
 };
