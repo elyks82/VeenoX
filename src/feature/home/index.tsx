@@ -11,7 +11,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { Card } from "./components/card";
 import { Row } from "./components/row";
 import { gridContent } from "./constant.ts";
 
@@ -140,10 +139,11 @@ export const Home = () => {
               className="overflow-hidden block relative whitespace-nowrap
                 text-7xl font-bold w-auto text-white uppercase text-center"
             >
-              The permissionless liquidity layer for Web3 trading
+              Unleash limitless trading
+              <br /> with lowest fees
             </motion.div>
             <motion.div
-              className="flex items-center"
+              className="flex items-center w-full"
               initial="visible"
               whileHover="hovered"
               variants={{
@@ -159,7 +159,7 @@ export const Home = () => {
               animate={mainControls}
               transition={{ duration: 0.3, delay: 0.6 }}
             >
-              <p className="text-lg text-font-80 font-normal text-center mt-5 max-w-[600px]">
+              <p className="text-lg text-font-80 font-normal text-center mx-auto mt-7 max-w-[600px]">
                 Experience a new era of trading with Veeno, the pioneering
                 decentralized exchange on Monad. Enjoy an intuitive user
                 interface and benefit from the{" "}
@@ -185,7 +185,7 @@ export const Home = () => {
                 duration: 0.3,
                 delay: 0.9,
               }}
-              className="mt-[40px] rounded mx-auto text-white text-lg mr-auto cursor-pointer bg-base_color"
+              className="mt-[50px] rounded mx-auto text-white text-lg mr-auto cursor-pointer bg-base_color"
             >
               <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
                 <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
@@ -197,60 +197,58 @@ export const Home = () => {
         </div>
       </BackgroundBeamsWithCollision>
       <div className="w-full relative border-t border-borderColor">
-        <div className="w-[90%] mx-auto relative flex flex-col items-center justify-center my-[10%] mb-[20%]">
-          <motion.h2
-            style={{ opacity: scrollYFirst }}
+        <div className="w-[90%] max-w-[1200px] mx-auto relative flex flex-col items-center justify-center my-[10%]">
+          <h2
             className="overflow-hidden block relative whitespace-nowrap
            text-6xl font-bold text-center mb-2 w-auto  text-white"
           >
             Powerful trading tools
-          </motion.h2>
+          </h2>
           <Row isEven />
           <Row />
           <Row isEven />
         </div>
       </div>
-
-      <HeroParallax />
       <div
-        className="w-[90%] mx-auto flex flex-col items-center justify-center my-[10%]"
+        className="w-[90%] max-w-[1200px] mx-auto flex flex-col items-center justify-center mt-[5%] mb-[15%]"
         ref={cardRef}
       >
         <motion.h2
           style={{ opacity: scrollYFirst }}
           className="overflow-hidden block relative whitespace-nowrap
-              text-6xl font-bold text-center mb-2 w-auto  text-white"
+              text-6xl font-bold mb-2 w-auto mr-auto  text-white"
         >
-          Level up your <br />
-          trading experience
+          Level up trading experience
         </motion.h2>
-        <motion.p
-          style={{ opacity: scrollYSec }}
-          className="text-lg text-font-60 font-normal text-center mt-5 max-w-[800px]"
-        >
-          Non KYC DEX, Trade our perpetual futures contracts with the lowest
-          fees, deep liquidity and in your favorite chain
-        </motion.p>
-        <div className="grid grid-cols-3 gap-6  w-full mt-[50px] max-w-[1000px]">
+        <div className="flex w-full justify-between flex-wrap mt-[50px]">
           {gridContent.map((content, i) => {
             const { translate, position, delay, scrollYProgress } =
               getAnimationStyle(i);
             return (
-              <Card
-                className="col-span-1"
-                isOdd={i % 2 !== 0}
-                description={content.description}
-                title={content.title}
-                image={content.image}
-                translate={translate}
-                position={position}
-                delay={delay}
-                scrollYProgress={scrollYProgress}
-              />
+              <div
+                key={i}
+                className={`${
+                  i === gridContent?.length - 1 ? "w-full" : "w-[49%]"
+                } min-h-[170px] py-8 px-10 rounded-xl mb-[20px] border border-borderColor`}
+              >
+                <img
+                  src={content.image}
+                  className="w-[50px] h-[50px] rounded-full"
+                  alt={content.title + "image"}
+                />
+                <p className="text-xl mt-5 text-white font-bold">
+                  {content.title}
+                </p>
+                <p className="text-base mt-2 text-font-60">
+                  {content.description}
+                </p>
+              </div>
             );
           })}
         </div>
       </div>
+      <HeroParallax />
+
       <div className="w-full h-fit flex flex-col items-center bg-[#1e2126]">
         <div className="w-[90%] max-w-[1350px]">
           <div className="py-[10vh] flex items-center gap-20 justify-between w-full ">

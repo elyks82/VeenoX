@@ -1,13 +1,6 @@
 "use client";
-import CryptoFearAndGreedChart from "@/components/fear-greed";
 import { useGeneralContext } from "@/context";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/lib/shadcn/tooltip";
 import {
   ChainsImageType,
   getImageFromChainId,
@@ -141,26 +134,6 @@ export const Header = () => {
       </div>
       <div className="flex items-center gap-5">
         <div className="flex relative w-fit h-fit">
-          <TooltipProvider>
-            <Tooltip delayDuration={0}>
-              <TooltipTrigger asChild>
-                <div className="w-full h-[38px] -mt-2.5 mr-2">
-                  <CryptoFearAndGreedChart
-                    fearLevel={50}
-                    fearClassification={"Greed"}
-                  />{" "}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent
-                side="bottom"
-                className="h-fit text-white overflow-clip max-w-[220px] w-full p-2 bg-secondary border border-borderColor shadow-xl whitespace-pre-wrap"
-              >
-                The Fear & Greed Index measures investor sentiment, indicating
-                whether the market is driven by fear (selling pressure) or greed
-                (buying enthusiasm)
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
           <Deposit />
           <Popover>
             <PopoverTrigger className="h-full min-w-fit">

@@ -2,11 +2,11 @@ import Link from "next/link";
 
 export const Row = ({ isEven = false }: { isEven?: boolean }) => {
   return (
-    <div className="flex items-center mt-[80px] py-[80px] border-b border-borderColor-DARK">
+    <div className="flex items-center justify-between w-full mt-[0px] py-[80px] border-b border-borderColor-DARK">
       {isEven ? (
         <img
-          src="https://pbs.twimg.com/profile_banners/1830299717814603778/1725373168/1500x500"
-          className="object-cover w-[600px] h-[350px] border border-borderColor rounded-xl"
+          src="/veenox/trading-platform.png"
+          className="object-cover w-[570px] h-[300px] shadow-2xl shadow-[rgba(0,0,0,0.2)] border border-borderColor rounded-xl"
         />
       ) : null}
 
@@ -24,8 +24,8 @@ export const Row = ({ isEven = false }: { isEven?: boolean }) => {
       </div>
       {!isEven ? (
         <img
-          src="https://pbs.twimg.com/profile_banners/1830299717814603778/1725373168/1500x500"
-          className="object-cover w-[600px] h-[350px] border border-borderColor rounded-xl"
+          src="/veenox/trading-platform.png"
+          className="object-cover w-[570px] h-[300px] shadow-2xl shadow-[rgba(0,0,0,0.2)] border border-borderColor rounded-xl"
         />
       ) : null}
     </div>

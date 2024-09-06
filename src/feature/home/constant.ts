@@ -26,13 +26,7 @@ export const gridContent = [
   {
     title: "CEX-Level Performance",
     description:
-      "Our system balances performance and decentralization, ensuring low-latency trading with on-chain transparency.",
+      "VeenoX uses charts that are powered By TradingView. A comprehensive trading and investment platform, offering an exceptional charting solution. It empowers traders and investors with cutting-edge analytical tools, including crypto market cap charts and real-time market data. With its assistance, users can conveniently track the price of BTC/USD price and stay informed about other relevant market trends.",
     image: "/assets/SCROLL.png",
-  },
-  {
-    title: "Self-custody",
-    description:
-      "Take control of your assets. Only you have access to your private keys, which means that only you can control your assets. No more worries about insolvency.",
-    image: "/assets/AVAX.png",
   },
 ];
