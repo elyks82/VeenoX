@@ -1,4 +1,5 @@
 "use client";
+import { BackgroundBeamsWithCollision } from "@/components/background-home";
 import { HeroParallax } from "@/components/hero-parralax";
 import {
   motion,
@@ -119,118 +120,98 @@ export const Home = () => {
           You are on a Preview version, The current design is temporary.
         </p>
       </div>
-      <div className="w-full bg-cover bg-end bg-no-repeat backdrop-filter ">
-        <div className="h-fit pt-[7%] pb-[10%] relative flex items-center w-[90%] max-w-[1350px] mx-auto">
-          <div className="h-full w-full mx-auto flex items-center z-10">
-            <div className="w-full flex items-center">
-              <motion.div className="flex flex-col w-fit">
-                <motion.div
-                  variants={{
-                    hidden: {
-                      opacity: 0,
-                      y: 10,
-                    },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                    },
-                  }}
-                  initial="hidden"
-                  animate={mainControls}
-                  transition={{ duration: 0.3, delay: 0.3 }}
-                  className="overflow-hidden block relative whitespace-nowrap
-                text-7xl font-bold w-auto text-white uppercase"
-                >
-                  <img src="/veenox/veenox-text.png" className="h-[100px]" />
-                </motion.div>
-                <motion.div
-                  className="flex items-center"
-                  initial="initial"
-                  whileHover="hovered"
-                  variants={{
-                    initial: {
-                      opacity: 0,
-                      y: 10,
-                    },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                    },
-                  }}
-                  animate={mainControls}
-                  transition={{ duration: 0.3, delay: 0.6 }}
-                >
-                  <p className="text-lg text-font-80 font-normal mt-5 max-w-[600px]">
-                    Experience a new era of trading with Veeno, the pioneering
-                    decentralized exchange on Monad. Enjoy an intuitive user
-                    interface and benefit from the{" "}
-                    <span className="text-white font-bold">lowest fees</span> in
-                    the market, powered by Orderly Network for seamless and
-                    cost-effective trading.
-                  </p>
-                </motion.div>
-                <motion.button
-                  variants={{
-                    hidden: {
-                      opacity: 0,
-                      y: 10,
-                    },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                    },
-                  }}
-                  initial="hidden"
-                  animate={mainControls}
-                  transition={{
-                    duration: 0.3,
-                    delay: 0.9,
-                  }}
-                  className="mt-[40px] rounded  text-white text-lg mr-auto cursor-pointer bg-base_color"
-                >
-                  <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
-                    <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
-                      Access preview{" "}
-                    </div>
-                  </Link>
-                </motion.button>
-              </motion.div>
-            </div>
-            <motion.img
-              initial="initial"
+      <BackgroundBeamsWithCollision>
+        <div className="w-full flex items-center justify-center">
+          <motion.div className="flex flex-col w-fit">
+            <motion.div
               variants={{
-                initial: {
+                hidden: {
                   opacity: 0,
+                  y: 10,
                 },
                 visible: {
                   opacity: 1,
+                  y: 0,
+                },
+              }}
+              initial="visible"
+              animate={mainControls}
+              transition={{ duration: 0.3, delay: 0.3 }}
+              className="overflow-hidden block relative whitespace-nowrap
+                text-7xl font-bold w-auto text-white uppercase text-center"
+            >
+              The permissionless liquidity layer for Web3 trading
+            </motion.div>
+            <motion.div
+              className="flex items-center"
+              initial="visible"
+              whileHover="hovered"
+              variants={{
+                initial: {
+                  opacity: 0,
+                  y: 10,
+                },
+                visible: {
+                  opacity: 1,
+                  y: 0,
                 },
               }}
               animate={mainControls}
-              transition={{ duration: 0.3, delay: 0.1 }}
-              src="/logo/veeno-purple.png"
-              className="h-[640px] z-[0]"
-              style={{
-                transform: "rotateZ(15deg)",
+              transition={{ duration: 0.3, delay: 0.6 }}
+            >
+              <p className="text-lg text-font-80 font-normal text-center mt-5 max-w-[600px]">
+                Experience a new era of trading with Veeno, the pioneering
+                decentralized exchange on Monad. Enjoy an intuitive user
+                interface and benefit from the{" "}
+                <span className="text-white font-bold">lowest fees</span> in the
+                market, powered by Orderly Network for seamless and
+                cost-effective trading.
+              </p>
+            </motion.div>
+            <motion.button
+              variants={{
+                hidden: {
+                  opacity: 0,
+                  y: 10,
+                },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                },
               }}
-              // animate-float-y
-            />
-          </div>
-        </div>{" "}
+              initial="hidden"
+              animate={mainControls}
+              transition={{
+                duration: 0.3,
+                delay: 0.9,
+              }}
+              className="mt-[40px] rounded mx-auto text-white text-lg mr-auto cursor-pointer bg-base_color"
+            >
+              <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
+                <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
+                  Access preview{" "}
+                </div>
+              </Link>
+            </motion.button>
+          </motion.div>
+        </div>
+      </BackgroundBeamsWithCollision>
+      <div className="w-full relative border-t border-borderColor">
+        <div className="w-[90%] mx-auto relative flex flex-col items-center justify-center my-[10%] mb-[20%]">
+          <motion.h2
+            style={{ opacity: scrollYFirst }}
+            className="overflow-hidden block relative whitespace-nowrap
+           text-6xl font-bold text-center mb-2 w-auto  text-white"
+          >
+            Powerful trading tools
+          </motion.h2>
+          <Row isEven />
+          <Row />
+          <Row isEven />
+        </div>
       </div>
 
-      <div className="w-[90%] mx-auto flex flex-col items-center justify-center my-[10%]">
-        <motion.h2
-          style={{ opacity: scrollYFirst }}
-          className="overflow-hidden block relative whitespace-nowrap
-              text-6xl font-bold text-center mb-2 w-auto  text-white"
-        >
-          Powerful trading tools
-        </motion.h2>
-        <Row isEven />
-        <Row />
-        <Row isEven />
-      </div>
+      <HeroParallax />
       <div
         className="w-[90%] mx-auto flex flex-col items-center justify-center my-[10%]"
         ref={cardRef}
@@ -270,7 +251,6 @@ export const Home = () => {
           })}
         </div>
       </div>
-      <HeroParallax />
       <div className="w-full h-fit flex flex-col items-center bg-[#1e2126]">
         <div className="w-[90%] max-w-[1350px]">
           <div className="py-[10vh] flex items-center gap-20 justify-between w-full ">

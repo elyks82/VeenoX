@@ -53,7 +53,7 @@ const config: Config = {
         "calc-leverage-height": "calc(100% - 143px)",
         "calc-full-button": "calc(100% - 44px)",
         "calc-full-chart": "calc(100% - 108px)",
-        "calc-full-header": "calc(100vh - 60px)",
+        "calc-full-header": "calc(100vh - 100px)",
         "calc-full-market": "calc(100% - 36px)",
       },
       inset: {
