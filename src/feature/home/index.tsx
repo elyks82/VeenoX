@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Row } from "./components/row";
+// @ts-ignore
 import { gridContent } from "./constant.ts";
 
 type BoxProps = {
