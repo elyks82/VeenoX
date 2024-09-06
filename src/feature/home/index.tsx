@@ -1,13 +1,19 @@
 "use client";
 import { BackgroundBeamsWithCollision } from "@/components/background-home";
+import { HeroParallax } from "@/components/hero-parralax";
 import {
+  motion,
   useAnimation,
   useInView,
   useScroll,
   useTransform,
 } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { Row } from "./components/row";
 // @ts-ignore
+import { gridContent } from "./constant.ts";
 
 type BoxProps = {
   children: React.ReactNode;
@@ -110,7 +116,7 @@ export const Home = () => {
   return (
     <div className="flex flex-col bg-secondary" ref={ref}>
       <BackgroundBeamsWithCollision>
-        {/* <div className="w-full flex items-center justify-center">
+        <div className="w-full flex items-center justify-center">
           <motion.div className="flex flex-col w-fit">
             <motion.div
               variants={{
@@ -184,15 +190,9 @@ export const Home = () => {
               </Link>
             </motion.button>
           </motion.div>
-        </div> */}
-        <p
-          className="overflow-hidden block relative whitespace-nowrap
-                text-7xl font-bold w-auto text-white uppercase text-center"
-        >
-          build in progress
-        </p>
+        </div>
       </BackgroundBeamsWithCollision>
-      {/* <div className="w-full relative border-t border-borderColor">
+      <div className="w-full relative border-t border-borderColor">
         <div className="w-[90%] max-w-[1200px] mx-auto relative flex flex-col items-center justify-center my-[10%]">
           <h2
             className="overflow-hidden block relative whitespace-nowrap
@@ -358,7 +358,7 @@ export const Home = () => {
             </div>
           </div>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };

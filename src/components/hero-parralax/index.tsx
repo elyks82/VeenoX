@@ -50,7 +50,7 @@ export const HeroParallax = () => {
       ref={ref}
       className="h-[230vh] py-40 overflow-hidden  antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d]"
     >
-      <Header assetsNumber={data?.length} />
+      <Header assetsNumber={data?.length || 0} />
       <motion.div
         style={{
           rotateX,
@@ -61,6 +61,7 @@ export const HeroParallax = () => {
       >
         <motion.div className="flex flex-row-reverse space-x-reverse space-x-20 mb-10">
           {data
+            // @ts-ignore
             ?.sort((a, b) => b["24h_amount"] - a["24h_amount"])
             ?.filter((_, i) => i < 8)
             .map((asset) => (
@@ -73,6 +74,7 @@ export const HeroParallax = () => {
         </motion.div>
         <motion.div className="flex flex-row mb-10 space-x-20 -ml-[200px]">
           {data
+            // @ts-ignore
             ?.sort((a, b) => b["24h_amount"] - a["24h_amount"])
             ?.filter((_, i) => i >= 8 && i < 16)
             .map((asset) => (
@@ -85,6 +87,7 @@ export const HeroParallax = () => {
         </motion.div>
         <motion.div className="flex flex-row-reverse space-x-reverse space-x-20">
           {data
+            // @ts-ignore
             ?.sort((a, b) => b["24h_amount"] - a["24h_amount"])
             ?.filter((_, i) => i >= 16 && i < 24)
             .map((asset) => (
