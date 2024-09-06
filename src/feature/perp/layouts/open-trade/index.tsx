@@ -3,11 +3,7 @@ import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
-import {
-  formatQuantity,
-  getFormattedAmount,
-  getTokenPercentage,
-} from "@/utils/misc";
+import { formatQuantity, getFormattedAmount } from "@/utils/misc";
 import {
   useAccountInstance,
   useCollateral,
@@ -23,7 +19,6 @@ import {
 import { OrderEntity, OrderSide } from "@orderly.network/types";
 import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
-import { Oval } from "react-loader-spinner";
 import "rsuite/Slider/styles/index.css";
 import { useAccount } from "wagmi";
 import { Leverage } from "./components/leverage";
@@ -324,8 +319,90 @@ export const OpenTrade = ({
     }
   }, [newMaxQty !== 0, maxLeverage, values.direction]);
 
+  const [positionPnL, proxy, states] = usePositionStream();
+  console.log("datadata", positionPnL.aggregated.unrealizedPnl);
+
   return (
     <section className="h-full w-full text-white">
+      <div className="pt-4 border-b border-borderColor hidden md:block px-5">
+        <div className="pb-4 ">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-font-60 mb-[3px]">Balance</p>
+              <p className="text-base text-white font-medium">
+                {totalValue} {positionPnL.aggregated.unrealizedPnl}
+              </p>
+            </div>
+            <IoChevronDown className="text-xl" />
+            {/* <div>
+              <p className="text-xs text-font-60 mb-[3px] text-end">
+                Unreal PnL
+              </p>
+              <p
+                className={`text-sm font-medium ${
+                  data?.aggregated.unrealPnL > 0
+                    ? "text-green"
+                    : data?.aggregated.unrealPnL < 0
+                    ? "text-red"
+                    : "text-white"
+                }`}
+              >
+                {getFormattedAmount(data?.aggregated.unrealPnL)} (
+                {data?.aggregated.unrealPnlROI.toFixed(2)}
+                %)
+              </p>
+            </div> */}
+          </div>
+          {/* <div className="flex items-center justify-between mt-4">
+            <div>
+              <p className="text-xs text-font-60 mb-1">Unsettled PnL (USDC)</p>
+              <p
+                className={`text-sm font-medium ${
+                  unsettledPnL > 0
+                    ? "text-green"
+                    : unsettledPnL < 0
+                    ? "text-red"
+                    : "text-white"
+                }`}
+              >
+                {unsettledPnL}{" "}
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                if (unsettledPnL !== 0 && accountInstance) {
+                  setIsSettleLoading(true);
+                  accountInstance?.settle();
+                }
+              }}
+              className={`${
+                unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
+              } flex items-center border border-borderColor hover:bg-terciary 
+                rounded px-2 py-1 text-xs text-white transition-all duration-100 ease-in-out`}
+            >
+              {isSettleLoading ? (
+                <Oval
+                  visible={true}
+                  height="13"
+                  width="13"
+                  color="#FFF"
+                  secondaryColor="rgba(255,255,255,0.6)"
+                  ariaLabel="oval-loading"
+                  strokeWidth={6}
+                  strokeWidthSecondary={6}
+                  wrapperStyle={{
+                    marginRight: "5px",
+                  }}
+                  wrapperClass=""
+                />
+              ) : (
+                <MdRefresh className="text-[13px] mr-[5px]" />
+              )}
+              <span>Settle PnL</span>
+            </button>
+          </div> */}
+        </div>
+      </div>
       {isMobile ? null : <Leverage />}
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
@@ -541,7 +618,7 @@ export const OpenTrade = ({
             </Popover> */}
           </div>
           <p
-            className={`text-red w-full text-xs mt-1 mb-1.5 pointer-events-none ${
+            className={`text-red w-full text-[11px] mt-1 mb-1.5 pointer-events-none ${
               inputErrors.input_quantity
                 ? "opacity-100 static"
                 : "opacity-0 absolute"
@@ -550,7 +627,6 @@ export const OpenTrade = ({
             Quantity can&apos;t exceed {getFormattedAmount(maxQty)}{" "}
             {getSymbolForPair()}
           </p>
-
           <div className={`mt-2 flex items-center `}>
             <Slider
               value={[sliderValue]}
@@ -568,7 +644,7 @@ export const OpenTrade = ({
             <div className="w-[57px] px-2 flex items-center justify-center ml-4 h-fit bg-terciary border border-borderColor-DARK rounded">
               <input
                 name="quantity"
-                className="w-[30px] text-white text-sm h-[30px]"
+                className="w-[30px] text-white text-sm h-[25px]"
                 type="number"
                 min={0}
                 max={100}
@@ -597,7 +673,7 @@ export const OpenTrade = ({
                     .toString() || "0"
                 }
               />
-              <p className="text-font-80">%</p>
+              <p className="text-font-80 text-sm">%</p>
             </div>
           </div>
 
@@ -735,73 +811,7 @@ export const OpenTrade = ({
             {currentAsset?.min_notional} {currentAsset?.quote}
           </p>
         </div> */}
-        <div className="pt-4 border-t border-borderColor hidden md:block">
-          <div className="pb-4 ">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-font-60 mb-[3px]">Total value ($)</p>
-                <p className="text-sm text-white font-medium">{totalValue}</p>
-              </div>
-              <div>
-                <p className="text-xs text-font-60 mb-[3px] text-end">
-                  Unreal PnL ($)
-                </p>
-                <p className="text-sm text-white font-medium text-end">
-                  {getFormattedAmount(data?.aggregated.unrealPnL)} (
-                  {getTokenPercentage(data?.aggregated.unrealPnlROI)}
-                  %)
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between mt-5">
-              <div>
-                <p className="text-xs text-font-60 mb-1">
-                  Unsettled PnL (USDC)
-                </p>
-                <p
-                  className={`text-sm font-medium ${
-                    unsettledPnL > 0
-                      ? "text-green"
-                      : unsettledPnL < 0
-                      ? "text-red"
-                      : "text-white"
-                  }`}
-                >
-                  {unsettledPnL}{" "}
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  if (unsettledPnL !== 0 && accountInstance) {
-                    setIsSettleLoading(true);
-                    accountInstance?.settle();
-                  }
-                }}
-                className={`${
-                  unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
-                } flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white`}
-              >
-                {isSettleLoading ? (
-                  <Oval
-                    visible={true}
-                    height="13"
-                    width="13"
-                    color="#FFF"
-                    secondaryColor="rgba(255,255,255,0.6)"
-                    ariaLabel="oval-loading"
-                    strokeWidth={6}
-                    strokeWidthSecondary={6}
-                    wrapperStyle={{
-                      marginRight: "5px",
-                    }}
-                    wrapperClass=""
-                  />
-                ) : null}
-                <span>Settle PnL</span>
-              </button>
-            </div>
-          </div>
-        </div>
+
         <div className="flex items-center justify-between border-t border-borderColor pt-4">
           <p className="text-xs text-font-60">Margin Required</p>
           <p className="text-xs text-white font-medium">{"N/A"}</p>

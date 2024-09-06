@@ -22,7 +22,7 @@ const Slider = React.forwardRef<
     )}
     {...props}
   >
-    <SliderPrimitive.Track className="relative h-1 w-full grow overflow-hidden rounded-full bg-terciary">
+    <SliderPrimitive.Track className="relative h-1 w-full grow  rounded-full bg-terciary">
       <SliderPrimitive.Range
         className={cn(
           "absolute h-full transition-colors duration-150 ease-in-out",
@@ -31,7 +31,7 @@ const Slider = React.forwardRef<
       />
     </SliderPrimitive.Track>
     <SliderPrimitive.Thumb
-      className={`block h-3 w-3 rounded-full border ${
+      className={`block h-3 w-3 rounded-full border-2 ${
         isBuy ? "border-green" : "border-red"
       } bg-terciary shadow focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 transition-all duration-150 ease-in-out`}
     />
