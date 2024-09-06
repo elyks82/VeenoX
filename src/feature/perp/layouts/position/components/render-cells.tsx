@@ -12,7 +12,7 @@ import { Dispatch, SetStateAction } from "react";
 import { EditModal } from "./edit-modal";
 import { TPSLModal } from "./tp-sl-modal";
 
-const tdStyle = `text-xs px-2.5 py-3 text-white whitespace-nowrap font-normal border-y border-borderColor text-end`;
+const tdStyle = `text-xs px-2.5 pt-3 pb-0 text-white whitespace-nowrap font-normal text-start`;
 enum Sections {
   POSITION = 0,
   PENDING = 1,
@@ -113,7 +113,7 @@ const renderAdditionalCells = (
         <td className={tdStyle}>{trade.status}</td>
         <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
         <td className={tdStyle}>No</td>
-        <td className={cn(tdStyle, "pr-5")}>
+        <td className={cn(tdStyle, "pr-5 text-end")}>
           {getFormattedDate(trade.created_time)}
         </td>
       </>
@@ -172,7 +172,7 @@ const renderAdditionalCells = (
                 setOrderPositions([]);
               }}
               className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
-              h-[30px] px-2.5 rounded flex items-center
+              h-[25px] px-2 rounded flex items-center
           "
             >
               Edit
@@ -182,7 +182,7 @@ const renderAdditionalCells = (
                 closePendingOrder(trade.order_id);
                 setOrderPositions([]);
               }}
-              className="h-[30px] w-fit px-2.5 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
+              className="h-[25px] w-fit px-2 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
             >
               Close
             </button>{" "}
@@ -191,6 +191,15 @@ const renderAdditionalCells = (
       </>
     );
   } else if (section === Sections.POSITION) {
+    const initialMargin =
+      Math.abs(trade.position_qty) *
+      trade.mark_price *
+      trade.IMR_withdraw_orders;
+    const totalMargin = initialMargin + trade.unrealized_pnl;
+    const maintenanceMargin =
+      Math.abs(trade.position_qty) * trade.mark_price * trade.MMR_with_orders;
+
+    console.log("rrr", trade);
     return (
       <>
         <td
@@ -205,53 +214,73 @@ const renderAdditionalCells = (
             } font-medium`
           )}
         >
-          {trade.position_qty}
+          {trade.position_qty} {formatSymbol(trade.symbol, true)}
         </td>
         <td className={tdStyle}>
           {getFormattedAmount(trade.average_open_price)}
         </td>
         <td className={tdStyle}>{getFormattedAmount(trade.mark_price)}</td>
-        <td className={tdStyle}>{getFormattedAmount(trade.est_liq_price)}</td>
+
         <td
           className={cn(
             tdStyle,
             `${
-              trade?.unrealized_pnl > 0
+              trade.unrealized_pnl > 0
                 ? "text-green"
-                : trade?.unrealized_pnl < 0
+                : trade.unrealized_pnl < 0
                 ? "text-red"
                 : "text-white"
-            } font-medium`
+            }`
           )}
         >
-          <div className="flex items-center gap-2.5 w-full h-full justify-end">
-            {getFormattedAmount(trade.unrealized_pnl)}
+          <div className="flex items-center justify-start w-full h-full">
+            <p className="mr-2">
+              {`${
+                trade.unrealized_pnl > 0
+                  ? `+$${Math.abs(trade.unrealized_pnl).toFixed(
+                      2
+                    )} (${trade.unrealized_pnl_ROI.toFixed(2)})`
+                  : `-$${Math.abs(trade.unrealized_pnl).toFixed(
+                      2
+                    )} (${trade.unrealized_pnl_ROI.toFixed(2)})`
+              }`}{" "}
+            </p>
             <PosterModal order={trade} />
           </div>
         </td>
         <td className={tdStyle}>
-          <div className="flex flex-col w-full h-full  text-white">
-            <p className="mb-1">
-              <span className="text-green font-bold">TP</span>{" "}
+          <div className="flex items-center justify-start w-full h-full text-font-80">
+            <p
+              className={`${
+                trade.tp_trigger_price ? "text-green" : "text-white"
+              }`}
+            >
               {trade.tp_trigger_price || "--"}
             </p>
-            <p>
-              <span className="text-red font-bold">SL</span>{" "}
+            /
+            <p
+              className={`${
+                trade.sl_trigger_price ? "text-red" : "text-white"
+              }`}
+            >
               {trade.sl_trigger_price || "--"}
             </p>
           </div>
         </td>
+        <td className={tdStyle}>{getFormattedAmount(trade.est_liq_price)}</td>
         <td className={tdStyle}>{getFormattedAmount(trade.cost_position)}</td>
-        <td className={tdStyle}>{getFormattedAmount(trade.mm)}</td>
+        <td className={tdStyle}>
+          ${isNaN(totalMargin.toFixed(2)) ? "N/A" : totalMargin.toFixed(2)}
+        </td>
         <td className={cn(tdStyle, "")}>
-          {getFormattedAmount(trade.settle_price)}
+          {getFormattedAmount(trade.notional)}
         </td>
         <td className={cn(tdStyle, "pr-5")}>
           <div className="w-full h-full justify-end items-center flex">
             <button
               onClick={() => setTPSLOpenOrder(trade)}
               className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
-            h-[30px] px-2.5 rounded flex items-center
+            h-[25px] px-2 rounded flex items-center
         "
             >
               TP/SL
@@ -282,7 +311,7 @@ const renderAdditionalCells = (
                   );
                 }
               }}
-              className="h-[30px] w-fit px-2.5 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
+              className="h-[25px] w-fit px-2 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
             >
               Close
             </button>
@@ -318,7 +347,7 @@ const renderAdditionalCells = (
         <td className={tdStyle}>{trade.status}</td>
         <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
         <td className={tdStyle}>No</td>
-        <td className={cn(tdStyle, "pr-5")}>
+        <td className={cn(tdStyle, "pr-5 text-end")}>
           {getFormattedDate(trade.created_time)}
         </td>
       </>
@@ -341,7 +370,7 @@ const renderAdditionalCells = (
         </td>
         <td className={tdStyle}>--</td>
         <td className={tdStyle}>{trade.reduce_only ? "Yes" : "No"}</td>
-        <td className={cn(tdStyle, "pr-5")}>
+        <td className={cn(tdStyle, "pr-5 text-end")}>
           {getFormattedDate(trade.created_time)}
         </td>
       </>

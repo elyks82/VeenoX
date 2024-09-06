@@ -3,11 +3,7 @@ import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
-import {
-  formatQuantity,
-  getFormattedAmount,
-  getTokenPercentage,
-} from "@/utils/misc";
+import { formatQuantity, getFormattedAmount } from "@/utils/misc";
 import {
   useAccountInstance,
   useCollateral,
@@ -23,8 +19,8 @@ import {
 import { OrderEntity, OrderSide } from "@orderly.network/types";
 import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
-import { Oval } from "react-loader-spinner";
 import "rsuite/Slider/styles/index.css";
+import { useAccount } from "wagmi";
 import { Leverage } from "./components/leverage";
 
 type OpenTradeProps = {
@@ -70,7 +66,7 @@ export const OpenTrade = ({
   const accountInstance = useAccountInstance();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
   const { state } = useOrderlyAccount();
-
+  const { address } = useAccount();
   const [isSettleLoading, setIsSettleLoading] = useState(false);
   const {
     setIsEnableTradingModalOpen,
@@ -202,7 +198,7 @@ export const OpenTrade = ({
       });
       setSliderValue(100);
     } catch (err) {
-      console.log("err", err);
+      triggerAlert("Error", "The margin will be insufficient after");
     }
   };
 
@@ -275,11 +271,11 @@ export const OpenTrade = ({
 
   const [maxLeverage] = useLeverage();
 
-  function percentageToValue(percentage: number) {
-    return (percentage / 100) * maxQty;
+  function percentageToValue(percentage: number | undefined) {
+    return ((percentage as number) / 100) * newMaxQty;
   }
   function toPercentage(value: number) {
-    const percentage = (value / maxQty) * 100;
+    const percentage = (value / newMaxQty) * 100;
     return percentage;
   }
 
@@ -303,10 +299,6 @@ export const OpenTrade = ({
 
   const [data] = usePositionStream();
 
-  // useEffect(() => {
-  //   if (values.type === "Market")
-  //     setValues((prev) => ({ ...prev, price: markPrices[asset.symbol] }));
-  // }, [values.type]);
   const [sliderValue, setSliderValue] = useState(toPercentage(newMaxQty));
 
   const handleInputErrors = (boolean: boolean, name: string) => {
@@ -318,6 +310,7 @@ export const OpenTrade = ({
 
   useEffect(() => {
     if (newMaxQty) {
+      console.log("I change value");
       setValues((prev) => ({
         ...prev,
         quantity: newMaxQty.toString(),
@@ -326,8 +319,90 @@ export const OpenTrade = ({
     }
   }, [newMaxQty !== 0, maxLeverage, values.direction]);
 
+  const [positionPnL, proxy, states] = usePositionStream();
+  console.log("datadata", positionPnL.aggregated.unrealizedPnl);
+
   return (
     <section className="h-full w-full text-white">
+      <div className="pt-4 border-b border-borderColor hidden md:block px-5">
+        <div className="pb-4 ">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-font-60 mb-[3px]">Balance</p>
+              <p className="text-base text-white font-medium">
+                {totalValue} {positionPnL.aggregated.unrealizedPnl}
+              </p>
+            </div>
+            <IoChevronDown className="text-xl" />
+            {/* <div>
+              <p className="text-xs text-font-60 mb-[3px] text-end">
+                Unreal PnL
+              </p>
+              <p
+                className={`text-sm font-medium ${
+                  data?.aggregated.unrealPnL > 0
+                    ? "text-green"
+                    : data?.aggregated.unrealPnL < 0
+                    ? "text-red"
+                    : "text-white"
+                }`}
+              >
+                {getFormattedAmount(data?.aggregated.unrealPnL)} (
+                {data?.aggregated.unrealPnlROI.toFixed(2)}
+                %)
+              </p>
+            </div> */}
+          </div>
+          {/* <div className="flex items-center justify-between mt-4">
+            <div>
+              <p className="text-xs text-font-60 mb-1">Unsettled PnL (USDC)</p>
+              <p
+                className={`text-sm font-medium ${
+                  unsettledPnL > 0
+                    ? "text-green"
+                    : unsettledPnL < 0
+                    ? "text-red"
+                    : "text-white"
+                }`}
+              >
+                {unsettledPnL}{" "}
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                if (unsettledPnL !== 0 && accountInstance) {
+                  setIsSettleLoading(true);
+                  accountInstance?.settle();
+                }
+              }}
+              className={`${
+                unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
+              } flex items-center border border-borderColor hover:bg-terciary 
+                rounded px-2 py-1 text-xs text-white transition-all duration-100 ease-in-out`}
+            >
+              {isSettleLoading ? (
+                <Oval
+                  visible={true}
+                  height="13"
+                  width="13"
+                  color="#FFF"
+                  secondaryColor="rgba(255,255,255,0.6)"
+                  ariaLabel="oval-loading"
+                  strokeWidth={6}
+                  strokeWidthSecondary={6}
+                  wrapperStyle={{
+                    marginRight: "5px",
+                  }}
+                  wrapperClass=""
+                />
+              ) : (
+                <MdRefresh className="text-[13px] mr-[5px]" />
+              )}
+              <span>Settle PnL</span>
+            </button>
+          </div> */}
+        </div>
+      </div>
       {isMobile ? null : <Leverage />}
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
@@ -499,6 +574,7 @@ export const OpenTrade = ({
                 }
               }}
               type="number"
+              disabled={!freeCollateral || !address}
               value={
                 parseFloat(values.quantity as string) === 0
                   ? values.quantity
@@ -542,7 +618,7 @@ export const OpenTrade = ({
             </Popover> */}
           </div>
           <p
-            className={`text-red w-full text-xs mt-1 mb-1.5 pointer-events-none ${
+            className={`text-red w-full text-[11px] mt-1 mb-1.5 pointer-events-none ${
               inputErrors.input_quantity
                 ? "opacity-100 static"
                 : "opacity-0 absolute"
@@ -551,7 +627,6 @@ export const OpenTrade = ({
             Quantity can&apos;t exceed {getFormattedAmount(maxQty)}{" "}
             {getSymbolForPair()}
           </p>
-
           <div className={`mt-2 flex items-center `}>
             <Slider
               value={[sliderValue]}
@@ -562,27 +637,43 @@ export const OpenTrade = ({
                 handleInputErrors(false, "input_quantity");
                 const newQuantity = percentageToValue(value[0]);
 
-                const adjustedQuantity = Math.min(
-                  Math.max(newQuantity, currentAsset?.base_min),
-                  currentAsset?.base_max
-                );
-
-                handleValueChange("quantity", adjustedQuantity.toString());
+                handleValueChange("quantity", newQuantity.toString());
               }}
               isBuy={values.direction === "BUY"}
             />
             <div className="w-[57px] px-2 flex items-center justify-center ml-4 h-fit bg-terciary border border-borderColor-DARK rounded">
               <input
                 name="quantity"
-                className="w-[30px] text-white text-sm h-[30px]"
+                className="w-[30px] text-white text-sm h-[25px]"
                 type="number"
+                min={0}
+                max={100}
+                disabled={!freeCollateral || !address}
+                onChange={(e) => {
+                  if (!e.target.value) {
+                    setSliderValue(0);
+                    const newQuantity = percentageToValue(undefined);
+                    handleValueChange("quantity", newQuantity.toString());
+                    return;
+                  }
+                  if (
+                    parseFloat(e.target.value) >= 0 &&
+                    parseFloat(e.target.value) <= 100
+                  ) {
+                    const newQuantity = percentageToValue(
+                      parseInt(e.target.value)
+                    );
+                    handleValueChange("quantity", newQuantity.toString());
+                    setSliderValue(Number(e.target.value));
+                  }
+                }}
                 value={
-                  Number(toPercentage(values.quantity as never))
+                  toPercentage(values.quantity as never)
                     .toFixed(0)
-                    .toString() || 0
+                    .toString() || "0"
                 }
               />
-              <p className="text-font-80">%</p>
+              <p className="text-font-80 text-sm">%</p>
             </div>
           </div>
 
@@ -593,18 +684,15 @@ export const OpenTrade = ({
               <span className="text-font-60">USDC</span>
             </p>
           </div>
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between mt-2 border-b border-borderColor pb-3">
             <p className="text-xs text-font-60">Account leverage</p>
             <p className="text-xs text-white font-medium">
               {estLeverage || "--"}x
             </p>
           </div>
-          <div className="flex items-center justify-between mt-2 border-b border-borderColor-DARK pb-4">
-            <p className="text-xs text-font-60">Fees</p>
-            <p className="text-xs text-white font-medium">0.00% / 0.03%</p>
-          </div>
+
           <button
-            className="text-xs text-white mt-4 flex items-center justify-between w-full"
+            className="text-xs text-white mt-3 flex items-center justify-between w-full"
             onClick={() => {
               setValues((prev) => ({
                 ...prev,
@@ -723,72 +811,18 @@ export const OpenTrade = ({
             {currentAsset?.min_notional} {currentAsset?.quote}
           </p>
         </div> */}
-        <div className="pt-4 border-t border-borderColor hidden md:block">
-          <div className="pb-4 mb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-font-60 mb-[3px]">Total value ($)</p>
-                <p className="text-sm text-white font-medium">{totalValue}</p>
-              </div>
-              <div>
-                <p className="text-xs text-font-60 mb-[3px] text-end">
-                  Unreal PnL ($)
-                </p>
-                <p className="text-sm text-white font-medium text-end">
-                  {getFormattedAmount(data?.aggregated.unrealPnL)} (
-                  {getTokenPercentage(data?.aggregated.unrealPnlROI)}
-                  %)
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between mt-5">
-              <div>
-                <p className="text-xs text-font-60 mb-1">
-                  Unsettled PnL (USDC)
-                </p>
-                <p
-                  className={`text-sm font-medium ${
-                    unsettledPnL > 0
-                      ? "text-green"
-                      : unsettledPnL < 0
-                      ? "text-red"
-                      : "text-white"
-                  }`}
-                >
-                  {unsettledPnL}{" "}
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  if (unsettledPnL !== 0 && accountInstance) {
-                    setIsSettleLoading(true);
-                    accountInstance?.settle();
-                  }
-                }}
-                className={`${
-                  unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
-                } flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white`}
-              >
-                {isSettleLoading ? (
-                  <Oval
-                    visible={true}
-                    height="13"
-                    width="13"
-                    color="#FFF"
-                    secondaryColor="rgba(255,255,255,0.6)"
-                    ariaLabel="oval-loading"
-                    strokeWidth={6}
-                    strokeWidthSecondary={6}
-                    wrapperStyle={{
-                      marginRight: "5px",
-                    }}
-                    wrapperClass=""
-                  />
-                ) : null}
-                <span>Settle PnL</span>
-              </button>
-            </div>
-          </div>
+
+        <div className="flex items-center justify-between border-t border-borderColor pt-4">
+          <p className="text-xs text-font-60">Margin Required</p>
+          <p className="text-xs text-white font-medium">{"N/A"}</p>
+        </div>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-font-60">Slippage</p>
+          <p className="text-xs text-white font-medium">Est: 0% / Max: 8%</p>
+        </div>
+        <div className="flex items-center justify-between mt-2 pb-4">
+          <p className="text-xs text-font-60">Fees</p>
+          <p className="text-xs text-white font-medium">0.030% / 0.030%</p>
         </div>
       </div>
     </section>
