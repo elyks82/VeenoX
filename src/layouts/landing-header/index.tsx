@@ -26,9 +26,33 @@ export const LandingHeader = () => {
               Perps
             </Link>
           </li>
-          <li>Twitter</li>
-          <li>Telegram</li>
-          <li>Discord</li>
+          <li>
+            {" "}
+            <Link
+              href="https://x.com/veenox_xyz"
+              className="w-full h-full hover:text-base_color"
+            >
+              Twitter
+            </Link>
+          </li>
+          <li>
+            {" "}
+            <Link
+              href="https://t.me/@veenox_xyz"
+              className="w-full h-full hover:text-base_color"
+            >
+              Telegram
+            </Link>
+          </li>
+          <li>
+            {" "}
+            <Link
+              href="https://discord.com/invite/vwjQ24yZ"
+              className="w-full h-full hover:text-base_color"
+            >
+              Discord
+            </Link>
+          </li>
         </ul>
       </nav>
       <button className="h-[45px] px-3 rounded-full text-white text-lg cursor-pointer bg-base_color">
