@@ -36,3 +36,27 @@ export const gridContent = [
     image: "/assets/SCROLL.png",
   },
 ];
+
+export const rowsContent = [
+  {
+    title: "Seamless trading",
+    ul: ["machin 1", "Machin 2"],
+    url: "",
+    button_content: "Get started",
+    image: "/veenox/trading-platform.png",
+  },
+  {
+    title: "Seamless trading",
+    ul: ["machin 1", "Machin 2"],
+    url: "",
+    button_content: "Get started",
+    image: "/veenox/trading-platform.png",
+  },
+  {
+    title: "Seamless trading",
+    ul: ["machin 1", "Machin 2"],
+    url: "",
+    button_content: "Get started",
+    image: "/veenox/trading-platform.png",
+  },
+];

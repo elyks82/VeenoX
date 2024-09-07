@@ -64,18 +64,45 @@ export const supportedChains: SupportedChain[] = [
 
 export const supportedChainIds = supportedChains.map(({ id }) => Number(id));
 
-export type ChainsImageType = 1 | 56 | 324 | 137 | 534352 | 59144;
-const chainsImage = {
+export type ChainsImageType =
+  | 1
+  | 56
+  | 324
+  | 137
+  | 534352
+  | 59144
+  | 42161
+  | 100
+  | 255
+  | 43114
+  | 34443;
+
+export const chainsImage: { [key: number]: string } = {
   1: "/assets/ETH.png",
   42161: "/assets/ETH.png",
   56: "/assets/BSC.png",
   324: "/assets/ZK.png",
   137: "/assets/MATIC.png",
+  100: "/assets/MONAD.png",
   534352: "/assets/SCROLL.png",
   59144: "/assets/LINEA.png",
   255: "/assets/KROMA.jpg",
   43114: "/assets/AVAX.png",
   34443: "/assets/MODE.png",
+};
+
+export const chainsName: { [key: number]: string } = {
+  1: "Ethereum",
+  42161: "Ethereum",
+  56: "BSC",
+  324: "ZkSync",
+  137: "Polygon",
+  100: "Monad",
+  534352: "Scroll",
+  59144: "Linea",
+  255: "Kroma",
+  43114: "Avalanche",
+  34443: "Mode",
 };
 
 export const getImageFromChainId = (id: ChainsImageType): string => {

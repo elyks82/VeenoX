@@ -1,7 +1,13 @@
 "use client";
-import { BackgroundBeamsWithCollision } from "@/components/background-home";
 import { Card, Carousel } from "@/components/caroussel";
-import { HeroParallax } from "@/components/hero-parralax";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/lib/shadcn/accordion";
+import { chainsImage, chainsName } from "@/utils/network";
+import { useDaily } from "@orderly.network/hooks";
 import {
   motion,
   useAnimation,
@@ -12,9 +18,10 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { IoAddOutline } from "react-icons/io5";
 import { Row } from "./components/row";
 // @ts-ignore
-import { gridContent } from "./constant.ts";
+import { gridContent, rowsContent } from "./constant.ts";
 
 type BoxProps = {
   children: React.ReactNode;
@@ -162,12 +169,13 @@ export const Home = () => {
   const cards = test.map((card, index) => (
     <Card key={card.src} card={card} index={index} />
   ));
-
+  const { data } = useDaily();
   return (
-    <div className="flex flex-col bg-secondary" ref={ref}>
-      <BackgroundBeamsWithCollision>
-        <div className="w-full flex items-center justify-center">
-          <motion.div className="flex flex-col w-fit">
+    <div className="flex flex-col " ref={ref}>
+      <div className="w-full flex items-center justify-center py-[150px] bg-[#15171b]">
+        {/* <div className="sparkles" /> */}
+        <div className="w-[90%] max-w-[1200px] flex items-center justify-between">
+          <motion.div className="flex flex-col  ">
             <motion.div
               variants={{
                 hidden: {
@@ -183,13 +191,15 @@ export const Home = () => {
               animate={mainControls}
               transition={{ duration: 0.3, delay: 0.3 }}
               className="overflow-hidden block relative whitespace-nowrap
-                text-7xl font-bold w-auto text-white uppercase text-center"
+                text-6xl font-extrabold w-auto text-white uppercase text-start leading-[60px]"
             >
-              Unleash limitless trading
-              <br /> with lowest fees
+              Unleash limitless
+              <br />
+              trading with <br />
+              <span className="text-base_color"> lowest fees</span>
             </motion.div>
             <motion.div
-              className="flex items-center w-full"
+              className="flex w-full jusitfy-start"
               initial="visible"
               whileHover="hovered"
               variants={{
@@ -205,7 +215,7 @@ export const Home = () => {
               animate={mainControls}
               transition={{ duration: 0.3, delay: 0.6 }}
             >
-              <p className="text-lg text-font-80 font-normal text-center mx-auto mt-7 max-w-[600px]">
+              <p className="text-lg text-font-80 font-normal text-start mt-7 max-w-[600px]">
                 Experience a new era of trading with Veeno, the pioneering
                 decentralized exchange on Monad. Enjoy an intuitive user
                 interface and benefit from the{" "}
@@ -214,165 +224,109 @@ export const Home = () => {
                 cost-effective trading.
               </p>
             </motion.div>
-            <motion.button
-              variants={{
-                hidden: {
-                  opacity: 0,
-                  y: 10,
-                },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                },
-              }}
-              initial="hidden"
-              animate={mainControls}
-              transition={{
-                duration: 0.3,
-                delay: 0.9,
-              }}
-              className="mt-[50px] rounded mx-auto text-white text-lg mr-auto cursor-pointer bg-base_color"
-            >
-              <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
-                <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
-                  Access preview{" "}
-                </div>
-              </Link>
-            </motion.button>
+            <div className="flex items-center w-fit justify-start">
+              <motion.button
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    y: 10,
+                  },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                  },
+                }}
+                initial="visible"
+                animate={mainControls}
+                transition={{
+                  duration: 0.3,
+                  delay: 0.9,
+                }}
+                className="mt-[50px] h-[50px] px-3 rounded-full mx-auto text-white text-lg mr-auto cursor-pointer bg-base_color"
+              >
+                <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
+                  <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
+                    Get Started
+                  </div>
+                </Link>
+              </motion.button>
+              <motion.button
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    y: 10,
+                  },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                  },
+                }}
+                initial="visible"
+                animate={mainControls}
+                transition={{
+                  duration: 0.3,
+                  delay: 0.9,
+                }}
+                className="mt-[50px] ml-5 h-[50px] px-3 rounded-full mx-auto text-base_color text-lg mr-auto cursor-pointer border border-base_color"
+              >
+                <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
+                  <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
+                    Learn More
+                  </div>
+                </Link>
+              </motion.button>
+            </div>
           </motion.div>
-        </div>
-      </BackgroundBeamsWithCollision>
-      <div className="w-full relative border-t border-borderColor">
-        <div className="w-[90%] max-w-[1200px] mx-auto relative flex flex-col items-center justify-center my-[10%]">
-          <h2
-            className="overflow-hidden block relative whitespace-nowrap
-           text-6xl font-bold text-center mb-2 w-auto  text-white"
-          >
-            Powerful trading tools
-          </h2>
-          <Row isEven />
-          <Row />
-          <Row isEven />
+          <div className="flex flex-col ">
+            <img
+              src="/logo/veeno-purple.png"
+              className="h-[550px] object-cover rotate-[15deg]"
+            />
+          </div>
         </div>
       </div>
-      <div className="w-full mb-[10%]">
+
+      <div className="w-full py-[100px] shadowY border-t border-borderColor-DARK z-[10] ">
         <div
-          className="w-[90%] max-w-[1200px] mx-auto flex flex-col items-center justify-center mt-[5%] mb-[7%]"
+          className="w-[90%] max-w-[1200px] mx-auto flex flex-col items-center justify-center"
           ref={cardRef}
         >
-          <motion.h2
-            style={{ opacity: scrollYFirst }}
+          <h2
             className="overflow-hidden block relative whitespace-nowrap
-              text-6xl font-bold mb-10 w-auto mx-auto text-center text-white"
+              text-5xl font-bold w-fit opacity-100 mr-auto text-white"
           >
-            Level up trading experience
-          </motion.h2>
+            <span className="text-base_color">Level up </span>trading experience
+          </h2>
           <Carousel items={cards} />
         </div>{" "}
       </div>
-      <HeroParallax />
-
-      <div className="w-full h-fit flex flex-col items-center bg-[#1e2126]">
-        <div className="w-[90%] max-w-[1350px]">
-          <div className="py-[10vh] flex items-center gap-20 justify-between w-full ">
-            <div className="bg-secondary flex items-center justify-center p-5 w-[600px] h-[500px] rounded-xl">
-              <Image
-                src="/layer/trade.webp"
-                alt={"learn to trade image"}
-                height={600}
-                width={500}
-              />{" "}
-            </div>
-            <div className="flex flex-col items-start">
-              <motion.h2
-                // variants={{
-                //   hidden: {
-                //     opacity: 0,
-                //     y: 10,
-                //   },
-                //   visible: {
-                //     opacity: 1,
-                //     y: 0,
-                //   },
-                // }}
-                // initial="hidden"
-                // animate={mainControls}
-                // transition={{ duration: 0.3, delay: 0.3 }}
-                className="overflow-hidden block relative whitespace-nowrap
-  text-6xl font-bold  mb-2 w-auto  text-white text-start"
-              >
-                <span className="text-base_color">Learn</span> Trading
-              </motion.h2>
-              <h2
-                className="block relative whitespace-nowrap
-      text-6xl font-bold text-white mb-2 w-auto text-start"
-              >
-                & Earn Program
-              </h2>
-              <p className="text-lg text-font-60 mt-5 max-w-[600px] text-start">
-                The Learn Trading and Earn program addresses the lack of trading
-                knowledge by teaching individuals how to trade effectively and
-                avoid irreversible losses. The program includes instructional
-                videos created by a professional trader that explain each
-                pattern in detail. Participants can practice trading and earn
-                rewards for their efforts.
-              </p>
-            </div>
-          </div>
+      {/* <HeroParallax /> */}
+      <div className="w-full relative border-t border-borderColor-DARK bg-[#15171B]">
+        <div className="w-[90%] max-w-[1200px] mx-auto relative flex flex-col justify-center py-[150px]">
+          <h2
+            className="overflow-hidden block relative whitespace-nowrap
+           text-6xl font-bold mb-10 w-auto  text-white"
+          >
+            <span className="text-base_color">Powerful</span> trading tools
+          </h2>
+          {rowsContent.map((content, i) => (
+            <Row isEven={i % 2 === 0} content={content} />
+          ))}
         </div>
       </div>
-      <div className="w-[90%] max-w-[1350px] mx-auto">
-        <div className="py-[20vh] flex items-center justify-between w-full ">
-          <div className="flex w-fit ">
-            <div className="flex flex-col items-start">
-              <h2
-                className="overflow-hidden block relative whitespace-nowrap
-  text-6xl font-bold  mb-2 w-auto  text-white text-start"
-              >
-                <span className="text-base_color text-start">Lowest fees</span>{" "}
-                <br />
-                across the market
-              </h2>
 
-              <p className="text-lg text-font-60 mt-5 max-w-[600px]">
-                Our platform offers the lowest trading fees among all perpetual
-                decentralized exchanges (DEXs) in the crypto space. By
-                prioritizing cost efficiency, we empower traders to maximize
-                their profits while enjoying a seamless and secure trading
-                experience. With our industry-leading low fees, users can trade
-                with confidence, knowing they’re getting the best value
-                available.
-              </p>
-            </div>
-          </div>
-          <img
-            src="https://s3.eu-central-1.amazonaws.com/tangem.cms/k_61_419d178016.png"
-            alt={"learn to trade image"}
-            height={400}
-            width={500}
-          />
-        </div>
-      </div>
-      <div className="w-full h-fit flex flex-col items-center bg-[#1e2126]">
-        <div className="w-[90%] max-w-[1350px]">
-          <div className="py-[10vh] flex items-center gap-20 justify-between w-full ">
-            <div className="bg-secondary flex items-center justify-center p-5 w-[600px] h-[500px] rounded-xl">
-              <img
-                src="https://www.ballet.com/static/banner_swap-1bb72278fb0ce04e8b09119769c9c491.png"
-                alt={"learn to trade image"}
-                height={400}
-                width={500}
-              />
-            </div>
+      <div className="w-full h-fit flex flex-col items-center bg-secondary py-[100px]">
+        <div className="w-[90%] max-w-[1200px]">
+          <div className="flex items-center gap-20 justify-between w-full ">
             <div className="flex w-fit mb-10 mr-[5%]">
               <div className="flex flex-col items-start">
                 <h2
                   className="overflow-hidden block relative whitespace-nowrap
-  text-6xl font-bold  mb-2 w-auto  text-white"
+                  text-6xl font-bold  mb-2 w-auto  text-white"
                 >
-                  Swap on <span className=" text-base_color">Monad</span>
+                  <span className=" text-base_color">Swap</span> cryptos <br />
+                  across <span className=" text-base_color">any</span> chain
                 </h2>
-
                 <p className="text-lg text-font-60 mt-5 max-w-[600px]">
                   Users will have the capability to seamlessly swap any assets
                   available on the Monad chain. This functionality ensures
@@ -383,7 +337,117 @@ export const Home = () => {
                 </p>
               </div>
             </div>
+            <div className="flex flex-wrap gap-2.5 w-[380px]">
+              {Object.entries(chainsImage)
+                .filter(
+                  ([chainId, _]: any, i) =>
+                    i !== 0 &&
+                    chainsName[chainId] !== "Kroma" &&
+                    chainsName[chainId] !== "Scroll"
+                )
+                .map(([chainId, image]: any, i) => (
+                  <div
+                    key={i}
+                    className="bg-[#15171B] border border-borderColor-DARK flex flex-col items-center 
+                    justify-center p-5 w-[120px] h-[120px] rounded-xl"
+                  >
+                    <Image
+                      src={image}
+                      alt={`${chainsName[chainId]} logo`}
+                      width={50}
+                      height={50}
+                      className="rounded-full border border-borderColor"
+                    />
+                    <p className="text-font-80 text-sm mt-2">
+                      {chainsName[chainId]}
+                    </p>
+                  </div>
+                ))}
+              <div
+                className="bg-[#15171B] border border-borderColor-DARK flex items-center 
+              justify-center p-5 w-[120px] text-white text-3xl h-[120px] rounded-xl"
+              >
+                <IoAddOutline className="-ml-2 text-2xl" />
+                <p>11</p>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
+
+      <div className="w-full h-fit flex flex-col items-center bg-[#15171B] py-[150px]">
+        <div className="w-[90%] max-w-[1200px]">
+          <h2
+            className="overflow-hidden block relative whitespace-nowrap
+           text-6xl font-bold mb-[100px] w-auto  text-center text-white"
+          >
+            Frequently <span className="text-base_color">Asked</span>
+          </h2>
+
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="item-1">
+              <AccordionTrigger>What is VeenoX?</AccordionTrigger>
+              <AccordionContent>
+                Veenox is a decentralized exchange that focuses on
+                orderbook-based trading, offering secure cryptocurrency trades
+                through the use of technology from Orderly Networks. It enables
+                real-time matching of buy and sell orders, promoting transparent
+                trading without centralized intermediaries, this empowering
+                users in the decentralized finance (DeFi) space.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-2">
+              <AccordionTrigger>
+                VeenoX & Orderly Network&apos;s Partnership
+              </AccordionTrigger>
+              <AccordionContent>
+                VeenoX closely partners with Orderly Network, leveraging its
+                technology and core contracts, especially for trade settlements.
+                This collaboration ensures not only the technological
+                infrastructure behind VeenoX but also its liquidity foundation.
+                While VeenoX provides the platform for trading and transaction
+                coordination, Orderly Network acts as the settlement layer and a
+                key source of liquidity. This dual role of Orderly Network
+                supports VeenoX in maintaining high levels of security and
+                efficiency in trade settlements and is instrumental in supplying
+                the liquidity necessary for smooth and continuous trading
+                operations on the VeenoX platform.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-3">
+              <AccordionTrigger>
+                Trading View Powered Charts on VeenoX
+              </AccordionTrigger>
+              <AccordionContent>
+                VeenoX utilizes TradingView’s advanced charting technology,
+                offering users real-time market data and analytics. This
+                integration ensures precise and informed trading decisions on
+                the VeenoX platform. TradingView is a global platform for
+                traders and investors. Visit their site for more of their
+                research offerings, such as global market data and the entire
+                crypto market cap.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-4">
+              <AccordionTrigger>VeenoX Business Model</AccordionTrigger>
+              <AccordionContent>
+                VeenoX generates revenue through transaction fees, calculated as
+                a percentage of the trade volume. This model aligns
+                VeenoX&apos;s success with that of its users, avoiding practices
+                like countertrading or imposing hidden fees.
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="item-5">
+              <AccordionTrigger>Why Choose VeenoX?</AccordionTrigger>
+              <AccordionContent>
+                VeenoX distinguishes itself with its security, lowest
+                transaction fees across Orderly perp dex, global access,
+                advanced UI, community engagement, and commitment to continuous
+                innovation, providing a superior trading experience in the
+                decentralized finance landscape.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
       </div>
     </div>
