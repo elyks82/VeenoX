@@ -25,7 +25,10 @@ export const Row = ({ content, isEven = false }: RowType) => {
         <h4 className="text-white font-bold text-3xl mb-2">{content.title}</h4>
         <ul className="text-font-60 text-lg mt-5">
           {content.ul.map((text, i) => (
-            <li className={`flex items-center ${i === 1 ? "my-2" : ""}`}>
+            <li
+              key={i}
+              className={`flex items-center ${i === 1 ? "my-2" : ""}`}
+            >
               <div className="h-1.5 w-1.5 min-w-1.5 mr-2 rounded-full bg-white" />
               {text}
             </li>
