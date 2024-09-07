@@ -1,5 +1,5 @@
+import { DynamicHeader } from "@/layouts/dynamic-header";
 import { Footer } from "@/layouts/footer";
-import { Header } from "@/layouts/header";
 import { config } from "@/lib/wallet-connect/config";
 import WagmiProvider from "@/lib/wallet-connect/provider";
 import { Providers } from "@/provider/wrapper";
@@ -37,6 +37,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const initialState = cookieToInitialState(config, headers().get("cookie"));
+  const headersList = headers();
+  const isHomePage = headersList.get("x-is-home-page") === "true";
   return (
     <html lang="en">
       <head>
@@ -64,7 +66,7 @@ export default function RootLayout({
                 zIndex={1600}
                 showAtBottom={false}
               />
-              <Header />
+              <DynamicHeader />
               {children}
               <SpeedInsights />
               <Footer />
