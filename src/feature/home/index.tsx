@@ -121,7 +121,7 @@ export const Home = () => {
     };
   };
 
-  const test = [
+  const carousselContent = [
     {
       src: "/veenox/trade.png",
       title: "Unified Orderbook & Liquidity",
@@ -159,7 +159,7 @@ export const Home = () => {
     },
   ];
 
-  const cards = test.map((card, index) => (
+  const cards = carousselContent.map((card, index) => (
     <Card key={card.src} card={card} index={index} />
   ));
   const { data } = useDaily();
@@ -304,7 +304,7 @@ export const Home = () => {
             <span className="text-base_color">Powerful</span> trading tools
           </h2>
           {rowsContent.map((content, i) => (
-            <Row isEven={i % 2 === 0} content={content} />
+            <Row key={i} isEven={i % 2 === 0} content={content} />
           ))}
         </div>
       </div>
