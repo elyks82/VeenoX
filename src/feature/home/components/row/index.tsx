@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 type RowType = {
   content: {
     title: string;
@@ -33,8 +31,10 @@ export const Row = ({ content, isEven = false }: RowType) => {
             </li>
           ))}
         </ul>
-        <button className="text-base_color font-medium text-lg mt-[30px]">
-          <Link href={content.url}>{content.button_content}</Link>
+        <button className="text-base_color font-medium cursor-not-allowed text-lg mt-[30px]">
+          {/* <Link href={content.url}> */}
+          {content.button_content}
+          {/* </Link> */}
         </button>
       </div>
       {!isEven ? (

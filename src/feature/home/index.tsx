@@ -325,9 +325,11 @@ export const Home = () => {
                   Users will have the capability to effortlessly swap any assets
                   available on the <span className="text-white">Monad</span>{" "}
                   chain. This functionality extends beyond Monad, allowing for
-                  cross-chain swaps through Wormhole messages. This ensures
-                  flexibility and convenience, enabling users to exchange a wide
-                  variety of digital assets across different blockchains.
+                  cross-chain swaps through{" "}
+                  <span className="text-white">Wormhole</span> messages. This
+                  ensures flexibility and convenience, enabling users to
+                  exchange a wide variety of digital assets across different
+                  blockchains.
                 </p>
                 <button className="mt-[40px] opacity-50 cursor-not-allowed h-[50px] px-3 rounded-full text-white text-lg mr-auto border border-base_color">
                   {/* <Link href="/perp/PERP_BTC_USDC" className="w-full h-full"> */}

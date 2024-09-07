@@ -244,7 +244,7 @@ export const Card = ({
       </AnimatePresence>
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
-        onClick={handleOpen}
+        // onClick={handleOpen}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className="rounded-3xl bg-secondary border border-borderColor-DARK shadow-xl h-80 w-56 md:h-[40rem] md:w-96 overflow-hidden flex flex-col items-start justify-start relative z-10"
