@@ -165,7 +165,7 @@ export const Home = () => {
   const { data } = useDaily();
   return (
     <div className="flex flex-col " ref={ref}>
-      <div className="w-full flex items-center justify-center py-[150px] bg-[#15171b]">
+      <div className="w-full flex items-center justify-center py-[150px] pt-[250px] bg-[#15171b]">
         {/* <div className="sparkles" /> */}
         <div className="w-[90%] max-w-[1200px] flex items-center justify-between">
           <motion.div className="flex flex-col  ">
@@ -209,9 +209,10 @@ export const Home = () => {
               transition={{ duration: 0.3, delay: 0.6 }}
             >
               <p className="text-lg text-font-80 font-normal text-start mt-7 max-w-[600px]">
-                Experience a new era of trading with Veeno, the pioneering
-                decentralized exchange on Monad. Enjoy an intuitive user
-                interface and benefit from the{" "}
+                Experience a new era of trading with VeenoX, the pioneering
+                decentralized exchange on{" "}
+                <span className="text-white font-bold">Monad</span>. Enjoy an
+                intuitive user interface and benefit from the{" "}
                 <span className="text-white font-bold">lowest fees</span> in the
                 market, powered by Orderly Network for seamless and
                 cost-effective trading.
@@ -308,7 +309,7 @@ export const Home = () => {
         </div>
       </div>
 
-      <div className="w-full h-fit flex flex-col items-center bg-secondary py-[100px]">
+      <div className="w-full h-fit flex flex-col items-center bg-secondary shadowY border-y border-borderColor-DARK py-[100px]">
         <div className="w-[90%] max-w-[1200px]">
           <div className="flex items-center gap-20 justify-between w-full ">
             <div className="flex w-fit mb-10 mr-[5%]">
@@ -317,17 +318,24 @@ export const Home = () => {
                   className="overflow-hidden block relative whitespace-nowrap
                   text-5xl font-bold  mb-2 w-auto  text-white"
                 >
-                  <span className=" text-base_color">Swap</span> cryptos <br />
-                  across <span className=" text-base_color">any</span> chain
+                  Seamlessly swap assets <br />
+                  on <span className=" text-base_color">Monad </span> and beyond
                 </h2>
                 <p className="text-lg text-font-60 mt-5 max-w-[600px]">
-                  Users will have the capability to seamlessly swap any assets
-                  available on the Monad chain. This functionality ensures
+                  Users will have the capability to effortlessly swap any assets
+                  available on the <span className="text-white">Monad</span>{" "}
+                  chain. This functionality extends beyond Monad, allowing for
+                  cross-chain swaps through Wormhole messages. This ensures
                   flexibility and convenience, enabling users to exchange a wide
-                  variety of digital assets within the ecosystem, enhancing
-                  their overall experience and providing greater control over
-                  their transactions.
+                  variety of digital assets across different blockchains.
                 </p>
+                <button className="mt-[40px] opacity-50 cursor-not-allowed h-[50px] px-3 rounded-full text-white text-lg mr-auto border border-base_color">
+                  {/* <Link href="/perp/PERP_BTC_USDC" className="w-full h-full"> */}
+                  <div className="flex items-center justify-center w-full font-semibold text-base text-base_color h-full px-4 py-2">
+                    Swap now
+                  </div>
+                  {/* </Link> */}
+                </button>
               </div>
             </div>
             <div className="flex flex-wrap gap-2.5 w-[380px]">
@@ -372,7 +380,7 @@ export const Home = () => {
         <div className="w-[90%] max-w-[1200px]">
           <h2
             className="overflow-hidden block relative whitespace-nowrap
-           text-5xl font-bold mb-[100px] w-auto  text-center text-white"
+           text-5xl font-bold mb-10 w-auto text-white"
           >
             Frequently <span className="text-base_color">Asked</span>
           </h2>

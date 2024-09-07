@@ -1,5 +1,5 @@
 import { Footer } from "@/layouts/footer";
-import { Header } from "@/layouts/header";
+import { LandingHeader } from "@/layouts/landing-header";
 import { config } from "@/lib/wallet-connect/config";
 import WagmiProvider from "@/lib/wallet-connect/provider";
 import { Providers } from "@/provider/wrapper";
@@ -64,7 +64,8 @@ export default function RootLayout({
                 zIndex={1600}
                 showAtBottom={false}
               />
-              <Header />
+              <LandingHeader />
+              {/* <Header /> */}
               {children}
               <SpeedInsights />
               <Footer />
