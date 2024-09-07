@@ -123,28 +123,28 @@ export const Home = () => {
 
   const test = [
     {
-      src: "/veenox/trading-platform.png",
+      src: "/veenox/trade.png",
       title: "Unified Orderbook & Liquidity",
       category: "PERP",
       content: <p className="text-white">{gridContent[0].description}</p>,
       description: gridContent[0].description,
     },
     {
-      src: "/veenox/trading-platform.png",
+      src: "/veenox/trade-2.png",
       title: "Most Competitive Fees",
       category: "PERP",
       content: <p className="text-white">{gridContent[1].description}</p>,
       description: gridContent[1].description,
     },
     {
-      src: "/veenox/trading-platform.png",
+      src: "/veenox/trade-3.png",
       title: "Ready-to-use Liquidity",
       category: "PERP",
       content: <p className="text-white">{gridContent[2].description}</p>,
       description: gridContent[2].description,
     },
     {
-      src: "/veenox/trading-platform.png",
+      src: "/veenox/trade-4.png",
       title: "One-Click Trading Experience",
       category: "PERP",
       content: <p className="text-white">{gridContent[3].description}</p>,
@@ -156,13 +156,6 @@ export const Home = () => {
       category: "PERP",
       content: <p className="text-white">{gridContent[4].description}</p>,
       description: gridContent[4].description,
-    },
-    {
-      src: "/veenox/trading-platform.png",
-      title: "Lowest ",
-      category: "PERP",
-      content: <p className="text-white">{gridContent[5].description}</p>,
-      description: gridContent[5].description,
     },
   ];
 
