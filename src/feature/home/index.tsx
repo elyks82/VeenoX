@@ -305,7 +305,7 @@ export const Home = () => {
         <div className="w-[90%] max-w-[1200px] mx-auto relative flex flex-col justify-center py-[150px]">
           <h2
             className="overflow-hidden block relative whitespace-nowrap
-           text-6xl font-bold mb-10 w-auto  text-white"
+           text-5xl font-bold mb-10 w-auto  text-white"
           >
             <span className="text-base_color">Powerful</span> trading tools
           </h2>
@@ -322,7 +322,7 @@ export const Home = () => {
               <div className="flex flex-col items-start">
                 <h2
                   className="overflow-hidden block relative whitespace-nowrap
-                  text-6xl font-bold  mb-2 w-auto  text-white"
+                  text-5xl font-bold  mb-2 w-auto  text-white"
                 >
                   <span className=" text-base_color">Swap</span> cryptos <br />
                   across <span className=" text-base_color">any</span> chain
@@ -379,7 +379,7 @@ export const Home = () => {
         <div className="w-[90%] max-w-[1200px]">
           <h2
             className="overflow-hidden block relative whitespace-nowrap
-           text-6xl font-bold mb-[100px] w-auto  text-center text-white"
+           text-5xl font-bold mb-[100px] w-auto  text-center text-white"
           >
             Frequently <span className="text-base_color">Asked</span>
           </h2>

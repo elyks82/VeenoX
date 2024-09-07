@@ -39,24 +39,38 @@ export const gridContent = [
 
 export const rowsContent = [
   {
-    title: "Seamless trading",
-    ul: ["machin 1", "Machin 2"],
+    title: "Manage your positions",
+    ul: [
+      "Chart Trading for a more visual and interactive experience",
+      "Price Ladder to enable rapid order placement and modification",
+      "Margin usage overview to help traders make better decisions",
+    ],
     url: "",
     button_content: "Get started",
-    image: "/veenox/trading-platform.png",
+    image: "/veenox/trade.png",
   },
   {
-    title: "Seamless trading",
-    ul: ["machin 1", "Machin 2"],
+    title: "Advanced Trading Tools and Customization",
+    ul: [
+      "Set Take Profit and Stop Loss before initiating a trade",
+      "Resizable interface components for a fully customizable experience",
+      "Leverage up to x50 for enhanced trading opportunities",
+    ],
     url: "",
     button_content: "Get started",
-    image: "/veenox/trading-platform.png",
+    image:
+      "https://www.lynxbroker.fr/app/uploads/sites/2/2023/09/leverage-trading-featured-image.jpg",
   },
   {
-    title: "Seamless trading",
-    ul: ["machin 1", "Machin 2"],
+    title: "The first all-in-one platform trading on Monad",
+    ul: [
+      "Cutting-edge technology for faster and more efficient trading",
+      "Leverage Monad's performance to stay ahead in the market",
+      "Explore pioneering features exclusive to Monad",
+    ],
     url: "",
-    button_content: "Get started",
-    image: "/veenox/trading-platform.png",
+    button_content: "Explore Monad",
+    image:
+      "https://www.tbstat.com/cdn-cgi/image/format=webp,q=75/wp/uploads/2024/07/20240725_Monad_News.jpg",
   },
 ];

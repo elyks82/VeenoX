@@ -18,19 +18,22 @@ export const Row = ({ content, isEven = false }: RowType) => {
         <div className="p-5">
           <img
             src={content.image}
-            className="w-[570px] h-[300px] shadow-2xl shadow-[rgba(0,0,0,0.2)] border border-borderColor rounded-xl"
+            className="min-w-[500px] object-cover h-[300px] shadow-2xl shadow-[rgba(0,0,0,0.3)] border border-borderColor rounded-xl"
           />
         </div>
       ) : null}
 
       <div className={isEven ? "ml-[50px]" : "mr-[50px]"}>
         <h4 className="text-white font-bold text-3xl mb-2">{content.title}</h4>
-        <ul className="text-font-60 text-lg">
-          {content.ul.map((text) => (
-            <li>{text}</li>
+        <ul className="text-font-60 text-lg mt-5">
+          {content.ul.map((text, i) => (
+            <li className={`flex items-center ${i === 1 ? "my-2" : ""}`}>
+              <div className="h-1.5 w-1.5 min-w-1.5 mr-2 rounded-full bg-white" />
+              {text}
+            </li>
           ))}
         </ul>
-        <button className="text-base_color font-medium text-lg mt-[50px]">
+        <button className="text-base_color font-medium text-lg mt-[30px]">
           <Link href={content.url}>{content.button_content}</Link>
         </button>
       </div>
@@ -38,7 +41,7 @@ export const Row = ({ content, isEven = false }: RowType) => {
         <div className="p-5">
           <img
             src={content.image}
-            className="w-[570px] h-[300px] shadow-2xl shadow-[rgba(0,0,0,0.2)] border border-borderColor rounded-xl"
+            className="min-w-[500px] object-cover h-[300px] shadow-2xl shadow-[rgba(0,0,0,0.3)] border border-borderColor rounded-xl"
           />
         </div>
       ) : null}
