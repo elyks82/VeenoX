@@ -141,7 +141,7 @@ const renderAdditionalCells = (
         </td>
         <td className={tdStyle}>--</td>
         <td className={tdStyle}>
-          <div className="w-full h-full flex flex-col items-end">
+          <div className="w-full h-full flex flex-col items-start">
             <div className="h-[5px] w-[100px] rounded bg-terciary">
               <div
                 className={`h-full bg-base_color rounded`}
