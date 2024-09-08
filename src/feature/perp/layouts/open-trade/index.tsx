@@ -425,8 +425,8 @@ export const OpenTrade = ({
           </button>
         ))}
         <button
-          className="w-1/3 h-full text-white text-xs font-medium flex items-center justify-center"
-          onClick={() => setIsTooltipMarketTypeOpen((prev) => !prev)}
+          className="w-1/3 h-full text-white text-xs opacity-50 cursor-not-allowed font-medium flex items-center justify-center"
+          // onClick={() => setIsTooltipMarketTypeOpen((prev) => !prev)}
         >
           {values.type !== "MARKET" && values.type !== "LIMIT"
             ? values.type
