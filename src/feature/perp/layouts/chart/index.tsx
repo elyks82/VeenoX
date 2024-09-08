@@ -160,8 +160,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         interval: chart.resolution(),
       };
 
-      console.log("currentState", currentState.drawings);
-
       const savedStateString = localStorage.getItem("chartState");
       const savedState: ChartState = savedStateString
         ? JSON.parse(savedStateString)

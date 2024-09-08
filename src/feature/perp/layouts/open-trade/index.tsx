@@ -7,6 +7,7 @@ import { formatQuantity, getFormattedAmount } from "@/utils/misc";
 import {
   useAccountInstance,
   useCollateral,
+  useHoldingStream,
   useLeverage,
   useMaxQty,
   useOrderEntry,
@@ -67,13 +68,16 @@ export const OpenTrade = ({
   const { setTradeInfo } = useGeneralContext();
   const accountInstance = useAccountInstance();
   const [isTooltipMarketTypeOpen, setIsTooltipMarketTypeOpen] = useState(false);
-  const { state } = useOrderlyAccount();
+  const { state, account } = useOrderlyAccount();
   const { address } = useAccount();
+  const [activeHoldings, setActiveHoldings] = useState(0);
   const [isSettleLoading, setIsSettleLoading] = useState(false);
   const {
     setIsEnableTradingModalOpen,
     setIsWalletConnectorOpen,
     setOrderPositions,
+    setDepositAmount,
+    depositAmount,
   } = useGeneralContext();
 
   const {
@@ -87,6 +91,15 @@ export const OpenTrade = ({
   } = useCollateral({
     dp: 2,
   });
+  const { usdc } = useHoldingStream();
+
+  useEffect(() => {
+    if (usdc && usdc.holding !== activeHoldings) {
+      setActiveHoldings(usdc.holding);
+      setDepositAmount(null);
+    }
+  }, [usdc]);
+  console.log("accountInstance", usdc);
 
   useSettleSubscription({
     onMessage: (data: any) => {
@@ -328,14 +341,50 @@ export const OpenTrade = ({
   const maxNotional = accountInfo?.max_notional[currentAsset?.symbol] || 0;
   const [positionPnL, proxy, states] = usePositionStream();
 
+  const [isTooltipDepositOpen, setIsTooltipDepositOpen] = useState(false);
+
+  useEffect(() => {
+    if (!depositAmount) setIsTooltipDepositOpen(false);
+  }, [depositAmount]);
+
   return (
     <section className="h-full w-full text-white">
       <div className="pt-4 border-b border-borderColor hidden md:block px-5">
         <div className="pb-4 ">
           <div className="flex items-center justify-between">
-            <div>
+            <div
+              className="relative"
+              onMouseEnter={() => {
+                if (depositAmount) {
+                  setIsTooltipDepositOpen(true);
+                }
+              }}
+              onMouseLeave={() => {
+                if (depositAmount) {
+                  setIsTooltipDepositOpen(false);
+                }
+              }}
+            >
+              <div
+                className={`absolute ${
+                  isTooltipDepositOpen
+                    ? "opacity-100 "
+                    : "opacity-0 pointer-events-none translate-y-[1%]"
+                } transition-all duration-200 h-fit rounded-md border border-borderColor ease-in-out  top-[105%] w-[180px] p-2.5 left-1/2 -translate-x-1/2 bg-secondary z-[10] shadow-xl shadow-[rgba(0,0,0,0.2)]`}
+              >
+                <p className="text-xs text-font-80">
+                  Your deposit has been successfully received. The funds will be
+                  available in your account shortly.
+                </p>
+              </div>
               <p className="text-xs text-font-60 mb-[3px]">Total Value</p>
-              <p className="text-base text-white font-medium">
+              <p
+                className={`text-base font-medium ${
+                  depositAmount
+                    ? "animate-pulse text-base_color"
+                    : " text-white"
+                } transition-opacity duration-1000 ease-in-out`}
+              >
                 {totalValue} {positionPnL.aggregated.unrealizedPnl}
               </p>
             </div>

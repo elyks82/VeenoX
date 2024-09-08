@@ -44,8 +44,6 @@ export const RenderCells = ({
     { watchOrderbook: true }
   );
 
-  console.log("currentLeverage", currentLeverage);
-
   return (
     <>
       {renderCommonCells(order)}
