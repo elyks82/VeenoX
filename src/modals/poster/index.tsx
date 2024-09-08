@@ -27,7 +27,7 @@ export const PosterModal = ({ order }: any) => {
     unrealized_pnl: order.unrealized_pnl,
   };
 
-  const { marginRatio, currentLeverage, mmr } = useMarginRatio();
+  const { currentLeverage } = useMarginRatio();
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -278,7 +278,7 @@ export const PosterModal = ({ order }: any) => {
     <Dialog>
       <DialogTrigger>
         <button>
-          <FaShareAlt className="text-white text-sm" />
+          <FaShareAlt className="text-font-60 text-xs -mb-[1px]" />
         </button>
       </DialogTrigger>
       <DialogContent

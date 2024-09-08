@@ -7,7 +7,7 @@ import {
   getFormattedAmount,
   getFormattedDate,
 } from "@/utils/misc";
-import { useOrderEntry } from "@orderly.network/hooks";
+import { useMarginRatio, useOrderEntry } from "@orderly.network/hooks";
 import { Dispatch, SetStateAction } from "react";
 import { EditModal } from "./edit-modal";
 import { TPSLModal } from "./tp-sl-modal";
@@ -33,7 +33,8 @@ export const RenderCells = ({
     editPendingPositionOpen,
     setEditPendingPositionOpen,
   } = useGeneralContext();
-  const { onSubmit, estLeverage } = useOrderEntry(
+  const { currentLeverage } = useMarginRatio();
+  const { onSubmit } = useOrderEntry(
     {
       symbol: order.symbol,
       side: (order.position_qty as number) >= 0 ? "SELL" : ("BUY" as any),
@@ -42,6 +43,8 @@ export const RenderCells = ({
     },
     { watchOrderbook: true }
   );
+
+  console.log("currentLeverage", currentLeverage);
 
   return (
     <>
@@ -53,7 +56,8 @@ export const RenderCells = ({
         setTPSLOpenOrder,
         setOrderPositions,
         onSubmit,
-        setEditPendingPositionOpen
+        setEditPendingPositionOpen,
+        currentLeverage
       )}
       {TPSLOpenOrder ? <TPSLModal order={order} /> : null}
       {editPendingPositionOpen ? <EditModal /> : null}
@@ -88,8 +92,10 @@ const renderAdditionalCells = (
   setTPSLOpenOrder: Dispatch<SetStateAction<boolean>>,
   setOrderPositions: any,
   onSubmit: any,
-  setEditPendingPositionOpen: Dispatch<SetStateAction<boolean>>
+  setEditPendingPositionOpen: Dispatch<SetStateAction<boolean>>,
+  currentLeverage: number | null
 ) => {
+  console.log(currentLeverage);
   if (section === Sections.FILLED) {
     return (
       <>
@@ -198,7 +204,6 @@ const renderAdditionalCells = (
     const totalMargin = initialMargin + trade.unrealized_pnl;
     const maintenanceMargin =
       Math.abs(trade.position_qty) * trade.mark_price * trade.MMR_with_orders;
-
     return (
       <>
         <td
@@ -236,12 +241,12 @@ const renderAdditionalCells = (
             <p className="mr-2">
               {`${
                 trade.unrealized_pnl > 0
-                  ? `+$${Math.abs(trade.unrealized_pnl).toFixed(
-                      2
-                    )} (${trade.unrealized_pnl_ROI.toFixed(2)})`
-                  : `-$${Math.abs(trade.unrealized_pnl).toFixed(
-                      2
-                    )} (${trade.unrealized_pnl_ROI.toFixed(2)})`
+                  ? `+$${Math.abs(trade.unrealized_pnl).toFixed(2)} (${Number(
+                      trade.unrealized_pnl_ROI
+                    ).toFixed(2)})`
+                  : `-$${Math.abs(trade.unrealized_pnl).toFixed(2)} (${Number(
+                      trade.unrealized_pnl_ROI
+                    ).toFixed(2)}%)`
               }`}{" "}
             </p>
             <PosterModal order={trade} />
