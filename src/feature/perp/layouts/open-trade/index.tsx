@@ -349,115 +349,6 @@ export const OpenTrade = ({
 
   return (
     <section className="h-full w-full text-white">
-      <div className="pt-4 border-b border-borderColor hidden md:block px-5">
-        <div className="pb-4 ">
-          <div className="flex items-center justify-between">
-            <div
-              className="relative"
-              onMouseEnter={() => {
-                if (depositAmount) {
-                  setIsTooltipDepositOpen(true);
-                }
-              }}
-              onMouseLeave={() => {
-                if (depositAmount) {
-                  setIsTooltipDepositOpen(false);
-                }
-              }}
-            >
-              <div
-                className={`absolute ${
-                  isTooltipDepositOpen
-                    ? "opacity-100 "
-                    : "opacity-0 pointer-events-none translate-y-[1%]"
-                } transition-all duration-200 h-fit rounded-md border border-borderColor ease-in-out  top-[105%] w-[180px] p-2.5 left-1/2 -translate-x-1/2 bg-secondary z-[10] shadow-xl shadow-[rgba(0,0,0,0.2)]`}
-              >
-                <p className="text-xs text-font-80">
-                  Your deposit has been successfully received. The funds will be
-                  available in your account shortly.
-                </p>
-              </div>
-              <p className="text-xs text-font-60 mb-[3px]">Total Value</p>
-              <p
-                className={`text-base font-medium ${
-                  depositAmount
-                    ? "animate-pulse text-base_color"
-                    : " text-white"
-                } transition-opacity duration-1000 ease-in-out`}
-              >
-                {totalValue} {positionPnL.aggregated.unrealizedPnl}
-              </p>
-            </div>
-            {/* <IoChevronDown className="text-xl" /> */}
-            <div>
-              <p className="text-xs text-font-60 mb-[3px] text-end">
-                Unreal PnL
-              </p>
-              <p
-                className={`text-sm font-medium ${
-                  data?.aggregated.unrealPnL > 0
-                    ? "text-green"
-                    : data?.aggregated.unrealPnL < 0
-                    ? "text-red"
-                    : "text-white"
-                }`}
-              >
-                {getFormattedAmount(data?.aggregated.unrealPnL)} (
-                {data?.aggregated.unrealPnlROI.toFixed(2)}
-                %)
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center justify-between mt-4">
-            <div>
-              <p className="text-xs text-font-60 mb-1">Unsettled PnL (USDC)</p>
-              <p
-                className={`text-sm font-medium ${
-                  unsettledPnL > 0
-                    ? "text-green"
-                    : unsettledPnL < 0
-                    ? "text-red"
-                    : "text-white"
-                }`}
-              >
-                {unsettledPnL}{" "}
-              </p>
-            </div>
-            <button
-              onClick={() => {
-                if (unsettledPnL !== 0 && accountInstance) {
-                  setIsSettleLoading(true);
-                  accountInstance?.settle();
-                }
-              }}
-              className={`${
-                unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
-              } flex items-center border border-borderColor hover:bg-terciary 
-                rounded px-2 py-1 text-xs text-white transition-all duration-100 ease-in-out`}
-            >
-              {isSettleLoading ? (
-                <Oval
-                  visible={true}
-                  height="13"
-                  width="13"
-                  color="#FFF"
-                  secondaryColor="rgba(255,255,255,0.6)"
-                  ariaLabel="oval-loading"
-                  strokeWidth={6}
-                  strokeWidthSecondary={6}
-                  wrapperStyle={{
-                    marginRight: "5px",
-                  }}
-                  wrapperClass=""
-                />
-              ) : (
-                <MdRefresh className="text-[13px] mr-[5px]" />
-              )}
-              <span>Settle PnL</span>
-            </button>
-          </div>
-        </div>
-      </div>
       {isMobile ? null : <Leverage />}
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
@@ -819,7 +710,117 @@ export const OpenTrade = ({
             {currentAsset?.min_notional} {currentAsset?.quote}
           </p>
         </div> */}
-
+        <div className="pt-4 border-t border-borderColor hidden md:block">
+          <div className="pb-4">
+            <div className="flex items-center justify-between">
+              <div
+                className="relative"
+                onMouseEnter={() => {
+                  if (depositAmount) {
+                    setIsTooltipDepositOpen(true);
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (depositAmount) {
+                    setIsTooltipDepositOpen(false);
+                  }
+                }}
+              >
+                <div
+                  className={`absolute ${
+                    isTooltipDepositOpen
+                      ? "opacity-100 "
+                      : "opacity-0 pointer-events-none translate-y-[1%]"
+                  } transition-all duration-200 h-fit rounded-md border border-borderColor ease-in-out  top-[105%] w-[180px] p-2.5 left-1/2 -translate-x-1/2 bg-secondary z-[10] shadow-xl shadow-[rgba(0,0,0,0.2)]`}
+                >
+                  <p className="text-xs text-font-80">
+                    Your deposit has been successfully received. The funds will
+                    be available in your account shortly.
+                  </p>
+                </div>
+                <p className="text-xs text-font-60 mb-[3px]">Total Value</p>
+                <p
+                  className={`text-base font-medium ${
+                    depositAmount
+                      ? "animate-pulse text-base_color"
+                      : " text-white"
+                  } transition-opacity duration-1000 ease-in-out`}
+                >
+                  {totalValue} {positionPnL.aggregated.unrealizedPnl}
+                </p>
+              </div>
+              {/* <IoChevronDown className="text-xl" /> */}
+              <div>
+                <p className="text-xs text-font-60 mb-[3px] text-end">
+                  Unreal PnL
+                </p>
+                <p
+                  className={`text-sm font-medium ${
+                    data?.aggregated.unrealPnL > 0
+                      ? "text-green"
+                      : data?.aggregated.unrealPnL < 0
+                      ? "text-red"
+                      : "text-white"
+                  }`}
+                >
+                  {getFormattedAmount(data?.aggregated.unrealPnL)} (
+                  {data?.aggregated.unrealPnlROI.toFixed(2)}
+                  %)
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between mt-4">
+              <div>
+                <p className="text-xs text-font-60 mb-1">
+                  Unsettled PnL (USDC)
+                </p>
+                <p
+                  className={`text-sm font-medium ${
+                    unsettledPnL > 0
+                      ? "text-green"
+                      : unsettledPnL < 0
+                      ? "text-red"
+                      : "text-white"
+                  }`}
+                >
+                  {unsettledPnL}{" "}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  if (unsettledPnL !== 0 && accountInstance) {
+                    setIsSettleLoading(true);
+                    accountInstance?.settle();
+                  }
+                }}
+                className={`${
+                  unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
+                } flex items-center border border-borderColor hover:bg-terciary 
+                rounded px-2 py-1 text-xs text-white transition-all duration-100 ease-in-out`}
+              >
+                {isSettleLoading ? (
+                  <Oval
+                    visible={true}
+                    height="13"
+                    width="13"
+                    color="#FFF"
+                    secondaryColor="rgba(255,255,255,0.6)"
+                    ariaLabel="oval-loading"
+                    strokeWidth={6}
+                    strokeWidthSecondary={6}
+                    wrapperStyle={{
+                      marginRight: "5px",
+                    }}
+                    wrapperClass=""
+                  />
+                ) : (
+                  <MdRefresh className="text-[13px] mr-[5px]" />
+                )}
+                <span>Settle PnL</span>
+              </button>
+            </div>
+          </div>
+        </div>
         <div className="flex items-center justify-between border-t border-borderColor pt-4">
           <p className="text-xs text-font-60">Margin Required</p>
           <p className="text-xs text-white font-medium">
