@@ -16,7 +16,7 @@ import {
 } from "@orderly.network/hooks";
 import { API } from "@orderly.network/types";
 import { FixedNumber } from "ethers";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FaArrowDownLong } from "react-icons/fa6";
 import { Oval } from "react-loader-spinner";
 import { useAccount, useSwitchChain } from "wagmi";
@@ -125,7 +125,8 @@ export const Deposit = () => {
           }
         }
       } else {
-        if (unsettledPnL < 1 && unsettledPnL > -1) {
+        console.log("unsettledPnL", unsettledPnL);
+        if (unsettledPnL > 1 || unsettledPnL < -1) {
           triggerAlert("Error", "Settle PnL first.");
           return;
         }
@@ -147,9 +148,7 @@ export const Deposit = () => {
             setNewOrderlyBalance(undefined);
             setTimeout(() => {
               setOpen(false);
-              setTimeout(() => {
-                setIsWithdrawSuccess(false);
-              }, 1000);
+              setIsWithdrawSuccess(false);
               triggerAlert(
                 "Information",
                 "Withdrawal is processing... Your funds will appear in your wallet shortly."
@@ -158,6 +157,7 @@ export const Deposit = () => {
           }
         } catch (err) {
           triggerAlert("Error", (err as any)?.error?.message);
+          console.log("err", err);
         }
       }
     } else {
@@ -165,9 +165,9 @@ export const Deposit = () => {
     }
   };
 
-  const getButtonState = (): string => {
+  const getButtonState = useCallback((): string => {
     if (isSupportedChain) {
-      if (unsettledPnL < 1 && unsettledPnL > -1 && !isDeposit)
+      if ((unsettledPnL > 1 && !isDeposit) || (unsettledPnL < -1 && !isDeposit))
         return "Settle PnL First";
       if (isDeposit) {
         if (amount != null && Number(allowance) < Number(amount))
@@ -180,7 +180,7 @@ export const Deposit = () => {
       return "Withdraw";
     }
     return "Switch Network";
-  };
+  }, [unsettledPnL, amount]);
 
   const buttonState = getButtonState();
 

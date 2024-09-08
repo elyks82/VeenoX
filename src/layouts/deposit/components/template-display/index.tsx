@@ -141,17 +141,17 @@ TemplateDisplayProps) => {
         title_top: "Your Wallet",
         image_top:
           connectorsToImage[state?.connectWallet?.name as ConnectorNameType] ||
-          "/logo/v.png",
+          "/veenox/veenox-logo.png",
         title_bot: "Your VeenoX account",
-        image_bot: "/logo/v.png",
+        image_bot: "/veenox/veenox-logo.png",
       };
     return {
       title_top: "Your VeenoX account ",
-      image_top: "/logo/v.png",
+      image_top: "/veenox/veenox-logo.png",
       title_bot: "Your Wallet",
       image_bot:
         connectorsToImage[state?.connectWallet?.name as ConnectorNameType] ||
-        "/logo/v.png",
+        "/veenox/veenox-logo.png",
     };
   };
 
@@ -206,8 +206,9 @@ TemplateDisplayProps) => {
             <button
               className="text-sm font-medium text-base_color uppercase"
               onClick={() => {
-                setAmount(balance as never);
-                setQuantity(balance.toString());
+                const newBalance = Number(balance).toFixed(3);
+                setAmount(newBalance as never);
+                setQuantity(newBalance);
               }}
             >
               MAX
@@ -281,7 +282,7 @@ TemplateDisplayProps) => {
             src={pageContent.image_bot}
             height={20}
             width={20}
-            alt="Veeno logo"
+            alt="VeenoX logo"
             className="rounded-full"
           />
         </div>
