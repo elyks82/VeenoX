@@ -33,7 +33,7 @@ export const RenderCells = ({
     editPendingPositionOpen,
     setEditPendingPositionOpen,
   } = useGeneralContext();
-  const { onSubmit } = useOrderEntry(
+  const { onSubmit, estLeverage } = useOrderEntry(
     {
       symbol: order.symbol,
       side: (order.position_qty as number) >= 0 ? "SELL" : ("BUY" as any),

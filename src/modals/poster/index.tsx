@@ -4,6 +4,7 @@ import {
   getFormattedAmount,
   getFormattedDate,
 } from "@/utils/misc";
+import { useMarginRatio } from "@orderly.network/hooks";
 import { useEffect, useRef, useState } from "react";
 import { FaShareAlt } from "react-icons/fa";
 
@@ -25,6 +26,8 @@ export const PosterModal = ({ order }: any) => {
     amount: order.position_qty,
     unrealized_pnl: order.unrealized_pnl,
   };
+
+  const { marginRatio, currentLeverage, mmr } = useMarginRatio();
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -91,7 +94,7 @@ export const PosterModal = ({ order }: any) => {
 
       ctx.fillStyle = "rgb(255,255,255)";
       ctx.fillText(
-        `${data.leverage}X`,
+        `${Math.round(currentLeverage)}X`,
         50 + sideWidth + pipeWidth1 + symbolWidth + pipeWidth2,
         100
       );
@@ -119,7 +122,9 @@ export const PosterModal = ({ order }: any) => {
           `${Number(pnlPercentage) > 0 ? "+" : ""}${
             pnlDisplay === "PnL"
               ? `${pnl}$`
-              : `${(Number(pnlPercentage) * 47).toFixed(2)}%`
+              : `${(Number(pnlPercentage) * (currentLeverage || 1)).toFixed(
+                  2
+                )}%`
           }`,
           baseX,
           baseY
