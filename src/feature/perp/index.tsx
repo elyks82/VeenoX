@@ -191,7 +191,7 @@ export const Perp = ({ asset }: PerpProps) => {
   };
 
   return (
-    <div ref={containerRef} className="container  w-full max-w-full">
+    <div ref={containerRef} className="container w-full max-w-full">
       <EnableTrading />
       {/* <AdvancedChart symbol={asset?.symbol} /> */}
       <div className="w-full flex h-full">
@@ -202,9 +202,9 @@ export const Perp = ({ asset }: PerpProps) => {
         >
           <div
             ref={rowUpRef}
-            className="relative w-full border-b border-borderColor topPane md:flex-grow "
+            className="relative w-full  border-b border-borderColor topPane md:flex-grow "
             style={{
-              height: `${window.innerWidth < 1168 ? "auto" : topHeight}%`,
+              height: `${window.innerWidth < 1168 ? "auto" : `${topHeight}%`}`,
               zIndex: 1,
             }}
           >
@@ -279,7 +279,7 @@ export const Perp = ({ asset }: PerpProps) => {
           </div>
           <div className="resizerY hidden md:flex" onMouseDown={handleMouse} />
           <div className=" w-full h-auto bottomPane">
-            <div className="overflow-x-hidden no-scrollbar">
+            <div className="no-scrollbar">
               <Position asset={asset} />
             </div>
           </div>

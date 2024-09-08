@@ -10,13 +10,14 @@ import { supportedChainIds } from "@/utils/network";
 import {
   useChains,
   useDeposit,
+  useHoldingStream,
   useAccount as useOrderlyAccount,
   useWalletConnector,
   useWithdraw,
 } from "@orderly.network/hooks";
 import { API } from "@orderly.network/types";
 import { FixedNumber } from "ethers";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { FaArrowDownLong } from "react-icons/fa6";
 import { Oval } from "react-loader-spinner";
 import { useAccount, useSwitchChain } from "wagmi";
@@ -41,6 +42,7 @@ export const Deposit = () => {
     setIsDeposit,
     openWithdraw,
     setOpenWithdraw,
+    setDepositAmount,
   } = useGeneralContext();
   const networkIdSupported = [42161, 421614, 8453, 84532, 10, 11155420];
   const isSupportedChain = networkIdSupported.includes(chainId as number);
@@ -81,6 +83,8 @@ export const Deposit = () => {
     srcToken: token?.symbol,
     srcChainId: Number(chainId),
   });
+  const { usdc } = useHoldingStream();
+
   const { switchChain } = useSwitchChain();
   const handleClick = async () => {
     if (isSupportedChain) {
@@ -110,6 +114,8 @@ export const Deposit = () => {
             await deposit();
             setIsDepositSuccess(true);
             setIsApprovalDepositLoading(false);
+            // @ts-ignore
+            setDepositAmount(usdc?.holding);
             setAmount(undefined);
             setNewWalletBalance(undefined);
             setNewOrderlyBalance(undefined);
@@ -119,8 +125,8 @@ export const Deposit = () => {
                 setIsDepositSuccess(false);
               }, 1000);
               triggerAlert(
-                "Information",
-                "Deposit is processing... Your funds will appear in your VeenoX account shortly. "
+                "Success",
+                "Successfully deposited. Your funds will appear in your VeenoX account shortly. "
               );
             }, 2000);
           } catch (err) {
@@ -153,8 +159,8 @@ export const Deposit = () => {
               setOpenWithdraw(false);
               setIsWithdrawSuccess(false);
               triggerAlert(
-                "Information",
-                "Withdrawal is processing... Your funds will appear in your wallet shortly."
+                "Success",
+                "Successfully withdraw. Your funds will appear in your wallet shortly."
               );
             }, 2000);
           }
@@ -168,7 +174,7 @@ export const Deposit = () => {
     }
   };
 
-  const getButtonState = useCallback((): string => {
+  const getButtonState = (): string => {
     if (isSupportedChain) {
       if ((unsettledPnL > 1 && !isDeposit) || (unsettledPnL < -1 && !isDeposit))
         return "Settle PnL First";
@@ -183,7 +189,7 @@ export const Deposit = () => {
       return "Withdraw";
     }
     return "Switch Network";
-  }, [unsettledPnL, amount]);
+  };
 
   const buttonState = getButtonState();
 

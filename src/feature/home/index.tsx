@@ -346,7 +346,9 @@ export const Home = () => {
                   ([chainId, _]: any, i) =>
                     i !== 0 &&
                     chainsName[chainId] !== "Kroma" &&
-                    chainsName[chainId] !== "Scroll"
+                    chainsName[chainId] !== "Scroll" &&
+                    chainsName[chainId] !== "Mode" &&
+                    chainsName[chainId] !== "Linea"
                 )
                 .map(([chainId, image]: any, i) => (
                   <div

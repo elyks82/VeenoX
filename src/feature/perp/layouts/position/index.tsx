@@ -3,6 +3,7 @@ import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
 import { getFormattedAmount, getTokenPercentage } from "@/utils/misc";
 import {
+  useMarginRatio,
   useOrderEntry,
   useOrderStream,
   usePositionStream,
@@ -35,6 +36,7 @@ export const Position = ({ asset }: PositionProps) => {
   }>({ width: "20%", left: "0%" });
   const [data] = usePositionStream();
   const [orders, { cancelOrder }] = useOrderStream({ symbol: asset.symbol });
+  const { currentLeverage } = useMarginRatio();
 
   useEffect(() => {
     if (!orderPositions?.length && (data?.rows?.length as number) > 0) {
@@ -168,7 +170,7 @@ export const Position = ({ asset }: PositionProps) => {
               }`}
             >
               {getFormattedAmount(data?.aggregated.unrealPnL)} (
-              {getTokenPercentage(pnl_change)}%)
+              {getTokenPercentage(pnl_change * currentLeverage)}%)
             </p>
           </div>
           <div>
