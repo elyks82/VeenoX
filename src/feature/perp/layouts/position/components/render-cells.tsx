@@ -269,7 +269,9 @@ const renderAdditionalCells = (
             </p>
           </div>
         </td>
-        <td className={tdStyle}>{getFormattedAmount(trade.est_liq_price)}</td>
+        <td className={cn(tdStyle, "text-orange-300")}>
+          {getFormattedAmount(trade.est_liq_price)}
+        </td>
         <td className={tdStyle}>{getFormattedAmount(trade.cost_position)}</td>
         <td className={tdStyle}>
           ${isNaN(totalMargin.toFixed(2)) ? "N/A" : totalMargin.toFixed(2)}
