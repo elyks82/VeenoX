@@ -159,7 +159,7 @@ export const Dashboard = () => {
                     }
                   >
                     <p>UID: {state.userId || "N/A"}</p>
-                    {isCopied ? (
+                    {isCopied === state.userId ? (
                       <FaCheck className="ml-2 text-green" />
                     ) : (
                       <MdOutlineContentCopy className="ml-2" />
@@ -270,7 +270,21 @@ export const Dashboard = () => {
                                 {item.amount.toFixed(2)}
                               </td>
                               <td className={tdStyle}>
-                                {addressSlicer(item.tx_id)}
+                                <div
+                                  className="flex items-center justify-end"
+                                  onClick={() =>
+                                    copyToClipboard(
+                                      (item?.tx_id as string) || ""
+                                    )
+                                  }
+                                >
+                                  {addressSlicer(item.tx_id)}
+                                  {isCopied === item.tx_id ? (
+                                    <FaCheck className="ml-2 text-green" />
+                                  ) : (
+                                    <MdOutlineContentCopy className="ml-2" />
+                                  )}{" "}
+                                </div>
                               </td>
                               <td className={tdStyle}>
                                 {getFormattedDate(item.created_time)}
