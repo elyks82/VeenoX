@@ -20,9 +20,8 @@ import {
 } from "@orderly.network/hooks";
 import { FixedNumber } from "ethers";
 import Image from "next/image";
-import { Dispatch, ReactNode, SetStateAction, useState } from "react";
+import { Dispatch, ReactNode, SetStateAction } from "react";
 import { IoChevronDown } from "react-icons/io5";
-import { Oval } from "react-loader-spinner";
 import { useAccount, useSwitchChain } from "wagmi";
 import { filterAllowedCharacters } from "../../utils";
 
@@ -41,6 +40,7 @@ const InputQuantity = () => {
   const { address, chainId, chain } = useAccount();
   const { switchChain } = useSwitchChain();
   const { isDeposit } = useGeneralContext();
+  const accountInstance = useAccountInstance();
 
   const chainLogo =
     supportedChains.find((entry) => entry.label === (chain?.name as string))
@@ -81,11 +81,12 @@ const InputQuantity = () => {
                 <button
                   key={i}
                   className="flex items-center py-1 flex-nowrap"
-                  onClick={() =>
+                  onClick={() => {
+                    accountInstance.switchChainId(supportedChain.chainId);
                     switchChain({
-                      chainId: parseInt(supportedChain.id, 16),
-                    })
-                  }
+                      chainId: supportedChain.chainId,
+                    });
+                  }}
                 >
                   <Image
                     src={supportedChain.icon}
@@ -129,11 +130,10 @@ export const TemplateDisplay = ({
   unsettledPnL,
 }: // dst,
 TemplateDisplayProps) => {
-  const { state } = useOrderlyAccount();
+  const { state, account } = useOrderlyAccount();
   const { isDeposit } = useGeneralContext();
   const { address, chainId, chain } = useAccount();
   const accountInstance = useAccountInstance();
-  const [isSettleLoading, setIsSettleLoading] = useState(false);
 
   const getPageContent = (): PageContentType => {
     if (isDeposit)
@@ -167,11 +167,9 @@ TemplateDisplayProps) => {
       switch (status) {
         case "COMPLETED":
           triggerAlert("Success", "Settlement has been completed.");
-          setIsSettleLoading(false);
           break;
         case "FAILED":
           triggerAlert("Error", "Settlement has failed.");
-          setIsSettleLoading(false);
           break;
         default:
           break;
@@ -251,37 +249,22 @@ TemplateDisplayProps) => {
                   : "text-white"
               }`}
             >
-              {unsettledPnL}
+              {(unsettledPnL || 0).toFixed(2)}
             </span>{" "}
             USDC
           </p>
           <button
             onClick={() => {
               if (unsettledPnL !== 0 && accountInstance) {
-                setIsSettleLoading(true);
-                accountInstance?.settle();
+                if (chainId === account.chainId) {
+                  accountInstance?.settle();
+                }
               }
             }}
             className={`${
               unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
             } flex items-center bg-terciary border border-borderColor-DARK rounded px-2 py-1 text-xs text-white`}
           >
-            {isSettleLoading ? (
-              <Oval
-                visible={true}
-                height="13"
-                width="13"
-                color="#FFF"
-                secondaryColor="rgba(255,255,255,0.6)"
-                ariaLabel="oval-loading"
-                strokeWidth={6}
-                strokeWidthSecondary={6}
-                wrapperStyle={{
-                  marginRight: "5px",
-                }}
-                wrapperClass=""
-              />
-            ) : null}
             <span>Settle PnL</span>
           </button>
         </div>

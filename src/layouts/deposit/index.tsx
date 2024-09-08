@@ -79,10 +79,6 @@ export const Deposit = () => {
   });
   const { switchChain } = useSwitchChain();
   const handleClick = async () => {
-    if (unsettledPnL !== 0) {
-      triggerAlert("Error", "Settle PnL first.");
-      return;
-    }
     if (isSupportedChain) {
       if (isDeposit) {
         if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
@@ -129,6 +125,10 @@ export const Deposit = () => {
           }
         }
       } else {
+        if (unsettledPnL < 1 && unsettledPnL > -1) {
+          triggerAlert("Error", "Settle PnL first.");
+          return;
+        }
         if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
           triggerAlert("Error", "Invalid amount.");
           return;
@@ -161,13 +161,14 @@ export const Deposit = () => {
         }
       }
     } else {
-      switchChain({ chainId: 42161 }); // Default switch to Arbitrum
+      switchChain({ chainId: 42161 });
     }
   };
 
   const getButtonState = (): string => {
     if (isSupportedChain) {
-      if (unsettledPnL !== 0 && !isDeposit) return "Settle PnL First";
+      if (unsettledPnL < 1 && unsettledPnL > -1 && !isDeposit)
+        return "Settle PnL First";
       if (isDeposit) {
         if (amount != null && Number(allowance) < Number(amount))
           return "Approve";
@@ -202,7 +203,7 @@ export const Deposit = () => {
         </DialogTrigger>
         <DialogContent
           close={() => setOpen(false)}
-          className="w-full max-w-[475px] h-auto max-h-auto flex flex-col gap-0"
+          className="w-full max-w-[475px] h-auto max-h-auto flex flex-col gap-0 "
         >
           <DialogHeader>
             <div className="w-full mb-5">
