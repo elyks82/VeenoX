@@ -88,8 +88,6 @@ export const OpenTrade = ({
     dp: 2,
   });
 
-  console.log("accountInfo", accountInfo);
-
   useSettleSubscription({
     onMessage: (data: any) => {
       const { status } = data;
@@ -314,7 +312,6 @@ export const OpenTrade = ({
 
   useEffect(() => {
     if (newMaxQty) {
-      console.log("I change value");
       setValues((prev) => ({
         ...prev,
         quantity: newMaxQty.toString(),
@@ -330,7 +327,6 @@ export const OpenTrade = ({
   const imrFactor = accountInfo?.imr_factor[currentAsset?.symbol] || 0;
   const maxNotional = accountInfo?.max_notional[currentAsset?.symbol] || 0;
   const [positionPnL, proxy, states] = usePositionStream();
-  console.log("datadata", currentAsset);
 
   return (
     <section className="h-full w-full text-white">

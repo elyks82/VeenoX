@@ -508,7 +508,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
   useEffect(() => {
     if (chartRef.current && isChartReady) {
-      console.log("I render");
       updatePositions();
     }
   }, [

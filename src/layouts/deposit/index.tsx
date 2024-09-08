@@ -125,7 +125,6 @@ export const Deposit = () => {
           }
         }
       } else {
-        console.log("unsettledPnL", unsettledPnL);
         if (unsettledPnL > 1 || unsettledPnL < -1) {
           triggerAlert("Error", "Settle PnL first.");
           return;

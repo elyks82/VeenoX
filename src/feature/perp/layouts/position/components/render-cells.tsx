@@ -199,7 +199,6 @@ const renderAdditionalCells = (
     const maintenanceMargin =
       Math.abs(trade.position_qty) * trade.mark_price * trade.MMR_with_orders;
 
-    console.log("rrr", trade);
     return (
       <>
         <td
