@@ -19,6 +19,8 @@ import {
 import { OrderEntity, OrderSide } from "@orderly.network/types";
 import { useEffect, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
+import { MdRefresh } from "react-icons/md";
+import { Oval } from "react-loader-spinner";
 import "rsuite/Slider/styles/index.css";
 import { useAccount } from "wagmi";
 import { Leverage } from "./components/leverage";
@@ -310,7 +312,6 @@ export const OpenTrade = ({
 
   useEffect(() => {
     if (newMaxQty) {
-      console.log("I change value");
       setValues((prev) => ({
         ...prev,
         quantity: newMaxQty.toString(),
@@ -319,8 +320,13 @@ export const OpenTrade = ({
     }
   }, [newMaxQty !== 0, maxLeverage, values.direction]);
 
+  const formatPercentage = (value: number) => {
+    return (value / 100).toFixed(3) + "%";
+  };
+
+  const imrFactor = accountInfo?.imr_factor[currentAsset?.symbol] || 0;
+  const maxNotional = accountInfo?.max_notional[currentAsset?.symbol] || 0;
   const [positionPnL, proxy, states] = usePositionStream();
-  console.log("datadata", positionPnL.aggregated.unrealizedPnl);
 
   return (
     <section className="h-full w-full text-white">
@@ -328,13 +334,13 @@ export const OpenTrade = ({
         <div className="pb-4 ">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs text-font-60 mb-[3px]">Balance</p>
+              <p className="text-xs text-font-60 mb-[3px]">Total Value</p>
               <p className="text-base text-white font-medium">
                 {totalValue} {positionPnL.aggregated.unrealizedPnl}
               </p>
             </div>
-            <IoChevronDown className="text-xl" />
-            {/* <div>
+            {/* <IoChevronDown className="text-xl" /> */}
+            <div>
               <p className="text-xs text-font-60 mb-[3px] text-end">
                 Unreal PnL
               </p>
@@ -351,9 +357,9 @@ export const OpenTrade = ({
                 {data?.aggregated.unrealPnlROI.toFixed(2)}
                 %)
               </p>
-            </div> */}
+            </div>
           </div>
-          {/* <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-4">
             <div>
               <p className="text-xs text-font-60 mb-1">Unsettled PnL (USDC)</p>
               <p
@@ -400,7 +406,7 @@ export const OpenTrade = ({
               )}
               <span>Settle PnL</span>
             </button>
-          </div> */}
+          </div>
         </div>
       </div>
       {isMobile ? null : <Leverage />}
@@ -415,8 +421,8 @@ export const OpenTrade = ({
           </button>
         ))}
         <button
-          className="w-1/3 h-full text-white text-xs font-medium flex items-center justify-center"
-          onClick={() => setIsTooltipMarketTypeOpen((prev) => !prev)}
+          className="w-1/3 h-full text-white text-xs opacity-50 cursor-not-allowed font-medium flex items-center justify-center"
+          // onClick={() => setIsTooltipMarketTypeOpen((prev) => !prev)}
         >
           {values.type !== "MARKET" && values.type !== "LIMIT"
             ? values.type
@@ -726,53 +732,6 @@ export const OpenTrade = ({
               ) : null}
             </div>
           </button> */}
-
-          {/* {values?.tp_sl ? (
-            <>
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center h-[35px] bg-terciary w-2/3 border border-borderColor-DARK rounded mt-3">
-                  <input
-                    name="size"
-                    className="w-full pl-2 h-full text-white text-xs"
-                    placeholder="TP Price"
-                    type="number"
-                  />
-                </div>
-                <div className="flex items-center h-[35px] bg-terciary w-1/3 border border-borderColor-DARK rounded mt-3">
-                  <input
-                    name="size"
-                    className="w-full h-full pl-2 text-white text-xs"
-                    placeholder="Gain"
-                    type="number"
-                  />
-                  <button className="pr-2 text-white text-xs flex items-center justify-center">
-                    % <IoChevronDown className="h-full ml-1" />
-                  </button>
-                </div>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center h-[35px] bg-terciary w-2/3 border border-borderColor-DARK rounded mt-2">
-                  <input
-                    name="size"
-                    className="w-full pl-2 h-full text-white text-xs"
-                    placeholder="SL Price"
-                    type="number"
-                  />
-                </div>
-                <div className="flex items-center h-[35px] bg-terciary w-1/3 border border-borderColor-DARK rounded mt-2">
-                  <input
-                    name="size"
-                    className="w-full h-full pl-2 text-white text-xs"
-                    placeholder="Loss"
-                    type="number"
-                  />
-                  <button className="pr-2 text-white text-xs flex items-center justify-center">
-                    % <IoChevronDown className="h-full ml-1" />
-                  </button>
-                </div>
-              </div>
-            </>
-          ) : null} */}
         </div>
         <div className={`${isMobile ? "hidden" : "flex"} h-[100px] w-full`} />
         <button
@@ -814,15 +773,17 @@ export const OpenTrade = ({
 
         <div className="flex items-center justify-between border-t border-borderColor pt-4">
           <p className="text-xs text-font-60">Margin Required</p>
-          <p className="text-xs text-white font-medium">{"N/A"}</p>
+          <p className="text-xs text-white font-medium">
+            {(imrFactor * 100).toFixed(4)}%
+          </p>
         </div>
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-xs text-font-60">Slippage</p>
-          <p className="text-xs text-white font-medium">Est: 0% / Max: 8%</p>
-        </div>
+
         <div className="flex items-center justify-between mt-2 pb-4">
-          <p className="text-xs text-font-60">Fees</p>
-          <p className="text-xs text-white font-medium">0.030% / 0.030%</p>
+          <p className="text-xs text-font-60">Fees (Maker / Taker)</p>
+          <p className="text-xs text-white font-medium">
+            {formatPercentage(accountInfo?.futures_maker_fee_rate as number)} /{" "}
+            {formatPercentage(accountInfo?.futures_taker_fee_rate as number)}
+          </p>
         </div>
       </div>
     </section>

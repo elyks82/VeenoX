@@ -9,6 +9,7 @@ export function isTestnet(chain: ConnectedChain | null): boolean {
 type SupportedChain = Chain & {
   network: "mainnet" | "testnet";
   icon: string;
+  chainId: number;
 } & { id: string };
 
 export const supportedChains: SupportedChain[] = [
@@ -19,6 +20,7 @@ export const supportedChains: SupportedChain[] = [
     token: "ETH",
     label: "Arbitrum One",
     rpcUrl: "https://arbitrum-one.publicnode.com",
+    chainId: 42161,
   },
   {
     network: "mainnet",
@@ -27,6 +29,7 @@ export const supportedChains: SupportedChain[] = [
     token: "ETH",
     label: "OP Mainnet",
     rpcUrl: "https://mainnet.optimism.io",
+    chainId: 10,
   },
   {
     network: "mainnet",
@@ -35,6 +38,7 @@ export const supportedChains: SupportedChain[] = [
     token: "ETH",
     label: "Base",
     rpcUrl: "https://base-rpc.publicnode.com",
+    chainId: 8453,
   },
   {
     network: "testnet",
@@ -43,6 +47,7 @@ export const supportedChains: SupportedChain[] = [
     token: "ETH",
     label: "Arbitrum Sepolia",
     rpcUrl: "https://arbitrum-sepolia.publicnode.com",
+    chainId: 421614,
   },
   {
     network: "testnet",
@@ -51,6 +56,7 @@ export const supportedChains: SupportedChain[] = [
     token: "ETH",
     label: "OP Sepolia",
     rpcUrl: "https://optimism-sepolia.publicnode.com",
+    chainId: 11155111,
   },
   {
     network: "testnet",
@@ -59,6 +65,7 @@ export const supportedChains: SupportedChain[] = [
     token: "ETH",
     label: "Base Sepolia",
     rpcUrl: "https://base-sepolia-rpc.publicnode.com",
+    chainId: 84532,
   },
 ];
 

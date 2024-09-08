@@ -3,7 +3,6 @@ import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
 import { getFormattedAmount, getTokenPercentage } from "@/utils/misc";
 import {
-  useCollateral,
   useOrderEntry,
   useOrderStream,
   usePositionStream,
@@ -34,19 +33,8 @@ export const Position = ({ asset }: PositionProps) => {
     width: string;
     left: string;
   }>({ width: "20%", left: "0%" });
-  const [data, proxy, state] = usePositionStream();
+  const [data] = usePositionStream();
   const [orders, { cancelOrder }] = useOrderStream({ symbol: asset.symbol });
-  const {
-    totalCollateral,
-    freeCollateral: freeCollat,
-    totalValue,
-    availableBalance,
-    unsettledPnL,
-    positions,
-    accountInfo,
-  } = useCollateral({
-    dp: 2,
-  });
 
   useEffect(() => {
     if (!orderPositions?.length && (data?.rows?.length as number) > 0) {
@@ -100,24 +88,6 @@ export const Position = ({ asset }: PositionProps) => {
       );
     return true;
   };
-
-  // const {
-  //   freeCollateral,
-  //   markPrice,
-  //   maxQty,
-  //   estLiqPrice,
-  //   estLeverage,
-  //   onSubmit,
-  //   helper: { calculate, validator },
-  // } = useOrderEntry(
-  //   {
-  //     symbol: asset.symbol,
-  //     side: .direction as OrderSide,
-  //     order_type: values.type as any,
-  //     order_quantity: values.quantity,
-  //   },
-  //   { watchOrderbook: true }
-  // );
 
   const getPnLChange = () => {
     const arr =
@@ -186,16 +156,15 @@ export const Position = ({ asset }: PositionProps) => {
       </div>
       {activeSection === Sections.POSITION ? (
         <div className="p-2.5 flex items-center gap-5">
-          {/* <p>unsettledPnL: {data?.aggregated.unsettledPnL}</p> */}
           <div>
             <p className="text-xs text-font-60 mb-[3px]">Unreal. PnL</p>
             <p
               className={`text-base  font-medium ${
-                data?.aggregated.unrealPnL === 0
-                  ? "text-white"
+                data?.aggregated.unrealPnL < 0
+                  ? "text-red"
                   : data?.aggregated.unrealPnL > 0
                   ? "text-green"
-                  : "text-red"
+                  : "text-white"
               }`}
             >
               {getFormattedAmount(data?.aggregated.unrealPnL)} (
@@ -210,7 +179,7 @@ export const Position = ({ asset }: PositionProps) => {
           </div>
         </div>
       ) : null}
-      <div className="overflow-x-scroll h-[300px] overflow-y-scroll w-full no-scrollbar">
+      <div className="overflow-x-scroll min-h-[300px] max-h-[300px] overflow-y-scroll w-full no-scrollbar">
         <table className="w-full ">
           <thead>
             <tr>
@@ -252,7 +221,7 @@ export const Position = ({ asset }: PositionProps) => {
                     key={i}
                     className="flex flex-col justify-center text-xs text-white items-center absolute h-[260px] left-1/2"
                   >
-                    <div className="flex items-center justify-center w-full h-full">
+                    <div className="flex flex-col items-center justify-center w-full h-full">
                       <Image
                         src="/empty/no-result.svg"
                         height={50}
@@ -275,8 +244,7 @@ export const Position = ({ asset }: PositionProps) => {
                 </tr>
               );
             })}
-            {(!orders?.length && activeSection !== Sections.POSITION) ||
-            (activeSection === Sections.POSITION && !data?.rows?.length) ? (
+            {!orders?.length && activeSection !== Sections.POSITION ? (
               <tr className="flex flex-col justify-center text-xs text-white items-center absolute h-[260px] left-1/2">
                 <div className="flex flex-col justify-center items-center">
                   <Image

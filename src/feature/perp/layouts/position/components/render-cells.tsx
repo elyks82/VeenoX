@@ -199,7 +199,6 @@ const renderAdditionalCells = (
     const maintenanceMargin =
       Math.abs(trade.position_qty) * trade.mark_price * trade.MMR_with_orders;
 
-    console.log("rrr", trade);
     return (
       <>
         <td
@@ -233,7 +232,7 @@ const renderAdditionalCells = (
             }`
           )}
         >
-          <div className="flex items-center justify-start w-full h-full">
+          <div className="flex items-center justify-start w-full h-full font-medium">
             <p className="mr-2">
               {`${
                 trade.unrealized_pnl > 0
@@ -249,7 +248,7 @@ const renderAdditionalCells = (
           </div>
         </td>
         <td className={tdStyle}>
-          <div className="flex items-center justify-start w-full h-full text-font-80">
+          <div className="flex items-center justify-start w-full font-medium h-full text-font-80">
             <p
               className={`${
                 trade.tp_trigger_price ? "text-green" : "text-white"
@@ -257,7 +256,7 @@ const renderAdditionalCells = (
             >
               {trade.tp_trigger_price || "--"}
             </p>
-            /
+            <p className="mx-1"> / </p>
             <p
               className={`${
                 trade.sl_trigger_price ? "text-red" : "text-white"

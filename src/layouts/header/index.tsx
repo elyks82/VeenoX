@@ -6,7 +6,10 @@ import {
   getImageFromChainId,
   supportedChains,
 } from "@/utils/network";
-import { useAccount as useOrderlyAccount } from "@orderly.network/hooks";
+import {
+  useAccountInstance,
+  useAccount as useOrderlyAccount,
+} from "@orderly.network/hooks";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -104,7 +107,7 @@ export const Header = () => {
 
   const { switchChain } = useSwitchChain();
   const { isDeposit } = useGeneralContext();
-  console.log("chainId", chainId);
+  const accountInstance = useAccountInstance();
   const chainLogo =
     supportedChains.find((entry) => entry.label === (chain?.name as string))
       ?.icon || getImageFromChainId(chainId as ChainsImageType);
@@ -169,11 +172,12 @@ export const Header = () => {
                         }
                       }}
                       onMouseLeave={() => setIsHoverChain(null)}
-                      onClick={() =>
+                      onClick={() => {
+                        accountInstance.switchChainId(supportedChain.chainId);
                         switchChain({
-                          chainId: parseInt(supportedChain.id, 16),
-                        })
-                      }
+                          chainId: supportedChain.chainId,
+                        });
+                      }}
                     >
                       <div
                         className={`h-10 w-10 ${
