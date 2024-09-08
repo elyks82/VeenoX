@@ -58,8 +58,7 @@ export const rowsContent = [
     ],
     url: "",
     button_content: "Get started",
-    image:
-      "https://www.lynxbroker.fr/app/uploads/sites/2/2023/09/leverage-trading-featured-image.jpg",
+    image: "/veenox/leverage.jpg",
   },
   {
     title: "The first all-in-one platform trading on Monad",
@@ -70,7 +69,6 @@ export const rowsContent = [
     ],
     url: "",
     button_content: "Explore Monad",
-    image:
-      "https://www.tbstat.com/cdn-cgi/image/format=webp,q=75/wp/uploads/2024/07/20240725_Monad_News.jpg",
+    image: "/veenox/monad.webp",
   },
 ];
