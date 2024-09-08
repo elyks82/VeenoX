@@ -25,7 +25,7 @@ export const Footer = () => {
     };
   }, [ws]);
   return (
-    <footer className=" bg-secondary border-t text-sm text-white border-borderColor max-h-[70px]">
+    <footer className=" bg-secondary border-t text-sm text-white border-borderColor h-[70px] max-h-[70px]">
       <div className="h-[35px] max-h-[35px] sm:max-h-[40px] sm:h-[40px] flex items-center justify-between w-full">
         <div className="flex items-center px-2.5">
           <FaWifi className="text-green text-sm mr-2 font-bold" />

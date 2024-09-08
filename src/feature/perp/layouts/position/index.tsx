@@ -160,11 +160,11 @@ export const Position = ({ asset }: PositionProps) => {
             <p className="text-xs text-font-60 mb-[3px]">Unreal. PnL</p>
             <p
               className={`text-base  font-medium ${
-                data?.aggregated.unrealPnL === 0
-                  ? "text-white"
+                data?.aggregated.unrealPnL < 0
+                  ? "text-red"
                   : data?.aggregated.unrealPnL > 0
                   ? "text-green"
-                  : "text-red"
+                  : "text-white"
               }`}
             >
               {getFormattedAmount(data?.aggregated.unrealPnL)} (
