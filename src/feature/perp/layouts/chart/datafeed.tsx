@@ -6,7 +6,6 @@ import {
 } from "@/models";
 import { getNextBarTime, resolutionToTimeframe } from "@/utils/misc";
 import { WS } from "@orderly.network/net";
-import { Dispatch, SetStateAction } from "react";
 
 export const supportedResolutions = [
   "1",
@@ -25,11 +24,7 @@ const sockets = new Map<string, WS>();
 const lastBarsCache = new Map();
 const initialDataLoadedMap: Record<string, boolean> = {};
 
-export const Datafeed = (
-  asset: FuturesAssetProps,
-  ws: WS,
-  setIsChartLoading: Dispatch<SetStateAction<boolean>>
-) => ({
+export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
   onReady: (callback: Function) => {
     callback({ supported_resolutions: supportedResolutions });
   },
