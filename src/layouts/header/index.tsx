@@ -108,7 +108,6 @@ export const Header = () => {
   const { switchChain } = useSwitchChain();
   const { isDeposit } = useGeneralContext();
   const accountInstance = useAccountInstance();
-  console.log("chainId", chainId);
   const chainLogo =
     supportedChains.find((entry) => entry.label === (chain?.name as string))
       ?.icon || getImageFromChainId(chainId as ChainsImageType);
