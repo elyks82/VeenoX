@@ -16,13 +16,245 @@
 
 .tv-floating-toolbar,
 .tvcolorpicker-popup,
-.chart-popup {
-  background-color: #ff0000 !important;
+.chart-popup,
+.tv-dialog,
+.tv-dropdown-behavior,
+._tv-dialog,
+.js-dialog,
+.tv-floating-panel,
+.context-menu,
+.tv-contextmenu,
+.tv-tooltip-wrapper,
+.tv-tooltip {
+  background-color: #1b1d22 !important;
+  border-color: #2a2e39 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Personnalisation du texte dans les popups */
+/* Styles de texte pour tous les éléments */
 .tv-floating-toolbar *,
 .tvcolorpicker-popup *,
-.chart-popup * {
-  color: #ff0000 !important;
+.chart-popup *,
+.tv-dialog *,
+.tv-dropdown-behavior *,
+._tv-dialog *,
+.js-dialog *,
+.tv-floating-panel *,
+.context-menu *,
+.tv-contextmenu *,
+.tv-tooltip-wrapper *,
+.tv-tooltip * {
+  color: white !important;
+}
+
+/* Styles spécifiques pour les éléments de formulaire */
+.tv-dialog input[type="text"],
+.tv-dialog input[type="number"],
+.tv-dialog select,
+.tv-dialog textarea {
+  background-color: #2a2e39 !important;
+  border-color: #363c4e !important;
+  color: white !important;
+}
+
+/* Styles pour les boutons */
+.tv-button,
+.button,
+.tv-dialog__button {
+  background-color: #2a2e39 !important;
+  border-color: #363c4e !important;
+  color: white !important;
+}
+
+.tv-button:hover,
+.button:hover,
+.tv-dialog__button:hover {
+  background-color: #363c4e !important;
+  color: #836ef9 !important;
+}
+
+/* Styles pour les en-têtes de popup */
+.tv-dialog__title,
+._tv-dialog-title {
+  background-color: #2a2e39 !important;
+  color: white !important;
+}
+
+/* Styles pour les éléments de liste dans les menus déroulants */
+.tv-dropdown-behavior__item:hover,
+.tv-contextmenu__item:hover {
+  background-color: #363c4e !important;
+  color: #836ef9 !important;
+}
+
+/* Styles pour les séparateurs */
+.tv-dialog__separator,
+.tv-dropdown-behavior__separator,
+.tv-contextmenu__separator {
+  background-color: #363c4e !important;
+}
+
+/* Styles pour les scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #363c4e;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #454b5e;
+}
+
+/* Styles pour les tooltips */
+.tv-tooltip {
+  background-color: #1b1d22 !important;
+  border-color: #2a2e39 !important;
+  color: white !important;
+}
+
+/* Styles pour les éléments sélectionnés ou actifs */
+.tv-floating-toolbar__widget--active,
+.tv-dropdown-behavior__item--active,
+.tv-contextmenu__item--active {
+  background-color: #363c4e !important;
+  color: #836ef9 !important;
+}
+
+/* Styles pour les icônes */
+.tv-floating-toolbar__icon,
+.tv-dialog__icon,
+.tv-contextmenu__icon {
+  fill: white !important;
+}
+
+.tv-floating-toolbar__icon:hover,
+.tv-dialog__icon:hover,
+.tv-contextmenu__icon:hover {
+  fill: #836ef9 !important;
+}
+
+/* Styles de base pour la popup des indicateurs */
+.tv-dialog--popup.js-dialog-indicator-dialog,
+.tv-dialog__modal-wrap--popup.js-dialog-indicator-dialog {
+  background-color: #1b1d22 !important;
+  border-color: #2a2e39 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Styles pour l'en-tête de la popup */
+.tv-dialog__title.js-dialog-title {
+  background-color: #2a2e39 !important;
+  color: white !important;
+}
+
+/* Styles pour la barre de recherche des indicateurs */
+.tv-search-row {
+  background-color: #2a2e39 !important;
+}
+
+.tv-search-row__input {
+  background-color: #363c4e !important;
+  color: white !important;
+  border-color: #454b5e !important;
+}
+
+/* Styles pour la liste des indicateurs */
+.tv-dialog__section--dialog-tabbed-indicators {
+  background-color: #1b1d22 !important;
+}
+
+.tv-dialog__tab {
+  color: white !important;
+}
+
+.tv-dialog__tab--active,
+.tv-dialog__tab:hover {
+  color: #836ef9 !important;
+  border-bottom-color: #836ef9 !important;
+}
+
+/* Styles pour les éléments de la liste d'indicateurs */
+.tv-dialog__scroll-wrap .tv-category-item {
+  background-color: #1b1d22 !important;
+  border-color: #2a2e39 !important;
+}
+
+.tv-dialog__scroll-wrap .tv-category-item:hover {
+  background-color: #2a2e39 !important;
+}
+
+.tv-category-item__title {
+  color: white !important;
+}
+
+/* Styles pour les boutons d'action des indicateurs */
+.tv-dialog__scroll-wrap .tv-category-item__action {
+  background-color: #363c4e !important;
+  color: white !important;
+}
+
+.tv-dialog__scroll-wrap .tv-category-item__action:hover {
+  background-color: #454b5e !important;
+  color: #836ef9 !important;
+}
+
+/* Styles pour la section de configuration des indicateurs */
+.tv-dialog__section--dialog-indicator-settings {
+  background-color: #1b1d22 !important;
+}
+
+.tv-dialog__section--dialog-indicator-settings input[type="text"],
+.tv-dialog__section--dialog-indicator-settings input[type="number"],
+.tv-dialog__section--dialog-indicator-settings select {
+  background-color: #2a2e39 !important;
+  color: white !important;
+  border-color: #363c4e !important;
+}
+
+/* Styles pour les boutons de la popup */
+.tv-dialog__button-wrap .tv-button {
+  background-color: #2a2e39 !important;
+  color: white !important;
+  border-color: #363c4e !important;
+}
+
+.tv-dialog__button-wrap .tv-button:hover {
+  background-color: #363c4e !important;
+  color: #836ef9 !important;
+}
+
+/* Styles pour les tooltips dans la popup des indicateurs */
+.tv-dialog__tooltip {
+  background-color: #2a2e39 !important;
+  color: white !important;
+  border-color: #363c4e !important;
+}
+
+/* Styles pour la barre de défilement dans la liste des indicateurs */
+.tv-dialog__scroll-wrap::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tv-dialog__scroll-wrap::-webkit-scrollbar-thumb {
+  background-color: #363c4e !important;
+  border-radius: 4px;
+}
+
+.tv-dialog__scroll-wrap::-webkit-scrollbar-thumb:hover {
+  background-color: #454b5e !important;
+}
+
+/* Styles pour les icônes dans la popup des indicateurs */
+.tv-dialog__section--dialog-tabbed-indicators svg,
+.tv-category-item__icon svg {
+  fill: white !important;
+}
+
+.tv-dialog__section--dialog-tabbed-indicators svg:hover,
+.tv-category-item__icon:hover svg {
+  fill: #836ef9 !important;
 }
