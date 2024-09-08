@@ -1,5 +1,6 @@
 "use client";
 import { useGeneralContext } from "@/context";
+import { useCopyToClipboard } from "@/hook/useCopy";
 import { cn } from "@/utils/cn";
 import {
   addressSlicer,
@@ -16,6 +17,7 @@ import {
   useWithdraw,
 } from "@orderly.network/hooks";
 import { useEffect, useRef, useState } from "react";
+import { FaCheck } from "react-icons/fa6";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { useAccount } from "wagmi";
 import { TimeSeriesChart } from "./components/chart";
@@ -71,7 +73,7 @@ export const Dashboard = () => {
   } = useCollateral({
     dp: 2,
   });
-
+  const { copyToClipboard, isCopied, error: copyError } = useCopyToClipboard();
   const { usdc } = useHoldingStream();
   const {
     withdraw,
@@ -104,7 +106,7 @@ export const Dashboard = () => {
 
   return (
     <div className="w-full flex flex-col items-center justify-center text-white pt-[50px] pb-[100px]">
-      <div className="max-w-[1350px] w-[90%] min-h-[70vh]">
+      <div className="max-w-[1350px] w-[90%] min-h-[80vh]">
         <div className="flex items-center justify-between mb-5 ">
           <h1 className="text-2xl text-white font-semibold">Dashboard</h1>
           <div className="flex items-center w-fit justify-start">
@@ -150,9 +152,18 @@ export const Dashboard = () => {
                   <p className="">
                     {address ? addressSlicer(address) : "0x00..0000"}
                   </p>
-                  <div className="flex items-center text-font-80">
+                  <div
+                    className="flex items-center cursor-pointer text-font-80"
+                    onClick={() =>
+                      copyToClipboard((state?.userId as string) || "")
+                    }
+                  >
                     <p>UID: {state.userId || "N/A"}</p>
-                    <MdOutlineContentCopy className="ml-2" />
+                    {isCopied ? (
+                      <FaCheck className="ml-2 text-green" />
+                    ) : (
+                      <MdOutlineContentCopy className="ml-2" />
+                    )}
                   </div>
                 </div>{" "}
               </div>
