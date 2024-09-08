@@ -86,7 +86,6 @@ export type ChainsImageType =
 
 export const chainsImage: { [key: number]: string } = {
   1: "/assets/ETH.png",
-  42161: "/assets/ETH.png",
   56: "/assets/BSC.png",
   324: "/assets/ZK.png",
   137: "/assets/MATIC.png",
@@ -96,6 +95,9 @@ export const chainsImage: { [key: number]: string } = {
   255: "/assets/KROMA.jpg",
   43114: "/assets/AVAX.png",
   34443: "/assets/MODE.png",
+  42161: "/assets/ARB.png",
+  10: "/assets/OP.png",
+  8453: "/assets/BASE_LOGO.png",
 };
 
 export const chainsName: { [key: number]: string } = {

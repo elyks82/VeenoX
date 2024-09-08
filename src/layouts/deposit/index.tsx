@@ -27,7 +27,6 @@ export const Deposit = () => {
   const { address, chainId, chain } = useAccount();
   const { state } = useOrderlyAccount();
   const [amount, setAmount] = useState<FixedNumber>();
-  const [open, setOpen] = useState(false); // Manage popup state
   const [disabled, setDisabled] = useState(true);
   const [mintedTestUSDC, setMintedTestUSDC] = useState(false);
   const [newWalletBalance, setNewWalletBalance] = useState<FixedNumber>();
@@ -36,8 +35,13 @@ export const Deposit = () => {
     useState<boolean>(false);
   const [isDepositSuccess, setIsDepositSuccess] = useState(false);
   const [isWithdrawSuccess, setIsWithdrawSuccess] = useState(false);
-  const { setIsWalletConnectorOpen, isDeposit, setIsDeposit } =
-    useGeneralContext();
+  const {
+    setIsWalletConnectorOpen,
+    isDeposit,
+    setIsDeposit,
+    openWithdraw,
+    setOpenWithdraw,
+  } = useGeneralContext();
   const networkIdSupported = [42161, 421614, 8453, 84532, 10, 11155420];
   const isSupportedChain = networkIdSupported.includes(chainId as number);
 
@@ -110,7 +114,7 @@ export const Deposit = () => {
             setNewWalletBalance(undefined);
             setNewOrderlyBalance(undefined);
             setTimeout(() => {
-              setOpen(false);
+              setOpenWithdraw(false);
               setTimeout(() => {
                 setIsDepositSuccess(false);
               }, 1000);
@@ -146,7 +150,7 @@ export const Deposit = () => {
             setNewWalletBalance(undefined);
             setNewOrderlyBalance(undefined);
             setTimeout(() => {
-              setOpen(false);
+              setOpenWithdraw(false);
               setIsWithdrawSuccess(false);
               triggerAlert(
                 "Information",
@@ -185,10 +189,10 @@ export const Deposit = () => {
 
   return (
     <>
-      <Dialog open={open}>
+      <Dialog open={openWithdraw}>
         <DialogTrigger
           onClick={() => {
-            if (state.status >= 2) setOpen(true);
+            if (state.status >= 2) setOpenWithdraw(true);
             else setIsWalletConnectorOpen(true);
           }}
         >
@@ -201,7 +205,7 @@ export const Deposit = () => {
           </button>
         </DialogTrigger>
         <DialogContent
-          close={() => setOpen(false)}
+          close={() => setOpenWithdraw(false)}
           className="w-full max-w-[475px] h-auto max-h-auto flex flex-col gap-0 "
         >
           <DialogHeader>
