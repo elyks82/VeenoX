@@ -542,6 +542,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     order?.tp_trigger_price,
     order?.average_open_price,
     params?.perp,
+    orders?.rows?.length,
     asset?.symbol,
     isChartReady,
     relevantPositions,
