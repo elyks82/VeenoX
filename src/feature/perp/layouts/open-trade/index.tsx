@@ -771,9 +771,7 @@ export const OpenTrade = ({
             </div>
             <div className="flex items-center justify-between mt-4">
               <div>
-                <p className="text-xs text-font-60 mb-1">
-                  Unsettled PnL (USDC)
-                </p>
+                <p className="text-xs text-font-60 mb-1">Unsettled PnL</p>
                 <p
                   className={`text-sm font-medium ${
                     unsettledPnL > 0
@@ -783,7 +781,7 @@ export const OpenTrade = ({
                       : "text-white"
                   }`}
                 >
-                  {unsettledPnL}{" "}
+                  {getFormattedAmount(unsettledPnL)}{" "}
                 </p>
               </div>
               <button
@@ -831,8 +829,13 @@ export const OpenTrade = ({
         <div className="flex items-center justify-between mt-2 pb-4">
           <p className="text-xs text-font-60">Fees (Maker / Taker)</p>
           <p className="text-xs text-white font-medium">
-            {formatPercentage(accountInfo?.futures_maker_fee_rate as number)} /{" "}
-            {formatPercentage(accountInfo?.futures_taker_fee_rate as number)}
+            {accountInfo?.futures_maker_fee_rate
+              ? formatPercentage(accountInfo?.futures_maker_fee_rate as number)
+              : "0.03"}{" "}
+            /{" "}
+            {accountInfo?.futures_taker_fee_rate
+              ? formatPercentage(accountInfo?.futures_taker_fee_rate as number)
+              : "0.03"}
           </p>
         </div>
       </div>
