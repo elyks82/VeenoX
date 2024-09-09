@@ -80,7 +80,7 @@ export const Position = ({ asset }: PositionProps) => {
   };
 
   const filterSide = (entry: any) => {
-    if (activeSection === 1)
+    if (activeSection === Sections.PENDING)
       return (
         entry.total_executed_quantity < entry.quantity &&
         entry.type === "LIMIT" &&
@@ -88,8 +88,45 @@ export const Position = ({ asset }: PositionProps) => {
         entry.status !== "FILLED" &&
         entry.status !== "CANCELLED"
       );
+    else if (activeSection === Sections.TP_SL) {
+      if (entry.algo_order_id) {
+        const tp = entry?.child_orders[0];
+        const sl = entry?.child_orders[1];
+        if (tp.algo_status === "FILLED" || sl.algo_status === "FILLED") {
+          return true;
+        }
+        return false;
+      }
+      return false;
+    } else if (activeSection === Sections.FILLED) {
+      const tp = entry?.child_orders?.[0];
+      const sl = entry?.child_orders?.[1];
+      if (
+        entry.status === "FILLED" ||
+        tp?.algo_status === "FILLED" ||
+        sl?.algo_status === "FILLED"
+      ) {
+        return true;
+      }
+      return false;
+    }
+
     return true;
   };
+
+  // const [tt] = useOrderStream({
+  //   includes: [AlgoOrderRootType.TP_SL, AlgoOrderRootType.POSITIONAL_TP_SL],
+  // });
+
+  // const tpslOrder = findPositionTPSLFromOrders(orders, asset?.symbol);
+  // console.log("tt", tt, orders);
+  // if (tpslOrder) {
+  //   console.log("TP/SL order trouvé pour BTC-USDT:", tpslOrder);
+  //   console.log("Take Profit:", tpslOrder.tp_trigger_price);
+  //   console.log("Stop Loss:", tpslOrder.sl_trigger_price);
+  // } else {
+  //   console.log("Aucun ordre TP/SL trouvé pour BTC-USDT");
+  // }
 
   const getPnLChange = () => {
     const arr =
