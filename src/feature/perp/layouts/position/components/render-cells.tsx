@@ -325,7 +325,7 @@ const renderAdditionalCells = (
 
                 try {
                   await onSubmit(cancelOrder);
-                  triggerAlert("Success", "Position is successfully closed");
+                  triggerAlert("Success", "Successfully closed");
                   setOrderPositions(["closed"]);
                 } catch (e) {
                   triggerAlert(
