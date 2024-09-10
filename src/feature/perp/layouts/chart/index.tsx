@@ -124,6 +124,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [isChartReady, setIsChartReady] = useState(false);
   const chartRef = useRef<any>(null);
   const prevPositionsRef = useRef("");
+  const prevPendingPriceRef = useRef("");
   const prevPendingRef = useRef("");
   const [resolution, setResolution] = useState<string | null>(null);
   const [currentInterval, setCurrentInterval] = useState<string>("");
@@ -132,21 +133,28 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [ordersData] = useOrderStream({ symbol: asset?.symbol });
 
   const pendingPosition = useMemo(() => {
+    console.log("I TRIGGER");
     return (
       ordersData?.filter(
         (entry) =>
-          entry.total_executed_quantity < entry.quantity &&
+          entry.symbol === asset?.symbol &&
           entry.type === "LIMIT" &&
-          entry.status !== "COMPLETED" &&
-          entry.status !== "FILLED" &&
-          entry.status !== "CANCELLED"
+          (entry.status === "NEW" || entry.status === "REPLACED")
       ) || []
     );
   }, [ordersData]);
 
-  const activeTokenPendingPosition = useMemo(() => {
-    return pendingPosition.find((entry) => entry.symbol === asset?.symbol);
-  }, [pendingPosition]);
+  console.log("ordersData", ordersData);
+
+  const relevantPositions = useMemo(() => {
+    return (
+      orders?.rows?.filter(
+        (position: any) => position.symbol === asset?.symbol
+      ) || []
+    );
+  }, [orders, params?.perp]);
+
+  console.log("pendingPosition", pendingPosition);
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -379,14 +387,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     );
   }, [asset, mobile, ws, setupChangeListeners]);
 
-  const relevantPositions = useMemo(() => {
-    return (
-      orders?.rows?.filter(
-        (position: any) => position.symbol === asset?.symbol
-      ) || []
-    );
-  }, [orders, params?.perp]);
-
   const updatePositions = useCallback(() => {
     const chart = chartRef.current;
     if (!chart || !relevantPositions) {
@@ -405,8 +405,12 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           prev.position_qty !== current.position_qty
         );
       };
-
-      if (relevantPositions.length !== prevPositionsRef.current.length) {
+      console.log(pendingPosition?.length, Number(prevPendingRef.current));
+      if (
+        relevantPositions.length !== prevPositionsRef.current.length ||
+        pendingPosition?.length !== Number(prevPendingRef.current) ||
+        pendingPosition?.[0].price !== prevPendingPriceRef?.current
+      ) {
         hasChanges = true;
       } else {
         for (let i = 0; i < relevantPositions.length; i++) {
@@ -497,14 +501,15 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           }
         });
 
-        pendingPosition?.forEach((entry) => {
-          const pendingLineId = `pending_${entry?.order_id}`;
+        console.log(pendingPosition);
+        pendingPosition.forEach((entry) => {
+          const pendingLineId = `pending_${entry.order_id}`;
           const pendingLine = createLine({
             setText: "Limit order",
-            setPrice: entry?.price || 150,
+            setPrice: entry.price,
+            setQuantity: entry.quantity.toString(),
             setLineWidth: 1,
-            setQuantity: "",
-            setBodyTextColor: "#000",
+            setBodyTextColor: "#000000",
             setBodyBackgroundColor: "#1c5e57",
             setBodyBorderColor: "#1c5e57",
             setLineColor: "#1c5e57",
@@ -517,7 +522,8 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
         setChartLines(newChartLines);
         (prevPositionsRef as any).current = relevantPositions;
-        prevPendingRef.current = activeTokenPendingPosition;
+        (prevPendingPriceRef as any).current = pendingPosition[0]?.price;
+        (prevPendingRef as any).current = pendingPosition?.length;
       } else {
       }
     } catch (e) {
@@ -528,9 +534,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     asset?.symbol,
     chartLines,
     relevantPositions,
-    activeTokenPendingPosition,
     setIsChartLoading,
+    pendingPosition,
   ]);
+
+  console.log("test", pendingPosition);
 
   useEffect(() => {
     if (chartRef.current && isChartReady) {
@@ -547,8 +555,8 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     asset?.symbol,
     isChartReady,
     relevantPositions,
-    activeTokenPendingPosition,
     updatePositions,
+    pendingPosition,
   ]);
 
   useEffect(() => {
