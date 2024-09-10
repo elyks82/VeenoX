@@ -282,7 +282,7 @@ export const PosterModal = ({ order }: any) => {
         </button>
       </DialogTrigger>
       <DialogContent
-        className="max-w-[1050px] w-[90%] h-auto max-h-[90vh] flex flex-col gap-0 overflow-auto"
+        className="max-w-[1050px] w-[90%] h-auto max-h-[90vh] flex flex-col gap-0 overflow-auto no-scrollbar"
         close={() => {}}
       >
         <div className="flex flex-col">
