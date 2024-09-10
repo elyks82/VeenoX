@@ -169,28 +169,15 @@ export const Home = () => {
         {/* <div className="sparkles" /> */}
         <div className="w-[90%] max-w-[1200px] flex flex-col md:flex-row items-center justify-between">
           <motion.div className="flex flex-col  ">
-            <motion.div
-              variants={{
-                hidden: {
-                  opacity: 0,
-                  y: 10,
-                },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                },
-              }}
-              initial="visible"
-              animate={mainControls}
-              transition={{ duration: 0.3, delay: 0.3 }}
-              className="overflow-hidden block relative whitespace-nowrap
-               text-4xl lg:text-6xl font-extrabold w-auto text-white uppercase text-start  lg:leading-[60px]"
+            <div
+              className="overflow-hidden block relative md:whitespace-nowrap
+               text-4xl lg:text-6xl font-extrabold w-auto text-white uppercase text-start lg:leading-[60px]"
             >
               Unleash limitless
               <br />
               trading with <br />
               <span className="text-base_color"> lowest fees</span>
-            </motion.div>
+            </div>
             <motion.div
               className="flex w-full jusitfy-start"
               initial="visible"
