@@ -165,7 +165,7 @@ export const Home = () => {
   const { data } = useDaily();
   return (
     <div className="flex flex-col " ref={ref}>
-      <div className="w-full flex items-center justify-center py-[150px] pt-[250px] bg-[#15171b]">
+      <div className="w-full flex items-center justify-center py-[50px] lg:py-[150px] pt-[150px] lg:pt-[250px] bg-[#15171b]">
         {/* <div className="sparkles" /> */}
         <div className="w-[90%] max-w-[1200px] flex flex-col md:flex-row items-center justify-between">
           <motion.div className="flex flex-col  ">
@@ -244,7 +244,7 @@ export const Home = () => {
                   </div>
                 </Link>
               </motion.button>
-              <motion.button
+              {/* <motion.button
                 variants={{
                   hidden: {
                     opacity: 0,
@@ -268,13 +268,13 @@ export const Home = () => {
                     Learn More
                   </div>
                 </Link>
-              </motion.button>
+              </motion.button> */}
             </div>
           </motion.div>
-          <div className="flex flex-col mt-10 md:initial absolute z-0">
+          <div className="md:flex flex-col mt-10 hidden  z-0">
             <img
               src="/logo/veeno-purple.png"
-              className="h-[450px] lg:h-[550px] object-cover rotate-[15deg]"
+              className="h-[450px] md:h-[400px] lg:h-[550px] object-cover rotate-[15deg]"
             />
           </div>
         </div>
@@ -286,7 +286,7 @@ export const Home = () => {
           ref={cardRef}
         >
           <h2
-            className="overflow-hidden block relative whitespace-nowrap
+            className="overflow-hidden block relative lg:whitespace-nowrap
               text-4xl lg:text-5xl font-bold w-fit opacity-100 mr-auto text-white"
           >
             <span className="text-base_color">Level up </span>trading experience
@@ -296,10 +296,10 @@ export const Home = () => {
       </div>
       {/* <HeroParallax /> */}
       <div className="w-full relative border-t border-borderColor-DARK bg-[#15171B]">
-        <div className="w-[90%] max-w-[1200px] mx-auto relative flex flex-col justify-center py-[150px]">
+        <div className="w-[90%] max-w-[1200px] mx-auto relative flex flex-col justify-center py-[50px] lg:py-[150px]">
           <h2
-            className="overflow-hidden block relative whitespace-nowrap
-           text-4xl lg:text-5xl font-bold mb-10 w-auto  text-white"
+            className="overflow-hidden block relative lg:whitespace-nowrap
+           text-4xl lg:text-5xl font-bold mb-5 lg:mb-10 w-auto  text-white"
           >
             <span className="text-base_color">Powerful</span> trading tools
           </h2>
@@ -315,11 +315,18 @@ export const Home = () => {
             <div className="flex w-fit mb-5 lg:mb-10 mr-[5%]">
               <div className="flex flex-col items-start">
                 <h2
-                  className="overflow-hidden block relative whitespace-nowrap
-                  text-4xl lg:text-5xl font-bold  mb-2 w-auto  text-white"
+                  className="overflow-hidden  relative lg:whitespace-nowrap
+                  text-4xl lg:block hidden lg:text-5xl font-bold  mb-2 w-auto  text-white"
                 >
                   Seamlessly swap assets <br />
                   on <span className=" text-base_color">Monad </span> and beyond
+                </h2>
+                <h2
+                  className="overflow-hidden block relative lg:whitespace-nowrap
+                  text-4xl lg:hidden  lg:text-5xl font-bold  mb-2 w-auto  text-white"
+                >
+                  Seamlessly swap assets on{" "}
+                  <span className=" text-base_color">Monad </span> and beyond
                 </h2>
                 <p className="text-sm lg:text-lg text-font-60 mt-2 lg:mt-5 max-w-[600px]">
                   Users will have the capability to effortlessly swap any assets
@@ -340,7 +347,7 @@ export const Home = () => {
                 </button>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2.5 w-full lg:w-[380px]">
+            <div className="flex flex-wrap gap-2.5 w-full lg:w-[380px] mt-5 lg:mt-0">
               {Object.entries(chainsImage)
                 .filter(
                   ([chainId, _]: any, i) =>
@@ -383,8 +390,8 @@ export const Home = () => {
       <div className="w-full h-fit flex flex-col items-center bg-[#15171B] py-[50px] lg:py-[150px]">
         <div className="w-[90%] max-w-[1200px]">
           <h2
-            className="overflow-hidden block relative whitespace-nowrap
-           text-4xl lg:text-5xl font-bold mb-10 w-auto text-white"
+            className="overflow-hidden block relative lg:whitespace-nowrap
+           text-4xl lg:text-5xl font-bold mb-5 lg:mb-10 w-auto text-white"
           >
             Frequently <span className="text-base_color">Asked</span>
           </h2>
