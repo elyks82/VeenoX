@@ -193,7 +193,6 @@ export const Perp = ({ asset }: PerpProps) => {
   return (
     <div ref={containerRef} className="container w-full max-w-full">
       <EnableTrading />
-      {/* <AdvancedChart symbol={asset?.symbol} /> */}
       <div className="w-full flex h-full">
         <div
           style={{

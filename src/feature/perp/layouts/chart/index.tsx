@@ -280,7 +280,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const setupChangeListeners = useCallback(
     (widget: IChartingLibraryWidget) => {
       const chart = widget.activeChart();
-      chartRef.current = chart;
       const saveState = () => {
         saveChartState(chart);
       };
@@ -291,8 +290,9 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         chart.onIntervalChanged().subscribe(null, () => {
           console.log("I CHANGE");
           setTimeout(() => {
+            setTimeframe(chart.resolution());
             updatePositions();
-          }, 500);
+          }, 1000);
           saveState();
           setCurrentInterval(chart.resolution());
         });
@@ -368,7 +368,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           setIsChartReady(true);
 
           const chart = widgetInstance.activeChart();
-          chartRef.current = widgetInstance;
 
           try {
             await loadSavedState(chart);
@@ -387,9 +386,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     );
   }, [asset, mobile, ws, setupChangeListeners]);
 
+  const prevTimeframe = useRef("");
+  const [timeframe, setTimeframe] = useState("15");
+
   const updatePositions = useCallback(() => {
-    const chart = chartRef.current;
-    if (!chart || !relevantPositions) {
+    if (!tvWidget || !relevantPositions) {
       console.warn(
         "Chart or relevant positions not available. Skipping update."
       );
@@ -405,11 +406,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           prev.position_qty !== current.position_qty
         );
       };
-      console.log(pendingPosition?.length, Number(prevPendingRef.current));
       if (
         relevantPositions.length !== prevPositionsRef.current.length ||
         pendingPosition?.length !== Number(prevPendingRef.current) ||
-        pendingPosition?.[0].price !== prevPendingPriceRef?.current
+        pendingPosition?.[0]?.price !== prevPendingPriceRef?.current ||
+        prevTimeframe.current !== timeframe
       ) {
         hasChanges = true;
       } else {
@@ -418,7 +419,8 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             hasPositionChanged(
               prevPositionsRef.current[i],
               relevantPositions[i]
-            )
+            ) ||
+            prevTimeframe.current !== timeframe
           ) {
             hasChanges = true;
             break;
@@ -437,7 +439,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
         const createLine = (lineConfig: any) => {
           try {
-            const line = chart.createOrderLine();
+            const line = tvWidget.activeChart().createOrderLine();
             if (line) {
               Object.entries(lineConfig).forEach(([key, value]) => {
                 if (typeof line[key] === "function") {
@@ -447,14 +449,14 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
               return line;
             }
           } catch (error) {
-            console.error(`Error creating line: ${lineConfig.text}`, error);
+            console.log(`Error creating line: ${lineConfig.text}`, error);
           }
           return null;
         };
 
         relevantPositions?.forEach((position: any) => {
           if (position.symbol !== asset?.symbol) return;
-
+          console.log("I TRY TO CREATE A NEW LINE");
           const openPriceLineId = `open_${position?.algo_order?.algo_order_id}`;
           const openPriceLine = createLine({
             setText: "Open Price",
@@ -524,13 +526,13 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         (prevPositionsRef as any).current = relevantPositions;
         (prevPendingPriceRef as any).current = pendingPosition[0]?.price;
         (prevPendingRef as any).current = pendingPosition?.length;
-      } else {
-      }
+      } else updatePositions();
+      prevTimeframe.current = timeframe;
     } catch (e) {
-      console.error("Error updating chart lines:", e);
+      console.log("Error updating chart lines:", e);
     }
   }, [
-    chartRef,
+    tvWidget,
     asset?.symbol,
     chartLines,
     relevantPositions,
@@ -538,10 +540,8 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     pendingPosition,
   ]);
 
-  console.log("test", pendingPosition);
-
   useEffect(() => {
-    if (chartRef.current && isChartReady) {
+    if (tvWidget && isChartReady) {
       setTimeout(() => {
         updatePositions();
       }, 400);
@@ -557,16 +557,19 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     relevantPositions,
     updatePositions,
     pendingPosition,
+    timeframe,
   ]);
 
   useEffect(() => {
+    (window as any).tvWidget = null;
     initChart();
     return () => {
-      if (chartRef.current) {
-        chartRef.current = null;
+      if ((window as any).tvWidget !== null) {
+        (window as any).tvWidget?.remove();
+        (window as any).tvWidget = null;
       }
     };
-  }, [asset?.symbol, custom_css_url, mobile, chartRef]);
+  }, [asset?.symbol, custom_css_url, mobile]);
 
   return (
     <div className="relative w-full chart">
