@@ -19,6 +19,10 @@ export const Providers = ({ children }: ProviderType) => {
         toastClassName="bg-secondary text-white p-2 rounded shadow-md border border-borderColor relative"
         bodyClassName="bg-secondary text-white"
         closeButton={CloseButton}
+        position="top-center"
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
+        autoClose={3000}
       />
       <GeneralProvider>{children}</GeneralProvider>
     </>

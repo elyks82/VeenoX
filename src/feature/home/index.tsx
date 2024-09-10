@@ -165,32 +165,19 @@ export const Home = () => {
   const { data } = useDaily();
   return (
     <div className="flex flex-col " ref={ref}>
-      <div className="w-full flex items-center justify-center py-[150px] pt-[250px] bg-[#15171b]">
+      <div className="w-full flex items-center justify-center py-[50px] lg:py-[150px] pt-[150px] lg:pt-[250px] bg-[#15171b]">
         {/* <div className="sparkles" /> */}
-        <div className="w-[90%] max-w-[1200px] flex items-center justify-between">
+        <div className="w-[90%] max-w-[1200px] flex flex-col md:flex-row items-center justify-between">
           <motion.div className="flex flex-col  ">
-            <motion.div
-              variants={{
-                hidden: {
-                  opacity: 0,
-                  y: 10,
-                },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                },
-              }}
-              initial="visible"
-              animate={mainControls}
-              transition={{ duration: 0.3, delay: 0.3 }}
-              className="overflow-hidden block relative whitespace-nowrap
-                text-6xl font-extrabold w-auto text-white uppercase text-start leading-[60px]"
+            <div
+              className="overflow-hidden block relative md:whitespace-nowrap
+               text-4xl lg:text-6xl font-extrabold w-auto text-white uppercase text-start lg:leading-[60px]"
             >
               Unleash limitless
               <br />
               trading with <br />
               <span className="text-base_color"> lowest fees</span>
-            </motion.div>
+            </div>
             <motion.div
               className="flex w-full jusitfy-start"
               initial="visible"
@@ -208,7 +195,7 @@ export const Home = () => {
               animate={mainControls}
               transition={{ duration: 0.3, delay: 0.6 }}
             >
-              <p className="text-lg text-font-80 font-normal text-start mt-7 max-w-[600px]">
+              <p className="text-sm lg:text-lg text-font-80 font-normal text-start mt-3 lg:mt-7 max-w-[450px] lg:max-w-[600px]">
                 Experience a new era of trading with VeenoX, the pioneering
                 decentralized exchange on{" "}
                 <span className="text-white font-bold">Monad</span>. Enjoy an
@@ -236,15 +223,15 @@ export const Home = () => {
                   duration: 0.3,
                   delay: 0.9,
                 }}
-                className="mt-[50px] h-[50px] px-3 rounded-full mx-auto text-white text-lg mr-auto cursor-pointer bg-base_color"
+                className="mt-7 lg:mt-[50px] h-[40px] lg:h-[50px] px-2 lg:px-3 rounded-full mx-auto text-white text-lg mr-auto cursor-pointer bg-base_color"
               >
                 <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
-                  <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
+                  <div className="flex items-center justify-center w-full text-sm lg:text-lg h-full px-3 lg:px-4 py-1.5 lg:py-2">
                     Get Started
                   </div>
                 </Link>
               </motion.button>
-              <motion.button
+              {/* <motion.button
                 variants={{
                   hidden: {
                     opacity: 0,
@@ -261,33 +248,33 @@ export const Home = () => {
                   duration: 0.3,
                   delay: 0.9,
                 }}
-                className="mt-[50px] ml-5 h-[50px] px-3 rounded-full mx-auto text-base_color text-lg mr-auto cursor-pointer border border-base_color"
+                className="mt-7 lg:mt-[50px] h-[40px] lg:h-[50px] px-2 lg:px-3 ml-4 lg:ml-5 rounded-full mx-auto text-base_color text-lg mr-auto cursor-pointer border border-base_color"
               >
                 <Link href="/perp/PERP_BTC_USDC" className="w-full h-full">
-                  <div className="flex items-center justify-center w-full text-lg h-full px-4 py-2">
+                  <div className="flex items-center justify-center w-full text-sm lg:text-lg h-full px-3 lg:px-4 py-1.5 lg:py-2">
                     Learn More
                   </div>
                 </Link>
-              </motion.button>
+              </motion.button> */}
             </div>
           </motion.div>
-          <div className="flex flex-col ">
+          <div className="md:flex flex-col mt-10 hidden  z-0">
             <img
               src="/logo/veeno-purple.png"
-              className="h-[550px] object-cover rotate-[15deg]"
+              className="h-[450px] md:h-[400px] lg:h-[550px] object-cover rotate-[15deg]"
             />
           </div>
         </div>
       </div>
 
-      <div className="w-full py-[100px] shadowY border-t border-borderColor-DARK z-[10] ">
+      <div className="w-full py-[50px] lg:py-[100px] shadowY border-t border-borderColor-DARK z-[10] ">
         <div
           className="w-[90%] max-w-[1200px] mx-auto flex flex-col items-center justify-center"
           ref={cardRef}
         >
           <h2
-            className="overflow-hidden block relative whitespace-nowrap
-              text-5xl font-bold w-fit opacity-100 mr-auto text-white"
+            className="overflow-hidden block relative lg:whitespace-nowrap
+              text-4xl lg:text-5xl font-bold w-fit opacity-100 mr-auto text-white"
           >
             <span className="text-base_color">Level up </span>trading experience
           </h2>
@@ -296,10 +283,10 @@ export const Home = () => {
       </div>
       {/* <HeroParallax /> */}
       <div className="w-full relative border-t border-borderColor-DARK bg-[#15171B]">
-        <div className="w-[90%] max-w-[1200px] mx-auto relative flex flex-col justify-center py-[150px]">
+        <div className="w-[90%] max-w-[1200px] mx-auto relative flex flex-col justify-center py-[50px] lg:py-[150px]">
           <h2
-            className="overflow-hidden block relative whitespace-nowrap
-           text-5xl font-bold mb-10 w-auto  text-white"
+            className="overflow-hidden block relative lg:whitespace-nowrap
+           text-4xl lg:text-5xl font-bold mb-5 lg:mb-10 w-auto  text-white"
           >
             <span className="text-base_color">Powerful</span> trading tools
           </h2>
@@ -309,19 +296,26 @@ export const Home = () => {
         </div>
       </div>
 
-      <div className="w-full h-fit flex flex-col items-center bg-secondary shadowY border-y border-borderColor-DARK py-[100px]">
+      <div className="w-full h-fit flex flex-col items-center bg-secondary shadowY border-y border-borderColor-DARK py-[50px] lg:py-[100px]">
         <div className="w-[90%] max-w-[1200px]">
-          <div className="flex items-center gap-20 justify-between w-full ">
-            <div className="flex w-fit mb-10 mr-[5%]">
+          <div className="flex lg:items-center lg:flex-row flex-col lg:gap-20 lg:justify-between w-full ">
+            <div className="flex w-fit mb-5 lg:mb-10 mr-[5%]">
               <div className="flex flex-col items-start">
                 <h2
-                  className="overflow-hidden block relative whitespace-nowrap
-                  text-5xl font-bold  mb-2 w-auto  text-white"
+                  className="overflow-hidden  relative lg:whitespace-nowrap
+                  text-4xl lg:block hidden lg:text-5xl font-bold  mb-2 w-auto  text-white"
                 >
                   Seamlessly swap assets <br />
                   on <span className=" text-base_color">Monad </span> and beyond
                 </h2>
-                <p className="text-lg text-font-60 mt-5 max-w-[600px]">
+                <h2
+                  className="overflow-hidden block relative lg:whitespace-nowrap
+                  text-4xl lg:hidden  lg:text-5xl font-bold  mb-2 w-auto  text-white"
+                >
+                  Seamlessly swap assets on{" "}
+                  <span className=" text-base_color">Monad </span> and beyond
+                </h2>
+                <p className="text-sm lg:text-lg text-font-60 mt-2 lg:mt-5 max-w-[600px]">
                   Users will have the capability to effortlessly swap any assets
                   available on the <span className="text-white">Monad</span>{" "}
                   chain. This functionality extends beyond Monad, allowing for
@@ -331,7 +325,7 @@ export const Home = () => {
                   exchange a wide variety of digital assets across different
                   blockchains.
                 </p>
-                <button className="mt-[40px] opacity-50 cursor-not-allowed h-[50px] px-3 rounded-full text-white text-lg mr-auto border border-base_color">
+                <button className="mt-[30px] lg:mt-[40px] opacity-50 cursor-not-allowed h-[40px] lg:h-[50px] px-3 rounded-full text-white text-sm lg:text-lg mr-auto border border-base_color">
                   {/* <Link href="/perp/PERP_BTC_USDC" className="w-full h-full"> */}
                   <div className="flex items-center justify-center w-full font-semibold text-base text-base_color h-full px-4 py-2">
                     Swap now
@@ -340,21 +334,21 @@ export const Home = () => {
                 </button>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2.5 w-[380px]">
+            <div className="flex flex-wrap gap-2.5 w-full lg:w-[380px] mt-5 lg:mt-0">
               {Object.entries(chainsImage)
                 .filter(
                   ([chainId, _]: any, i) =>
-                    i !== 0 &&
                     chainsName[chainId] !== "Kroma" &&
                     chainsName[chainId] !== "Scroll" &&
                     chainsName[chainId] !== "Mode" &&
-                    chainsName[chainId] !== "Linea"
+                    chainsName[chainId] !== "Linea" &&
+                    chainsName[chainId] !== "Avalanche"
                 )
                 .map(([chainId, image]: any, i) => (
                   <div
                     key={i}
                     className="bg-[#15171B] border border-borderColor-DARK flex flex-col items-center 
-                    justify-center p-5 w-[120px] h-[120px] rounded-xl"
+                    justify-center p-2 lg:p-5 w-[60px] lg:w-[120px] h-[60px] lg:h-[120px] rounded-xl"
                   >
                     <Image
                       src={image}
@@ -363,16 +357,16 @@ export const Home = () => {
                       height={50}
                       className="rounded-full border border-borderColor"
                     />
-                    <p className="text-font-80 text-sm mt-2">
+                    <p className="text-font-80 text-sm mt-2 lg:flex hidden">
                       {chainsName[chainId]}
                     </p>
                   </div>
                 ))}
               <div
                 className="bg-[#15171B] border border-borderColor-DARK flex items-center 
-              justify-center p-5 w-[120px] text-white text-3xl h-[120px] rounded-xl"
+              justify-center p-2 lg:p-5 text-white text-xl lg:text-3xl w-[60px] lg:w-[120px] h-[60px] lg:h-[120px] rounded-xl"
               >
-                <IoAddOutline className="-ml-2 text-2xl" />
+                <IoAddOutline className="-ml-2 text-lg lg:text-2xl" />
                 <p>11</p>
               </div>
             </div>
@@ -380,11 +374,11 @@ export const Home = () => {
         </div>
       </div>
 
-      <div className="w-full h-fit flex flex-col items-center bg-[#15171B] py-[150px]">
+      <div className="w-full h-fit flex flex-col items-center bg-[#15171B] py-[50px] lg:py-[150px]">
         <div className="w-[90%] max-w-[1200px]">
           <h2
-            className="overflow-hidden block relative whitespace-nowrap
-           text-5xl font-bold mb-10 w-auto text-white"
+            className="overflow-hidden block relative lg:whitespace-nowrap
+           text-4xl lg:text-5xl font-bold mb-5 lg:mb-10 w-auto text-white"
           >
             Frequently <span className="text-base_color">Asked</span>
           </h2>

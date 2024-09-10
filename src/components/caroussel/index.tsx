@@ -93,7 +93,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
     >
       <div className="relative w-full">
         <div
-          className="flex w-full overflow-x-scroll overscroll-x-auto py-10 md:py-[60px] scroll-smooth [scrollbar-width:none]"
+          className="flex w-full overflow-x-scroll overscroll-x-auto no-scrollbar py-10 md:py-[60px] scroll-smooth [scrollbar-width:none]"
           ref={carouselRef}
           onScroll={checkScrollability}
         >
@@ -203,7 +203,7 @@ export const Card = ({
     <>
       <AnimatePresence>
         {open && (
-          <div className="fixed inset-0 h-screen z-50 overflow-auto">
+          <div className="fixed inset-0 h-screen z-50 overflow-auto no-scrollbar ">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -250,7 +250,7 @@ export const Card = ({
         className="rounded-3xl bg-secondary border border-borderColor-DARK shadow-xl h-80 w-56 md:h-[40rem] md:w-96 overflow-hidden flex flex-col items-start justify-start relative z-10"
       >
         <div className="absolute h-full top-0 inset-x-0 bg-gradient-to-b from-black/50 via-transparent to-transparent z-30 pointer-events-none" />
-        <div className="relative z-40 p-8">
+        <div className="relative z-40 p-4 lg:p-8">
           {/* <motion.p
             layoutId={layout ? `category-${card.category}` : undefined}
             className="text-base_color text-sm md:text-base font-semibold font-sans text-left"
@@ -266,7 +266,7 @@ export const Card = ({
           <motion.p
             className={`text-font-60 ${
               hover ? "translate-y-0" : "translate-y-[10px]  opacity-0"
-            } text-lg mt-5 font-normal max-w-xs text-left [text-wrap:balance] font-sans 
+            } text-sm lg:text-lg mt-2.5 lg:mt-5 font-normal max-w-xs text-left [text-wrap:balance] font-sans 
             transition-all duration-300 ease-out`}
           >
             {card.description}

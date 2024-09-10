@@ -204,7 +204,7 @@ export const OpenTrade = ({
     try {
       const val = getInput(values, asset.symbol, currentAsset?.base_tick);
       await onSubmit(val);
-      triggerAlert("Success", "Order has been executed.");
+      triggerAlert("Success", "Order executed.");
       setOrderPositions(val as any);
       setValues({
         ...defaultValues,

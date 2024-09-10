@@ -1,3 +1,4 @@
+import { Loader } from "@/components/loader";
 import { useGeneralContext } from "@/context";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { FuturesAssetProps, TradeExtension } from "@/models";
@@ -152,7 +153,7 @@ export const Orderbook = ({
         >
           {!data?.asks?.length && !data?.bids?.length ? (
             <div className="w-full h-full flex items-center justify-center">
-              <img src="/loader/loader.gif" className="w-[150px]" />
+              <Loader />
             </div>
           ) : (
             <table className="w-full h-calc-full-market">
