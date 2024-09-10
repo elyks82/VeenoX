@@ -10,9 +10,7 @@ export const AdvancedChart: FC<{ symbol: string }> = ({ symbol }) => {
         tradingViewScriptSrc="/static/charting_library/charting_library.js"
         tradingViewCustomCssUrl="/static/pro.css"
         loadingElement={
-          <div className="w-full h-full bg-secondary flex items-center justify-center">
-            <img src="/loader/loader.gif" className="w-[150px]" />
-          </div>
+          <div className="w-full h-full bg-secondary flex items-center justify-center"></div>
         }
         overrides={{
           "mainSeriesProperties.candleStyle.borderDownColor": "#DC2140",

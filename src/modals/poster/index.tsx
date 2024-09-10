@@ -1,3 +1,4 @@
+import { Loader } from "@/components/loader";
 import { Dialog, DialogContent, DialogTrigger } from "@/lib/shadcn/dialog";
 import {
   formatSymbol,
@@ -298,16 +299,16 @@ export const PosterModal = ({ order }: any) => {
                 />
               ) : (
                 <div className="max-w-[760px] w-[760px] h-[427px] bg-[#1B1D22] rounded-lg flex items-center justify-center">
-                  <img
+                  {/* <img
                     src={"/loader/loader.gif"}
                     alt="Generated Trading Poster"
                     style={{ maxWidth: "100px", height: "auto" }}
                     className="rounded-lg"
-                  />
+                  /> */}
+                  <Loader className="w-[70px]" />
                 </div>
               )}
             </div>
-
             <div className="flex flex-col ml-5">
               <p>PnL display:</p>
               <div className="flex items-center gap-3">

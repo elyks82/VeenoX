@@ -1,3 +1,4 @@
+import { Loader } from "@/components/loader";
 import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
@@ -568,7 +569,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         )}
       >
         <div className="w-full h-full flex items-center justify-center">
-          <img src="/loader/loader.gif" className="w-[150px]" alt="Loading" />
+          <Loader />
         </div>
       </div>
       <div className={cn(`w-full h-full`, className)} ref={ref} />
