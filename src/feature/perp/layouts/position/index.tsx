@@ -44,6 +44,8 @@ export const Position = ({ asset }: PositionProps) => {
     }
   }, [data?.rows]);
 
+  const position = usePositionStream();
+  console.log("datadatadata", position);
   useEffect(() => {
     const updateUnderline = () => {
       const button = buttonRefs.current[activeSection];

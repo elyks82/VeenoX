@@ -50,7 +50,7 @@ type ButtonStatusType = {
 };
 
 const defaultValues: Inputs = {
-  direction: "BUY" as any,
+  direction: "BUY",
   type: "MARKET",
   triggerPrice: undefined,
   price: undefined,

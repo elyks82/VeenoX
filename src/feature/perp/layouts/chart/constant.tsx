@@ -1,4 +1,4 @@
-export const ENABLED_FEATURES = ["show_spread_operators"];
+export const ENABLED_FEATURES = ["show_spread_operators", "header_resolutions"];
 
 export const DISABLED_FEATURES = [
   "header_compare",

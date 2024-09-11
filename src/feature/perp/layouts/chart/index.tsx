@@ -339,7 +339,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           theme: "Dark",
           custom_css_url: "/static/pro.css",
           loading_screen: { backgroundColor: "#1B1D22" },
-
           timezone: Intl.DateTimeFormat().resolvedOptions()
             .timeZone as Timezone,
           ...widgetOptionsDefault,
@@ -401,10 +400,23 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           prev.position_qty !== current.position_qty
         );
       };
+      const newPrices: number[] = [];
+
+      pendingPosition?.forEach((entry) => {
+        newPrices.push(entry.price);
+      });
+
+      if (
+        newPrices[0] !==
+          ((prevPendingPriceRef as any)?.current?.[0] as number) ||
+        newPrices[1] !== ((prevPendingPriceRef as any)?.current?.[1] as number)
+      ) {
+        hasChanges = true;
+      }
+
       if (
         relevantPositions.length !== prevPositionsRef.current.length ||
         pendingPosition?.length !== Number(prevPendingRef.current) ||
-        pendingPosition?.[0]?.price !== prevPendingPriceRef?.current ||
         prevTimeframe.current !== timeframe
       ) {
         hasChanges = true;
@@ -521,10 +533,15 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         });
 
         setIsChartLoading(false);
-
         setChartLines(newChartLines);
+        const prices: number[] = [];
+        pendingPosition?.forEach((entry) => {
+          prices.push(entry.price);
+        });
+        console.log("prices", prices);
+
         (prevPositionsRef as any).current = relevantPositions;
-        (prevPendingPriceRef as any).current = pendingPosition?.[0]?.price;
+        (prevPendingPriceRef as any).current = prices;
         (prevPendingRef as any).current = pendingPosition?.length;
       } else updatePositions();
       prevTimeframe.current = timeframe;

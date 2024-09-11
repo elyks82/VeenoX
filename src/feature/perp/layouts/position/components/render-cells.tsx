@@ -65,8 +65,8 @@ export const RenderCells = ({
         setEditPendingPositionOpen,
         currentLeverage
       )}
+
       {TPSLOpenOrder ? <TPSLModal order={order} /> : null}
-      {editPendingPositionOpen ? <EditModal /> : null}
     </>
   );
 };
@@ -197,17 +197,7 @@ const renderAdditionalCells = (
         </td>
         <td className={cn(tdStyle, "pr-5")}>
           <div className="flex items-center justify-end w-full h-full">
-            <button
-              onClick={() => {
-                setEditPendingPositionOpen(trade);
-                setOrderPositions([]);
-              }}
-              className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
-              h-[25px] px-2 rounded flex items-center
-          "
-            >
-              Edit
-            </button>
+            <EditModal order={trade} />
             <button
               onClick={() => {
                 closePendingOrder(trade.order_id);
@@ -340,7 +330,7 @@ const renderAdditionalCells = (
                   console.log("e", e);
                   triggerAlert(
                     "Error",
-                    "Failed to close position. Please try again."
+                    "Unable to close position. Pending orders interfere with the position amount."
                   );
                 }
               }}
