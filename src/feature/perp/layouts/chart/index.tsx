@@ -120,33 +120,40 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const [chartLines, setChartLines] = useState<{ [key: string]: any }>({});
   const [orders] = usePositionStream();
-  const { orderPositions } = useGeneralContext();
   const [isChartReady, setIsChartReady] = useState(false);
   const chartRef = useRef<any>(null);
   const prevPositionsRef = useRef("");
+  const prevPendingPriceRef = useRef("");
   const prevPendingRef = useRef("");
-  const [resolution, setResolution] = useState<string | null>(null);
   const [currentInterval, setCurrentInterval] = useState<string>("");
   const order = orders?.rows?.find((entry) => entry.symbol === asset?.symbol);
-
   const [ordersData] = useOrderStream({ symbol: asset?.symbol });
 
   const pendingPosition = useMemo(() => {
     return (
-      ordersData?.filter(
-        (entry) =>
-          entry.total_executed_quantity < entry.quantity &&
+      ordersData?.filter((entry) => {
+        const orderExecuted =
+          orders?.rows?.find(
+            (item) => item?.average_open_price === entry?.price
+          ) || null;
+        return (
+          entry.symbol === asset?.symbol &&
           entry.type === "LIMIT" &&
-          entry.status !== "COMPLETED" &&
-          entry.status !== "FILLED" &&
-          entry.status !== "CANCELLED"
-      ) || []
+          entry.total_executed_quantity < entry.quantity &&
+          (entry.status === "NEW" || entry.status === "REPLACED") &&
+          !orderExecuted
+        );
+      }) || []
     );
   }, [ordersData]);
 
-  const activeTokenPendingPosition = useMemo(() => {
-    return pendingPosition.find((entry) => entry.symbol === asset?.symbol);
-  }, [pendingPosition]);
+  const relevantPositions = useMemo(() => {
+    return (
+      orders?.rows?.filter(
+        (position: any) => position.symbol === asset?.symbol
+      ) || []
+    );
+  }, [orders, params?.perp]);
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -181,7 +188,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           return true;
         });
       };
-      console.log("ifiirfjdrif");
       const updatedState: ChartState = {
         drawings: updateElements(currentState.drawings, savedState.drawings),
         studies: updateElements(currentState.studies, savedState.studies),
@@ -194,7 +200,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       //     (s) => !currentState.drawings.some((c) => c.name === s.name)
       //   ),
       // ];
-      console.log("ifiirfjdrif");
       updatedState.studies = [
         ...updatedState.studies,
         ...savedState.studies.filter((s) =>
@@ -212,7 +217,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       // });
       // console.log("arr", arr);
       // updatedState.drawings = [...updatedState.drawings, ...arr];
-      console.log("ifiirfjdrif");
 
       localStorage.setItem("chartState", JSON.stringify(updatedState));
     },
@@ -272,7 +276,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const setupChangeListeners = useCallback(
     (widget: IChartingLibraryWidget) => {
       const chart = widget.activeChart();
-      chartRef.current = chart;
       const saveState = () => {
         saveChartState(chart);
       };
@@ -281,10 +284,10 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         chart.onDataLoaded().subscribe(null, saveState);
         chart.onSymbolChanged().subscribe(null, saveState);
         chart.onIntervalChanged().subscribe(null, () => {
-          console.log("I CHANGE");
           setTimeout(() => {
+            setTimeframe(chart.resolution());
             updatePositions();
-          }, 500);
+          }, 1000);
           saveState();
           setCurrentInterval(chart.resolution());
         });
@@ -360,7 +363,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           setIsChartReady(true);
 
           const chart = widgetInstance.activeChart();
-          chartRef.current = widgetInstance;
 
           try {
             await loadSavedState(chart);
@@ -379,17 +381,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     );
   }, [asset, mobile, ws, setupChangeListeners]);
 
-  const relevantPositions = useMemo(() => {
-    return (
-      orders?.rows?.filter(
-        (position: any) => position.symbol === asset?.symbol
-      ) || []
-    );
-  }, [orders, params?.perp]);
+  const prevTimeframe = useRef("");
+  const [timeframe, setTimeframe] = useState("15");
 
   const updatePositions = useCallback(() => {
-    const chart = chartRef.current;
-    if (!chart || !relevantPositions) {
+    if (!tvWidget || !relevantPositions) {
       console.warn(
         "Chart or relevant positions not available. Skipping update."
       );
@@ -405,8 +401,12 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           prev.position_qty !== current.position_qty
         );
       };
-
-      if (relevantPositions.length !== prevPositionsRef.current.length) {
+      if (
+        relevantPositions.length !== prevPositionsRef.current.length ||
+        pendingPosition?.length !== Number(prevPendingRef.current) ||
+        pendingPosition?.[0]?.price !== prevPendingPriceRef?.current ||
+        prevTimeframe.current !== timeframe
+      ) {
         hasChanges = true;
       } else {
         for (let i = 0; i < relevantPositions.length; i++) {
@@ -414,7 +414,8 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             hasPositionChanged(
               prevPositionsRef.current[i],
               relevantPositions[i]
-            )
+            ) ||
+            prevTimeframe.current !== timeframe
           ) {
             hasChanges = true;
             break;
@@ -433,36 +434,34 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
         const createLine = (lineConfig: any) => {
           try {
-            const line = chart.createOrderLine();
+            const line = tvWidget.activeChart().createOrderLine();
             if (line) {
               Object.entries(lineConfig).forEach(([key, value]) => {
-                if (typeof line[key] === "function") {
-                  line[key](value);
+                if (typeof (line as any)[key] === "function") {
+                  (line as any)[key](value);
                 }
               });
               return line;
             }
-          } catch (error) {
-            console.error(`Error creating line: ${lineConfig.text}`, error);
-          }
+          } catch (error) {}
           return null;
         };
 
         relevantPositions?.forEach((position: any) => {
           if (position.symbol !== asset?.symbol) return;
-
           const openPriceLineId = `open_${position?.algo_order?.algo_order_id}`;
           const openPriceLine = createLine({
             setText: "Open Price",
             setPrice: position?.average_open_price || 150,
             setLineWidth: 1,
             setQuantity: position?.position_qty,
-            setBodyTextColor: "#000",
-            setBodyBackgroundColor: "#836EF9",
+            setBodyTextColor: "#FFF",
+            setBodyBackgroundColor: "#1B1D22",
             setBodyBorderColor: "#836EF9",
             setLineColor: "#836EF9",
             setQuantityBackgroundColor: "#836EF9",
             setQuantityBorderColor: "#836EF9",
+            setLineStyle: 1,
           });
           if (openPriceLine) newChartLines[openPriceLineId] = openPriceLine;
 
@@ -473,10 +472,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
               setPrice: position.tp_trigger_price || 150,
               setLineWidth: 1,
               setQuantity: "",
-              setBodyTextColor: "#000",
-              setBodyBackgroundColor: "#427af4",
-              setBodyBorderColor: "#427af4",
-              setLineColor: "#427af4",
+              setBodyTextColor: "#FFF",
+              setBodyBackgroundColor: "#1B1D22",
+              setBodyBorderColor: "#21A179",
+              setLineColor: "#21A179",
+              setLineStyle: 1,
             });
             if (tpLine) newChartLines[tpLineId] = tpLine;
           }
@@ -488,27 +488,30 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
               setPrice: position?.sl_trigger_price || 150,
               setLineWidth: 1,
               setQuantity: "",
-              setBodyTextColor: "#000",
-              setBodyBackgroundColor: "#F5921A",
-              setBodyBorderColor: "#F5921A",
-              setLineColor: "#F5921A",
+              setBodyTextColor: "#FFF",
+              setBodyBackgroundColor: "#1B1D22",
+              setBodyBorderColor: "#D63230",
+              setLineColor: "#D63230",
+              setQuantityBackgroundColor: "#D63230",
+              setQuantityBorderColor: "#D63230",
+              setLineStyle: 1,
             });
             if (slLine) newChartLines[slLineId] = slLine;
           }
         });
 
         pendingPosition?.forEach((entry) => {
-          const pendingLineId = `pending_${entry?.order_id}`;
+          const pendingLineId = `pending_${entry.order_id}`;
           const pendingLine = createLine({
             setText: "Limit order",
-            setPrice: entry?.price || 150,
+            setPrice: entry.price,
+            setQuantity: entry.quantity.toString(),
             setLineWidth: 1,
-            setQuantity: "",
-            setBodyTextColor: "#000",
-            setBodyBackgroundColor: "#1c5e57",
-            setBodyBorderColor: "#1c5e57",
-            setLineColor: "#1c5e57",
-            setLineStyle: 1,
+            setBodyTextColor: "#FFF",
+            setBodyBackgroundColor: "#1B1D22",
+            setBodyBorderColor: "#3498DB",
+            setLineColor: "#3498DB",
+            setLineStyle: 2,
           });
           if (pendingLine) newChartLines[pendingLineId] = pendingLine;
         });
@@ -517,23 +520,22 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
         setChartLines(newChartLines);
         (prevPositionsRef as any).current = relevantPositions;
-        prevPendingRef.current = activeTokenPendingPosition;
-      } else {
-      }
-    } catch (e) {
-      console.error("Error updating chart lines:", e);
-    }
+        (prevPendingPriceRef as any).current = pendingPosition?.[0]?.price;
+        (prevPendingRef as any).current = pendingPosition?.length;
+      } else updatePositions();
+      prevTimeframe.current = timeframe;
+    } catch (e) {}
   }, [
-    chartRef,
+    tvWidget,
     asset?.symbol,
     chartLines,
     relevantPositions,
-    activeTokenPendingPosition,
     setIsChartLoading,
+    pendingPosition,
   ]);
 
   useEffect(() => {
-    if (chartRef.current && isChartReady) {
+    if (tvWidget && isChartReady) {
       setTimeout(() => {
         updatePositions();
       }, 400);
@@ -547,18 +549,21 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     asset?.symbol,
     isChartReady,
     relevantPositions,
-    activeTokenPendingPosition,
     updatePositions,
+    pendingPosition,
+    timeframe,
   ]);
 
   useEffect(() => {
+    (window as any).tvWidget = null;
     initChart();
     return () => {
-      if (chartRef.current) {
-        chartRef.current = null;
+      if ((window as any).tvWidget !== null) {
+        (window as any).tvWidget?.remove();
+        (window as any).tvWidget = null;
       }
     };
-  }, [asset?.symbol, custom_css_url, mobile, chartRef]);
+  }, [asset?.symbol, custom_css_url, mobile]);
 
   return (
     <div className="relative w-full chart">
