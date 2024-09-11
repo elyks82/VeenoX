@@ -166,6 +166,7 @@ export const OpenTrade = ({
   const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
+    console.log("I PASSED MAX & MIN RANGE");
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
 
@@ -184,6 +185,7 @@ export const OpenTrade = ({
         triggerAlert("Error", errors?.order_quantity?.message);
       return;
     }
+    console.log("I PASSED errors");
     if (Number(values.quantity || 0) >= currentAsset?.base_max) {
       triggerAlert(
         "Error",
@@ -191,7 +193,9 @@ export const OpenTrade = ({
       );
       return;
     }
-
+    console.log(
+      "I PASSED Number(values.quantity || 0) >= currentAsset?.base_max"
+    );
     if (Number(values.quantity || 0) <= currentAsset?.base_min) {
       triggerAlert(
         "Error",
@@ -199,8 +203,13 @@ export const OpenTrade = ({
       );
       return;
     }
+    console.log(
+      "I PASSED Number(values.quantity || 0) <= currentAsset?.base_min"
+    );
     try {
+      console.log("I RUN VAL");
       const val = getInput(values, asset.symbol, currentAsset?.base_tick);
+      console.log("I RUN SUBMIT");
       await onSubmit(val);
       triggerAlert("Success", "Order executed.");
       setOrderPositions(val as any);
@@ -230,22 +239,26 @@ export const OpenTrade = ({
   const barPosition = getSectionBarPosition();
 
   const handleButtonLongClick = async () => {
+    console.log("FORFOROF");
     if (state.status === 0) setIsWalletConnectorOpen(true);
     else if (state.status === 2 || state.status === 4)
       setIsEnableTradingModalOpen(true);
     else {
+      console.log("ELSE");
       if (values.type === "LIMIT") {
         if (Number(values.price) > (rangeInfo?.max as number)) {
           setInputErrors((prev) => ({
             ...prev,
             input_price_max: true,
           }));
+          console.log("EROR MAX");
           return;
         } else if (Number(values.price) < (rangeInfo?.min as number)) {
           setInputErrors((prev) => ({
             ...prev,
             input_price_min: true,
           }));
+          console.log("EROR MIN");
           return;
         }
       }
@@ -297,10 +310,6 @@ export const OpenTrade = ({
     return formatted;
   };
   const handleValueChange = (name: string, value: string) => {
-    setValues((prev) => ({
-      ...prev,
-      price: undefined,
-    }));
     setValues((prev) => ({
       ...prev,
       [name]:

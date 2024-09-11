@@ -337,6 +337,7 @@ const renderAdditionalCells = (
                   triggerAlert("Success", "Successfully closed");
                   setOrderPositions(["closed"]);
                 } catch (e) {
+                  console.log("e", e);
                   triggerAlert(
                     "Error",
                     "Failed to close position. Please try again."

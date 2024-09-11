@@ -505,12 +505,16 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           const pendingLine = createLine({
             setText: "Limit order",
             setPrice: entry.price,
-            setQuantity: entry.quantity.toString(),
+            setQuantity: entry.side === "BUY" ? "LONG" : "SHORT",
             setLineWidth: 1,
             setBodyTextColor: "#FFF",
             setBodyBackgroundColor: "#1B1D22",
-            setBodyBorderColor: "#3498DB",
-            setLineColor: "#3498DB",
+            setBodyBorderColor: entry.side === "BUY" ? "#21A179" : "#D63230",
+            setLineColor: entry.side === "BUY" ? "#21A179" : "#D63230",
+            setQuantityBackgroundColor:
+              entry.side === "BUY" ? "#21A179" : "#D63230",
+            setQuantityBorderColor:
+              entry.side === "BUY" ? "#21A179" : "#D63230",
             setLineStyle: 2,
           });
           if (pendingLine) newChartLines[pendingLineId] = pendingLine;
