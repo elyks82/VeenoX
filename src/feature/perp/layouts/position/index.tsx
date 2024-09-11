@@ -80,15 +80,17 @@ export const Position = ({ asset }: PositionProps) => {
   };
 
   const filterSide = (entry: any) => {
-    if (activeSection === Sections.PENDING)
+    if (activeSection === Sections.PENDING) {
+      const orderExecuted =
+        data?.rows?.find((item) => item?.average_open_price === entry?.price) ||
+        null;
       return (
         entry.total_executed_quantity < entry.quantity &&
         entry.type === "LIMIT" &&
-        entry.status !== "COMPLETED" &&
-        entry.status !== "FILLED" &&
-        entry.status !== "CANCELLED"
+        (entry.status === "REPLACED" || entry.status === "NEW") &&
+        !orderExecuted
       );
-    else if (activeSection === Sections.TP_SL) {
+    } else if (activeSection === Sections.TP_SL) {
       if (entry.algo_order_id) {
         const tp = entry?.child_orders[0];
         const sl = entry?.child_orders[1];
@@ -113,6 +115,16 @@ export const Position = ({ asset }: PositionProps) => {
 
     return true;
   };
+
+  const test = orders?.filter(
+    (entry) =>
+      entry.total_executed_quantity < entry.quantity &&
+      entry.type === "LIMIT" &&
+      (entry.status === "REPLACED" || entry.status === "NEW")
+  );
+
+  console.log("test", test);
+  console.log(data?.rows);
 
   // const [tt] = useOrderStream({
   //   includes: [AlgoOrderRootType.TP_SL, AlgoOrderRootType.POSITIONAL_TP_SL],
@@ -279,6 +291,7 @@ export const Position = ({ asset }: PositionProps) => {
                     order={order}
                     activeSection={activeSection}
                     closePendingOrder={closePendingOrder}
+                    rows={data?.rows}
                   />
                 </tr>
               );

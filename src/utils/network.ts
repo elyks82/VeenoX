@@ -102,7 +102,7 @@ export const chainsImage: { [key: number]: string } = {
 
 export const chainsName: { [key: number]: string } = {
   1: "Ethereum",
-  42161: "Ethereum",
+  42161: "Arbitrum",
   56: "BSC",
   324: "ZkSync",
   137: "Polygon",

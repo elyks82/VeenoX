@@ -99,7 +99,6 @@ export const OpenTrade = ({
       setDepositAmount(null);
     }
   }, [usdc]);
-  console.log("accountInstance", usdc);
 
   useSettleSubscription({
     onMessage: (data: any) => {
@@ -185,7 +184,6 @@ export const OpenTrade = ({
         triggerAlert("Error", errors?.order_quantity?.message);
       return;
     }
-
     if (Number(values.quantity || 0) >= currentAsset?.base_max) {
       triggerAlert(
         "Error",
@@ -299,6 +297,10 @@ export const OpenTrade = ({
     return formatted;
   };
   const handleValueChange = (name: string, value: string) => {
+    setValues((prev) => ({
+      ...prev,
+      price: undefined,
+    }));
     setValues((prev) => ({
       ...prev,
       [name]:

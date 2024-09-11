@@ -84,7 +84,7 @@ export const PairSelector = ({ params }: FavoriteProps) => {
           </button>
         ))}
       </div>
-      <div className="w-full overflow-y-scroll no-scroll max-h-[250px]">
+      <div className="w-full overflow-y-scroll no-scrollbar max-h-[250px]">
         <table className="w-full text-xs">
           <thead>
             <tr className="text-font-60">

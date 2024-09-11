@@ -25,6 +25,7 @@ export const RenderCells = ({
   order,
   activeSection,
   closePendingOrder,
+  rows,
 }: any) => {
   const {
     TPSLOpenOrder,
@@ -33,12 +34,20 @@ export const RenderCells = ({
     editPendingPositionOpen,
     setEditPendingPositionOpen,
   } = useGeneralContext();
+
   const { currentLeverage } = useMarginRatio();
+
   const { onSubmit } = useOrderEntry(
     {
       symbol: order.symbol,
-      side: (order.position_qty as number) >= 0 ? "SELL" : ("BUY" as any),
-      order_type: "MARKET" as any,
+      side: order?.side
+        ? order.side
+        : order?.algo_order?.side
+        ? order?.algo_order?.side
+        : (order.position_qty as number) >= 0
+        ? "SELL"
+        : ("BUY" as any),
+      order_type: order.type || "MARKET",
       order_quantity: order?.position_qty,
     },
     { watchOrderbook: true }
