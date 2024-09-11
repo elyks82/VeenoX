@@ -463,12 +463,13 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             setPrice: position?.average_open_price || 150,
             setLineWidth: 1,
             setQuantity: position?.position_qty,
-            setBodyTextColor: "#000",
-            setBodyBackgroundColor: "#836EF9",
+            setBodyTextColor: "#FFF",
+            setBodyBackgroundColor: "#1B1D22",
             setBodyBorderColor: "#836EF9",
             setLineColor: "#836EF9",
             setQuantityBackgroundColor: "#836EF9",
             setQuantityBorderColor: "#836EF9",
+            setLineStyle: 1,
           });
           if (openPriceLine) newChartLines[openPriceLineId] = openPriceLine;
 
@@ -479,10 +480,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
               setPrice: position.tp_trigger_price || 150,
               setLineWidth: 1,
               setQuantity: "",
-              setBodyTextColor: "#000",
-              setBodyBackgroundColor: "#427af4",
-              setBodyBorderColor: "#427af4",
-              setLineColor: "#427af4",
+              setBodyTextColor: "#FFF",
+              setBodyBackgroundColor: "#1B1D22",
+              setBodyBorderColor: "#21A179",
+              setLineColor: "#21A179",
+              setLineStyle: 1,
             });
             if (tpLine) newChartLines[tpLineId] = tpLine;
           }
@@ -494,16 +496,18 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
               setPrice: position?.sl_trigger_price || 150,
               setLineWidth: 1,
               setQuantity: "",
-              setBodyTextColor: "#000",
-              setBodyBackgroundColor: "#F5921A",
-              setBodyBorderColor: "#F5921A",
-              setLineColor: "#F5921A",
+              setBodyTextColor: "#FFF",
+              setBodyBackgroundColor: "#1B1D22",
+              setBodyBorderColor: "#D63230",
+              setLineColor: "#D63230",
+              setQuantityBackgroundColor: "#D63230",
+              setQuantityBorderColor: "#D63230",
+              setLineStyle: 1,
             });
             if (slLine) newChartLines[slLineId] = slLine;
           }
         });
 
-        console.log(pendingPosition);
         pendingPosition.forEach((entry) => {
           const pendingLineId = `pending_${entry.order_id}`;
           const pendingLine = createLine({
@@ -511,11 +515,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             setPrice: entry.price,
             setQuantity: entry.quantity.toString(),
             setLineWidth: 1,
-            setBodyTextColor: "#000000",
-            setBodyBackgroundColor: "#1c5e57",
-            setBodyBorderColor: "#1c5e57",
-            setLineColor: "#1c5e57",
-            setLineStyle: 1,
+            setBodyTextColor: "#FFF",
+            setBodyBackgroundColor: "#1B1D22",
+            setBodyBorderColor: "#3498DB",
+            setLineColor: "#3498DB",
+            setLineStyle: 2,
           });
           if (pendingLine) newChartLines[pendingLineId] = pendingLine;
         });
