@@ -25,7 +25,7 @@ import { TimeSeriesChart } from "./components/chart";
 const thStyle =
   "text-sm text-font-60 font-normal py-1.5 border-b border-borderColor-DARK text-end";
 const tdStyle =
-  "text-sm text-white font-normal py-2.5 border-b border-borderColor-DARK text-end";
+  "text-sm text-white font-normal py-3.5 border-b border-borderColor-DARK text-end";
 
 type DepositWithdrawTx = {
   id: string;
@@ -68,11 +68,10 @@ export const Dashboard = () => {
     totalValue,
     availableBalance,
     unsettledPnL,
-    positions,
-    accountInfo,
   } = useCollateral({
     dp: 2,
   });
+
   const { copyToClipboard, isCopied, error: copyError } = useCopyToClipboard();
   const { usdc } = useHoldingStream();
   const {
@@ -105,8 +104,8 @@ export const Dashboard = () => {
   }, [activeSection]);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center text-white pt-[50px] pb-[100px]">
-      <div className="max-w-[1350px] w-[90%] min-h-[80vh]">
+    <div className="w-full flex flex-col items-center text-white pt-[50px] pb-[100px] bg-[#15171B] min-h-[90vh]">
+      <div className="max-w-[1350px] w-[90%] ">
         <div className="flex items-center justify-between mb-5 ">
           <h1 className="text-2xl text-white font-semibold">Dashboard</h1>
           <div className="flex items-center w-fit justify-start">
@@ -228,7 +227,7 @@ export const Dashboard = () => {
                   />
                 </div>
                 <div className="max-h-[500px] min-h-[500px] relative w-full overflow-y-scroll no-scrollbar">
-                  <table className="mt-0.5 w-full">
+                  <table className="mt-2.5 w-full">
                     <thead>
                       <tr>
                         <th className={cn(thStyle, "pl-2.5 text-start")}>

@@ -1,11 +1,16 @@
 import { useDaily } from "@orderly.network/hooks";
 import Chart from "chart.js/auto";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 export const TimeSeriesChart = () => {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
   const { data } = useDaily();
+
+  const labels = useMemo(
+    () => data?.map((entry) => new Date(entry.date).toLocaleDateString()) || [],
+    [data]
+  );
 
   useEffect(() => {
     if (chartInstance.current) {
@@ -21,7 +26,7 @@ export const TimeSeriesChart = () => {
           data?.map((entry) => new Date(entry.date).toLocaleDateString()) || [],
         datasets: [
           {
-            label: "Perp Volume",
+            label: "Volume",
             data: data?.map((entry) => entry.perp_volume) || [],
             borderColor: "#836EF9",
             backgroundColor: "rgba(131, 110, 249, 0.1)",
@@ -45,7 +50,7 @@ export const TimeSeriesChart = () => {
           tooltip: {
             backgroundColor: "rgba(30, 30, 30, 0.8)",
             titleColor: "#FFFFFF",
-            bodyColor: "#1B1D22",
+            bodyColor: "#FFFFFF",
             borderColor: "#836EF9",
             borderWidth: 1,
             displayColors: false,
@@ -55,7 +60,7 @@ export const TimeSeriesChart = () => {
               label: function (context) {
                 let label = context.dataset.label || "";
                 if (label) {
-                  label += ": ";
+                  label += ": $";
                 }
                 if (context.parsed.y !== null) {
                   label += new Intl.NumberFormat("en-US").format(
@@ -67,7 +72,6 @@ export const TimeSeriesChart = () => {
             },
           },
         },
-
         scales: {
           x: {
             grid: {
@@ -75,6 +79,17 @@ export const TimeSeriesChart = () => {
             },
             ticks: {
               color: "#FFFFFF",
+              maxTicksLimit: 7,
+              callback: function (value, index, ticks) {
+                const labelCount = labels.length;
+                if (
+                  index === 0 ||
+                  index === labelCount - 1 ||
+                  index % Math.ceil((labelCount - 2) / 5) === 0
+                ) {
+                  return labels[index];
+                }
+              },
             },
           },
           y: {
