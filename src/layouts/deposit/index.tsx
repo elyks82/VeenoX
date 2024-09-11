@@ -168,7 +168,6 @@ export const Deposit = () => {
           }
         } catch (err) {
           triggerAlert("Error", (err as any)?.error?.message);
-          console.log("err", err);
         }
       }
     } else {
