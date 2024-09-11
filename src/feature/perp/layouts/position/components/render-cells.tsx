@@ -8,6 +8,7 @@ import {
   getFormattedDate,
 } from "@/utils/misc";
 import { useMarginRatio, useOrderEntry } from "@orderly.network/hooks";
+import { OrderEntity } from "@orderly.network/types";
 import { Dispatch, SetStateAction } from "react";
 import { EditModal } from "./edit-modal";
 import { TPSLModal } from "./tp-sl-modal";
@@ -92,7 +93,7 @@ const renderCommonCells = (trade: any) => (
 );
 
 const renderAdditionalCells = (
-  trade: any,
+  trade: OrderEntity | any,
   section: Sections,
   closePendingOrder: Function,
   setTPSLOpenOrder: Dispatch<SetStateAction<boolean>>,

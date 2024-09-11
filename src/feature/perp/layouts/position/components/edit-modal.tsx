@@ -14,7 +14,11 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Oval } from "react-loader-spinner";
 
-export const EditModal = ({ order, onOpen }) => {
+type EditModalType = {
+  order: OrderEntity | any;
+};
+
+export const EditModal = ({ order }: EditModalType) => {
   const [activePnlOrOffset, setActivePnlOrOffset] = useState("$");
   const [error, setError] = useState([""]);
   const params = useParams();
@@ -94,7 +98,6 @@ export const EditModal = ({ order, onOpen }) => {
       triggerAlert("Error", JSON.stringify(e));
     }
   };
-  console.log(editPendingPositionOpen?.symbol === params.perp);
   return (
     <Popover
       open={editPendingPositionOpen?.order_id === order?.order_id}
