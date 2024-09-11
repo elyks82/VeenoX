@@ -3,7 +3,11 @@ import { useGeneralContext } from "@/context";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
 import { FuturesAssetProps, TradeExtension } from "@/models";
 import { cn } from "@/utils/cn";
-import { getFormattedAmount, getStyleFromDevice } from "@/utils/misc";
+import {
+  formatSymbol,
+  getFormattedAmount,
+  getStyleFromDevice,
+} from "@/utils/misc";
 import {
   useMarketTradeStream,
   useOrderbookStream,
@@ -11,7 +15,7 @@ import {
 import { useRef, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
 import { TradeSection } from "./trade-section";
-
+1;
 enum OrderbookSection {
   ORDERBOOK,
   TRADE_HISTORY,
@@ -184,9 +188,11 @@ export const Orderbook = ({
                   {isMobileOpenTrade ? null : (
                     <th className="text-end font-normal">Size</th>
                   )}
-                  <th className="pr-2.5 text-end font-normal"></th>
+                  <th className="pr-2.5 text-end font-normal">
+                    Total {formatSymbol(asset?.symbol, true)}
+                  </th>
                   {isMobileOpenTrade ? null : (
-                    <th className="pr-2.5 text-end font-normal">Total $</th>
+                    <th className="pr-2.5 text-end font-normal"> Total $</th>
                   )}
                 </tr>
               </thead>
