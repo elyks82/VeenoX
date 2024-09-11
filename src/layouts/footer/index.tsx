@@ -19,7 +19,6 @@ export const Footer = () => {
         },
       }
     );
-
     return () => {
       if (unsubscribe) unsubscribe();
     };
