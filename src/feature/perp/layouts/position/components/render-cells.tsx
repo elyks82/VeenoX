@@ -25,6 +25,7 @@ export const RenderCells = ({
   order,
   activeSection,
   closePendingOrder,
+  rows,
 }: any) => {
   const {
     TPSLOpenOrder,
@@ -33,12 +34,28 @@ export const RenderCells = ({
     editPendingPositionOpen,
     setEditPendingPositionOpen,
   } = useGeneralContext();
+
+  console.log("orderrrr");
   const { currentLeverage } = useMarginRatio();
+
+  console.log(
+    "CHECKCORDER",
+    order?.algo_order?.algo_order_id,
+    order?.algo_order?.root_algo_order_id,
+    order?.order_id
+  );
+  //  ORDER ID => 4055147810
   const { onSubmit } = useOrderEntry(
     {
       symbol: order.symbol,
-      side: (order.position_qty as number) >= 0 ? "SELL" : ("BUY" as any),
-      order_type: "MARKET" as any,
+      side: order?.side
+        ? order.side
+        : order?.algo_order?.side
+        ? order?.algo_order?.side
+        : (order.position_qty as number) >= 0
+        ? "SELL"
+        : ("BUY" as any),
+      order_type: order.type || "MARKET",
       order_quantity: order?.position_qty,
     },
     { watchOrderbook: true }

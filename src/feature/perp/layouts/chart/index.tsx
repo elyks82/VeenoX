@@ -504,7 +504,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           }
         });
 
-        pendingPosition.forEach((entry) => {
+        pendingPosition?.forEach((entry) => {
           const pendingLineId = `pending_${entry.order_id}`;
           const pendingLine = createLine({
             setText: "Limit order",
@@ -524,7 +524,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
         setChartLines(newChartLines);
         (prevPositionsRef as any).current = relevantPositions;
-        (prevPendingPriceRef as any).current = pendingPosition[0]?.price;
+        (prevPendingPriceRef as any).current = pendingPosition?.[0]?.price;
         (prevPendingRef as any).current = pendingPosition?.length;
       } else updatePositions();
       prevTimeframe.current = timeframe;
