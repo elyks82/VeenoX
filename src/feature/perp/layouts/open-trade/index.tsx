@@ -166,18 +166,15 @@ export const OpenTrade = ({
   const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
-    console.log("STEP 1");
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
 
-    console.log("STEP 2");
     const errors = await getValidationErrors(
       values,
       asset.symbol,
       validator,
       currentAsset?.base_tick
     );
-    console.log("STEP 3");
     if (errors && Object.keys(errors)?.length > 0) {
       if (errors?.total?.message) {
         triggerAlert("Error", errors?.total?.message);
@@ -187,7 +184,6 @@ export const OpenTrade = ({
         triggerAlert("Error", errors?.order_quantity?.message);
       return;
     }
-    console.log("STEP 4");
     if (Number(values.quantity || 0) >= currentAsset?.base_max) {
       triggerAlert(
         "Error",
@@ -203,10 +199,8 @@ export const OpenTrade = ({
       );
       return;
     }
-    console.log("STEP 5");
     try {
       const val = getInput(values, asset.symbol, currentAsset?.base_tick);
-      console.log("STEP 6");
       await onSubmit(val);
       triggerAlert("Success", "Order executed.");
       setOrderPositions(val as any);
@@ -319,8 +313,6 @@ export const OpenTrade = ({
 
     if (name === "quantity") setSliderValue(toPercentage(Number(value)));
   };
-
-  console.log("values", values);
 
   const [data] = usePositionStream();
 

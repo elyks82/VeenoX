@@ -1,7 +1,6 @@
 import { triggerAlert } from "@/lib/toaster";
 import { useCallback, useEffect, useRef } from "react";
 
-// Types (comme avant)
 export interface Position {
   symbol: string;
   average_open_price: number;
@@ -36,13 +35,8 @@ const useUpdatePositions = (
 
   const createOrUpdateLine = useCallback(
     (lineId: string, config: any) => {
-      console.log("I want to create or update a line", lineId);
-
       if (chart) {
-        console.log("I try to update a line");
         if (linesRef?.current && linesRef.current[lineId]) {
-          console.log("I update a line");
-          console.log("linesRef.current[lineId]", linesRef.current[lineId]);
           Object.entries(config).forEach(([key, value]) => {
             if (typeof linesRef.current[lineId][key] === "function") {
               linesRef.current[lineId][key](value);
@@ -64,7 +58,6 @@ const useUpdatePositions = (
     [chart, timeframe]
   );
 
-  // Fonction principale pour mettre à jour toutes les positions
   const updatePositions = useCallback(() => {
     if (!chart || !relevantPositions) {
       triggerAlert(
@@ -73,8 +66,6 @@ const useUpdatePositions = (
       );
       return;
     }
-
-    console.log(`Updating positions for timeframe: ${timeframe}`);
 
     const currentLines = new Set<string>();
 

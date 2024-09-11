@@ -120,13 +120,11 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false);
   const [chartLines, setChartLines] = useState<{ [key: string]: any }>({});
   const [orders] = usePositionStream();
-  const { orderPositions } = useGeneralContext();
   const [isChartReady, setIsChartReady] = useState(false);
   const chartRef = useRef<any>(null);
   const prevPositionsRef = useRef("");
   const prevPendingPriceRef = useRef("");
   const prevPendingRef = useRef("");
-  const [resolution, setResolution] = useState<string | null>(null);
   const [currentInterval, setCurrentInterval] = useState<string>("");
   const order = orders?.rows?.find((entry) => entry.symbol === asset?.symbol);
   const [ordersData] = useOrderStream({ symbol: asset?.symbol });
@@ -190,7 +188,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           return true;
         });
       };
-      console.log("ifiirfjdrif");
       const updatedState: ChartState = {
         drawings: updateElements(currentState.drawings, savedState.drawings),
         studies: updateElements(currentState.studies, savedState.studies),
@@ -203,7 +200,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       //     (s) => !currentState.drawings.some((c) => c.name === s.name)
       //   ),
       // ];
-      console.log("ifiirfjdrif");
       updatedState.studies = [
         ...updatedState.studies,
         ...savedState.studies.filter((s) =>
@@ -221,7 +217,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       // });
       // console.log("arr", arr);
       // updatedState.drawings = [...updatedState.drawings, ...arr];
-      console.log("ifiirfjdrif");
 
       localStorage.setItem("chartState", JSON.stringify(updatedState));
     },
@@ -289,7 +284,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         chart.onDataLoaded().subscribe(null, saveState);
         chart.onSymbolChanged().subscribe(null, saveState);
         chart.onIntervalChanged().subscribe(null, () => {
-          console.log("I CHANGE");
           setTimeout(() => {
             setTimeframe(chart.resolution());
             updatePositions();
@@ -449,15 +443,12 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
               });
               return line;
             }
-          } catch (error) {
-            console.log(`Error creating line: ${lineConfig.text}`, error);
-          }
+          } catch (error) {}
           return null;
         };
 
         relevantPositions?.forEach((position: any) => {
           if (position.symbol !== asset?.symbol) return;
-          console.log("I TRY TO CREATE A NEW LINE");
           const openPriceLineId = `open_${position?.algo_order?.algo_order_id}`;
           const openPriceLine = createLine({
             setText: "Open Price",
@@ -533,9 +524,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         (prevPendingRef as any).current = pendingPosition?.length;
       } else updatePositions();
       prevTimeframe.current = timeframe;
-    } catch (e) {
-      console.log("Error updating chart lines:", e);
-    }
+    } catch (e) {}
   }, [
     tvWidget,
     asset?.symbol,

@@ -35,16 +35,8 @@ export const RenderCells = ({
     setEditPendingPositionOpen,
   } = useGeneralContext();
 
-  console.log("orderrrr");
   const { currentLeverage } = useMarginRatio();
 
-  console.log(
-    "CHECKCORDER",
-    order?.algo_order?.algo_order_id,
-    order?.algo_order?.root_algo_order_id,
-    order?.order_id
-  );
-  //  ORDER ID => 4055147810
   const { onSubmit } = useOrderEntry(
     {
       symbol: order.symbol,
