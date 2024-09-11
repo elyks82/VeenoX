@@ -25,8 +25,8 @@ import { TemplateDisplay } from "./components/template-display";
 
 export const Deposit = () => {
   const { connectedChain } = useWalletConnector();
-  const { address, chainId, chain } = useAccount();
-  const { state } = useOrderlyAccount();
+  const { address, chainId, chain, connector } = useAccount();
+  const { state, account } = useOrderlyAccount();
   const [amount, setAmount] = useState<FixedNumber>();
   const [disabled, setDisabled] = useState(true);
   const [mintedTestUSDC, setMintedTestUSDC] = useState(false);
@@ -43,6 +43,7 @@ export const Deposit = () => {
     openWithdraw,
     setOpenWithdraw,
     setDepositAmount,
+    setIsEnableTradingModalOpen,
   } = useGeneralContext();
   const networkIdSupported = [42161, 421614, 8453, 84532, 10, 11155420];
   const isSupportedChain = networkIdSupported.includes(chainId as number);
@@ -86,6 +87,7 @@ export const Deposit = () => {
   const { usdc } = useHoldingStream();
 
   const { switchChain } = useSwitchChain();
+
   const handleClick = async () => {
     if (isSupportedChain) {
       if (isDeposit) {
@@ -197,7 +199,8 @@ export const Deposit = () => {
       <Dialog open={openWithdraw}>
         <DialogTrigger
           onClick={() => {
-            if (state.status >= 2) setOpenWithdraw(true);
+            if (state.status >= 5) setOpenWithdraw(true);
+            else if (state.status >= 2) setIsEnableTradingModalOpen(true);
             else setIsWalletConnectorOpen(true);
           }}
         >
