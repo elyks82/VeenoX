@@ -84,9 +84,7 @@ export const Position = ({ asset }: PositionProps) => {
       return (
         entry.total_executed_quantity < entry.quantity &&
         entry.type === "LIMIT" &&
-        entry.status !== "COMPLETED" &&
-        entry.status !== "FILLED" &&
-        entry.status !== "CANCELLED"
+        (entry.status === "REPLACED" || entry.status === "NEW")
       );
     else if (activeSection === Sections.TP_SL) {
       if (entry.algo_order_id) {

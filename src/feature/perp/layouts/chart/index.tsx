@@ -133,18 +133,16 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const [ordersData] = useOrderStream({ symbol: asset?.symbol });
 
   const pendingPosition = useMemo(() => {
-    console.log("I TRIGGER");
     return (
       ordersData?.filter(
         (entry) =>
           entry.symbol === asset?.symbol &&
           entry.type === "LIMIT" &&
+          entry.total_executed_quantity < entry.quantity &&
           (entry.status === "NEW" || entry.status === "REPLACED")
       ) || []
     );
   }, [ordersData]);
-
-  console.log("ordersData", ordersData);
 
   const relevantPositions = useMemo(() => {
     return (
@@ -153,8 +151,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       ) || []
     );
   }, [orders, params?.perp]);
-
-  console.log("pendingPosition", pendingPosition);
 
   const saveChartState = useCallback(
     (chart: any) => {
@@ -442,8 +438,8 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             const line = tvWidget.activeChart().createOrderLine();
             if (line) {
               Object.entries(lineConfig).forEach(([key, value]) => {
-                if (typeof line[key] === "function") {
-                  line[key](value);
+                if (typeof (line as any)[key] === "function") {
+                  (line as any)[key](value);
                 }
               });
               return line;
