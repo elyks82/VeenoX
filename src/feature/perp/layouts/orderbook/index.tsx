@@ -37,18 +37,20 @@ export const Orderbook = ({
     OrderbookSection.ORDERBOOK
   );
 
+  const exepectedOrderbookLength =
+    isMobileOpenTrade || isMobile
+      ? 8
+      : (sectionRef?.current?.clientHeight as number) > 950
+      ? 18
+      : (sectionRef?.current?.clientHeight as number) > 900
+      ? 16
+      : (sectionRef?.current?.clientHeight as number) > 800
+      ? 14
+      : 12;
+
   const [data, { isLoading, onDepthChange, depth, allDepths }] =
     useOrderbookStream(asset?.symbol, undefined, {
-      level:
-        isMobileOpenTrade || isMobile
-          ? 8
-          : (sectionRef?.current?.clientHeight as number) > 950
-          ? 18
-          : (sectionRef?.current?.clientHeight as number) > 900
-          ? 16
-          : (sectionRef?.current?.clientHeight as number) > 800
-          ? 14
-          : 12,
+      level: exepectedOrderbookLength,
       padding: false,
     });
   const bestBid: number | undefined = (data?.bids as [number[]])[0]?.[0];
@@ -76,6 +78,25 @@ export const Orderbook = ({
   const { data: trades, isLoading: isTradesLoading } = useMarketTradeStream(
     asset?.symbol
   );
+
+  const getBidsOrAsks = (type: "bids" | "asks") => {
+    if (!data?.[type] || !Array.isArray(data[type])) {
+      return Array(exepectedOrderbookLength).fill(["--", "--", "--", "--"]);
+    }
+
+    const orders = [...data[type]];
+    const missingEntries = exepectedOrderbookLength - orders.length;
+
+    if (missingEntries > 0) {
+      const fillerOrders = Array(missingEntries).fill(["--", "--", "--", "--"]);
+      return [...orders, ...fillerOrders];
+    }
+
+    return orders.slice(0, exepectedOrderbookLength);
+  };
+
+  const bids = getBidsOrAsks("bids");
+  const asks = getBidsOrAsks("asks");
 
   return (
     <section
@@ -170,13 +191,17 @@ export const Orderbook = ({
                 </tr>
               </thead>
               <tbody>
-                {(data?.asks || [])?.map((ask: number[], i: number) => {
+                {(asks || [])?.map((ask: number[], i: number) => {
                   return (
                     <tr key={i} className="text-font-80 text-xs relative">
                       {Array.from({ length: 4 }).map((_, j) => {
                         const className = getStyleFromDevice(j, "");
                         const value =
-                          j === 0 ? ask[j] : getFormattedAmount(ask[j]);
+                          j === 0
+                            ? ask[j]
+                            : typeof ask[j] === "number"
+                            ? getFormattedAmount(ask[j])
+                            : ask[j];
                         if (isMobileOpenTrade && (j === 0 || j === 2))
                           return (
                             <td
@@ -229,13 +254,17 @@ export const Orderbook = ({
                     </div>
                   </td>
                 </tr>
-                {(data?.bids || []).map((bid: number[], i: number) => {
+                {(bids || []).map((bid: number[], i: number) => {
                   return (
                     <tr key={i} className="text-font-80 text-xs relative">
                       {Array.from({ length: 4 }).map((_, j) => {
                         const className = getStyleFromDevice(j, "");
                         const value =
-                          j === 0 ? bid[j] : getFormattedAmount(bid[j]);
+                          j === 0
+                            ? bid[j]
+                            : typeof bid[j] === "number"
+                            ? getFormattedAmount(bid[j])
+                            : bid[j];
                         if (isMobileOpenTrade && (j === 0 || j === 2))
                           return (
                             <td

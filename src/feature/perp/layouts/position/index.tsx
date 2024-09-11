@@ -78,12 +78,22 @@ export const Position = ({ asset }: PositionProps) => {
     await cancelOrder(id, asset?.symbol);
     triggerAlert("Success", "Pending order successfully closed");
   };
-
+  console.log(
+    "OROROROR",
+    data?.rows,
+    orders?.find(
+      (entry) =>
+        entry.total_executed_quantity < entry.quantity &&
+        entry.type === "LIMIT" &&
+        (entry.status === "REPLACED" || entry.status === "NEW")
+    )
+  );
   const filterSide = (entry: any) => {
     if (activeSection === Sections.PENDING) {
       const orderExecuted =
         data?.rows?.find((item) => item?.average_open_price === entry?.price) ||
         null;
+
       return (
         entry.total_executed_quantity < entry.quantity &&
         entry.type === "LIMIT" &&
