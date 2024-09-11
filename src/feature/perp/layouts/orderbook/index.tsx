@@ -159,9 +159,9 @@ export const Orderbook = ({
                   {isMobileOpenTrade ? null : (
                     <th className="text-end font-normal">Size</th>
                   )}
-                  <th className="pr-2.5 text-end font-normal"></th>
+                  <th className="pr-2.5 text-end font-normal">Total {formatSymbol(asset?.symbol, true)}</th>
                   {isMobileOpenTrade ? null : (
-                    <th className="pr-2.5 text-end font-normal">   Total {formatSymbol(asset?.symbol, true)}</th>
+                    <th className="pr-2.5 text-end font-normal">   Total $</th>
                   )}
                 </tr>
               </thead>
