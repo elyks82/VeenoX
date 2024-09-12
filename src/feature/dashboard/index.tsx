@@ -104,7 +104,7 @@ export const Dashboard = () => {
   }, [activeSection]);
 
   return (
-    <div className="w-full flex flex-col items-center text-white pt-[50px] pb-[100px] bg-[#15171B] min-h-[90vh]">
+    <div className="w-full flex flex-col items-center text-white pt-[50px] pb-[100px] min-h-[90vh]">
       <div className="max-w-[1350px] w-[90%] ">
         <div className="flex items-center justify-between mb-5 ">
           <h1 className="text-2xl text-white font-semibold">Dashboard</h1>
@@ -167,17 +167,17 @@ export const Dashboard = () => {
                 </div>{" "}
               </div>
               <div className="flex items-center justify-between gap-2.5 mt-5">
-                <div className="flex h-[100px] w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#15171B] border border-borderColor-DARK">
+                <div className="flex h-[100px] w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#2b2f3649] border border-borderColor-DARK">
                   <p className="text-xs text-font-60 text-center">Coin</p>
                   <p className="text-lg text-center">{usdc?.token || "--"}</p>
                 </div>
-                <div className="flex h-[100px]  w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#15171B] border border-borderColor-DARK">
+                <div className="flex h-[100px]  w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#2b2f3649] border border-borderColor-DARK">
                   <p className="text-xs text-font-60 text-center">Holding</p>
                   <p className="text-lg text-center">
                     {getFormattedAmount(usdc?.holding.toFixed(2)) || "--"}
                   </p>
                 </div>
-                <div className="flex h-[100px]  w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#15171B] border border-borderColor-DARK">
+                <div className="flex h-[100px]  w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#2b2f3649] border border-borderColor-DARK">
                   <p className="text-xs text-font-60 text-center">
                     Avabl. Withdraw
                   </p>
@@ -185,7 +185,7 @@ export const Dashboard = () => {
                     {getFormattedAmount(availableWithdraw?.toFixed(2)) || "--"}
                   </p>
                 </div>
-                <div className="flex h-[100px] w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#15171B] border border-borderColor-DARK">
+                <div className="flex h-[100px] w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#2b2f3649] border border-borderColor-DARK">
                   <p className="text-xs text-font-60 text-center">
                     Unsettled PnL
                   </p>
@@ -317,10 +317,10 @@ export const Dashboard = () => {
           <div className="w-[44%]">
             <div className="rounded-2xl p-5 border border-borderColor-DARK bg-secondary shadow-[rgba(0,0,0,0.2)] shadow-xl">
               <div className="flex items-center justify-between">
-                <p className="text-xl mb-7">Volume history</p>
+                <p className="text-xl mb-4">Volume history</p>
               </div>
-
               <TimeSeriesChart />
+              {/* <LabeledValuesSlider /> */}
             </div>
           </div>{" "}
         </div>

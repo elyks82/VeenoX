@@ -3,7 +3,7 @@ import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
-import { formatQuantity, getFormattedAmount } from "@/utils/misc";
+import { getFormattedAmount } from "@/utils/misc";
 import {
   useAccountInstance,
   useCollateral,
@@ -166,16 +166,18 @@ export const OpenTrade = ({
   const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
-    console.log("I PASSED MAX & MIN RANGE");
+    console.log("I COME FOR MAX & MIN RANGE");
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
-
+    console.log("I PASSED MAX & MIN RANGE");
     const errors = await getValidationErrors(
       values,
       asset.symbol,
       validator,
+      calculate,
       currentAsset?.base_tick
     );
+    console.log("I PASSED AWAIT _ERRORS", errors);
     if (errors && Object.keys(errors)?.length > 0) {
       if (errors?.total?.message) {
         triggerAlert("Error", errors?.total?.message);
@@ -209,17 +211,28 @@ export const OpenTrade = ({
     try {
       console.log("I RUN VAL");
       const val = getInput(values, asset.symbol, currentAsset?.base_tick);
-      console.log("I RUN SUBMIT");
-      await onSubmit(val);
+      try {
+        const test = calculate(
+          getInput(values, asset.symbol, currentAsset?.base_tick),
+          "order_quantity",
+          values?.quantity
+        );
+        console.log("I RUN SUBMIT", test);
+        console.log("I RUN VAL", val);
+        await onSubmit(test as OrderEntity);
+      } catch (e) {
+        console.log("e", e);
+      }
       triggerAlert("Success", "Order executed.");
       setOrderPositions(val as any);
       setValues({
         ...defaultValues,
-        quantity: newMaxQty.toString(),
+        quantity: "0",
         direction: values.direction,
       });
       setSliderValue(100);
     } catch (err) {
+      console.log("err", err);
       triggerAlert("Error", "The margin will be insufficient after");
     }
   };
@@ -262,6 +275,7 @@ export const OpenTrade = ({
           return;
         }
       }
+      console.log("TRY SUBMIT");
       submitForm();
     }
   };
@@ -858,11 +872,18 @@ async function getValidationErrors(
   data: Inputs,
   symbol: string,
   validator: ReturnType<typeof useOrderEntry>["helper"]["validator"],
+  calculate: ReturnType<typeof useOrderEntry>["helper"]["calculate"],
   base_tick: number
 ): Promise<
   ReturnType<ReturnType<typeof useOrderEntry>["helper"]["validator"]>
 > {
-  return validator(getInput(data, symbol, base_tick));
+  return validator(
+    getInput(
+      calculate(data, "order_quantity", base_tick) as any,
+      symbol,
+      base_tick
+    )
+  );
 }
 
 function getInput(
@@ -874,8 +895,8 @@ function getInput(
     symbol,
     side: data.direction as OrderSide,
     order_type: data.type.toUpperCase() as any,
-    order_price: isNaN(Number(data.price)) ? undefined : Number(data.price),
-    order_quantity: formatQuantity(Number(data.quantity), base_tick),
+    order_price: (data.price as any).toString() || undefined,
+    order_quantity: data.quantity?.toString(),
     trigger_price: data.triggerPrice,
     reduce_only: data.reduce_only,
   };

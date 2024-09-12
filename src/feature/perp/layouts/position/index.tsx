@@ -35,7 +35,9 @@ export const Position = ({ asset }: PositionProps) => {
     left: string;
   }>({ width: "20%", left: "0%" });
   const [data] = usePositionStream();
-  const [orders, { cancelOrder }] = useOrderStream({ symbol: asset.symbol });
+  const [orders, { cancelOrder, refresh }] = useOrderStream({
+    symbol: asset.symbol,
+  });
   const { currentLeverage } = useMarginRatio();
 
   useEffect(() => {
@@ -44,8 +46,6 @@ export const Position = ({ asset }: PositionProps) => {
     }
   }, [data?.rows]);
 
-  const position = usePositionStream();
-  console.log("datadatadata", position);
   useEffect(() => {
     const updateUnderline = () => {
       const button = buttonRefs.current[activeSection];
@@ -80,27 +80,13 @@ export const Position = ({ asset }: PositionProps) => {
     await cancelOrder(id, asset?.symbol);
     triggerAlert("Success", "Pending order successfully closed");
   };
-  console.log(
-    "OROROROR",
-    data?.rows,
-    orders?.find(
-      (entry) =>
-        entry.total_executed_quantity < entry.quantity &&
-        entry.type === "LIMIT" &&
-        (entry.status === "REPLACED" || entry.status === "NEW")
-    )
-  );
+
   const filterSide = (entry: any) => {
     if (activeSection === Sections.PENDING) {
-      const orderExecuted =
-        data?.rows?.find((item) => item?.average_open_price === entry?.price) ||
-        null;
-
       return (
         entry.total_executed_quantity < entry.quantity &&
         entry.type === "LIMIT" &&
-        (entry.status === "REPLACED" || entry.status === "NEW") &&
-        !orderExecuted
+        (entry.status === "REPLACED" || entry.status === "NEW")
       );
     } else if (activeSection === Sections.TP_SL) {
       if (entry.algo_order_id) {

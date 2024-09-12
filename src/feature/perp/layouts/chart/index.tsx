@@ -127,21 +127,20 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const prevPendingRef = useRef("");
   const [currentInterval, setCurrentInterval] = useState<string>("");
   const order = orders?.rows?.find((entry) => entry.symbol === asset?.symbol);
-  const [ordersData] = useOrderStream({ symbol: asset?.symbol });
+  const [ordersData, { refresh }] = useOrderStream({ symbol: asset?.symbol });
+
+  useEffect(() => {
+    if (orders) refresh();
+  }, [orders?.rows?.length]);
 
   const pendingPosition = useMemo(() => {
     return (
       ordersData?.filter((entry) => {
-        const orderExecuted =
-          orders?.rows?.find(
-            (item) => item?.average_open_price === entry?.price
-          ) || null;
         return (
           entry.symbol === asset?.symbol &&
-          entry.type === "LIMIT" &&
           entry.total_executed_quantity < entry.quantity &&
-          (entry.status === "NEW" || entry.status === "REPLACED") &&
-          !orderExecuted
+          entry.type === "LIMIT" &&
+          (entry.status === "REPLACED" || entry.status === "NEW")
         );
       }) || []
     );
