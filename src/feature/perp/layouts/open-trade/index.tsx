@@ -124,6 +124,8 @@ export const OpenTrade = ({
     input_quantity: false,
     input_price_max: false,
     input_price_min: false,
+    limit_max: false,
+    limit_min: false,
   });
   const {
     freeCollateral,
@@ -166,10 +168,28 @@ export const OpenTrade = ({
   const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
-    console.log("I COME FOR MAX & MIN RANGE");
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
-    console.log("I PASSED MAX & MIN RANGE");
+    if (values.type === "LIMIT") {
+      if (values.direction === "BUY") {
+        if (parseInt(values.price as string) >= markPrice) {
+          triggerAlert(
+            "Error",
+            "A limit buy order cannot be placed above the current market price."
+          );
+          return;
+        }
+      } else {
+        if (parseInt(values.price as string) <= markPrice) {
+          triggerAlert(
+            "Error",
+            "A limit sell order cannot be placed under the current market price."
+          );
+          return;
+        }
+      }
+    }
+
     const errors = await getValidationErrors(
       values,
       asset.symbol,
@@ -177,7 +197,7 @@ export const OpenTrade = ({
       calculate,
       currentAsset?.base_tick
     );
-    console.log("I PASSED AWAIT _ERRORS", errors);
+
     if (errors && Object.keys(errors)?.length > 0) {
       if (errors?.total?.message) {
         triggerAlert("Error", errors?.total?.message);
@@ -187,7 +207,7 @@ export const OpenTrade = ({
         triggerAlert("Error", errors?.order_quantity?.message);
       return;
     }
-    console.log("I PASSED errors");
+
     if (Number(values.quantity || 0) >= currentAsset?.base_max) {
       triggerAlert(
         "Error",
@@ -195,9 +215,7 @@ export const OpenTrade = ({
       );
       return;
     }
-    console.log(
-      "I PASSED Number(values.quantity || 0) >= currentAsset?.base_max"
-    );
+
     if (Number(values.quantity || 0) <= currentAsset?.base_min) {
       triggerAlert(
         "Error",
@@ -205,24 +223,14 @@ export const OpenTrade = ({
       );
       return;
     }
-    console.log(
-      "I PASSED Number(values.quantity || 0) <= currentAsset?.base_min"
-    );
+
     try {
-      console.log("I RUN VAL");
-      const val = getInput(values, asset.symbol, currentAsset?.base_tick);
-      try {
-        const test = calculate(
-          getInput(values, asset.symbol, currentAsset?.base_tick),
-          "order_quantity",
-          values?.quantity
-        );
-        console.log("I RUN SUBMIT", test);
-        console.log("I RUN VAL", val);
-        await onSubmit(test as OrderEntity);
-      } catch (e) {
-        console.log("e", e);
-      }
+      const val = calculate(
+        getInput(values, asset.symbol, currentAsset?.base_tick),
+        "order_quantity",
+        values?.quantity
+      );
+      await onSubmit(val as OrderEntity);
       triggerAlert("Success", "Order executed.");
       setOrderPositions(val as any);
       setValues({
