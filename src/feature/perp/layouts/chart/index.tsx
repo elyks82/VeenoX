@@ -127,21 +127,20 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
   const prevPendingRef = useRef("");
   const [currentInterval, setCurrentInterval] = useState<string>("");
   const order = orders?.rows?.find((entry) => entry.symbol === asset?.symbol);
-  const [ordersData] = useOrderStream({ symbol: asset?.symbol });
+  const [ordersData, { refresh }] = useOrderStream({ symbol: asset?.symbol });
+
+  useEffect(() => {
+    if (orders) refresh();
+  }, [orders?.rows?.length]);
 
   const pendingPosition = useMemo(() => {
     return (
       ordersData?.filter((entry) => {
-        const orderExecuted =
-          orders?.rows?.find(
-            (item) => item?.average_open_price === entry?.price
-          ) || null;
         return (
           entry.symbol === asset?.symbol &&
-          entry.type === "LIMIT" &&
           entry.total_executed_quantity < entry.quantity &&
-          (entry.status === "NEW" || entry.status === "REPLACED") &&
-          !orderExecuted
+          entry.type === "LIMIT" &&
+          (entry.status === "REPLACED" || entry.status === "NEW")
         );
       }) || []
     );
@@ -339,7 +338,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           theme: "Dark",
           custom_css_url: "/static/pro.css",
           loading_screen: { backgroundColor: "#1B1D22" },
-
           timezone: Intl.DateTimeFormat().resolvedOptions()
             .timeZone as Timezone,
           ...widgetOptionsDefault,
@@ -401,10 +399,23 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           prev.position_qty !== current.position_qty
         );
       };
+      const newPrices: number[] = [];
+
+      pendingPosition?.forEach((entry) => {
+        newPrices.push(entry.price);
+      });
+
+      if (
+        newPrices[0] !==
+          ((prevPendingPriceRef as any)?.current?.[0] as number) ||
+        newPrices[1] !== ((prevPendingPriceRef as any)?.current?.[1] as number)
+      ) {
+        hasChanges = true;
+      }
+
       if (
         relevantPositions.length !== prevPositionsRef.current.length ||
         pendingPosition?.length !== Number(prevPendingRef.current) ||
-        pendingPosition?.[0]?.price !== prevPendingPriceRef?.current ||
         prevTimeframe.current !== timeframe
       ) {
         hasChanges = true;
@@ -505,22 +516,31 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           const pendingLine = createLine({
             setText: "Limit order",
             setPrice: entry.price,
-            setQuantity: entry.quantity.toString(),
+            setQuantity: entry.side === "BUY" ? "LONG" : "SHORT",
             setLineWidth: 1,
             setBodyTextColor: "#FFF",
             setBodyBackgroundColor: "#1B1D22",
-            setBodyBorderColor: "#3498DB",
-            setLineColor: "#3498DB",
+            setBodyBorderColor: entry.side === "BUY" ? "#21A179" : "#D63230",
+            setLineColor: entry.side === "BUY" ? "#21A179" : "#D63230",
+            setQuantityBackgroundColor:
+              entry.side === "BUY" ? "#21A179" : "#D63230",
+            setQuantityBorderColor:
+              entry.side === "BUY" ? "#21A179" : "#D63230",
             setLineStyle: 2,
           });
           if (pendingLine) newChartLines[pendingLineId] = pendingLine;
         });
 
         setIsChartLoading(false);
-
         setChartLines(newChartLines);
+        const prices: number[] = [];
+        pendingPosition?.forEach((entry) => {
+          prices.push(entry.price);
+        });
+        console.log("prices", prices);
+
         (prevPositionsRef as any).current = relevantPositions;
-        (prevPendingPriceRef as any).current = pendingPosition?.[0]?.price;
+        (prevPendingPriceRef as any).current = prices;
         (prevPendingRef as any).current = pendingPosition?.length;
       } else updatePositions();
       prevTimeframe.current = timeframe;

@@ -8,6 +8,7 @@ import {
   getFormattedDate,
 } from "@/utils/misc";
 import { useMarginRatio, useOrderEntry } from "@orderly.network/hooks";
+import { OrderEntity } from "@orderly.network/types";
 import { Dispatch, SetStateAction } from "react";
 import { EditModal } from "./edit-modal";
 import { TPSLModal } from "./tp-sl-modal";
@@ -65,8 +66,8 @@ export const RenderCells = ({
         setEditPendingPositionOpen,
         currentLeverage
       )}
+
       {TPSLOpenOrder ? <TPSLModal order={order} /> : null}
-      {editPendingPositionOpen ? <EditModal /> : null}
     </>
   );
 };
@@ -92,7 +93,7 @@ const renderCommonCells = (trade: any) => (
 );
 
 const renderAdditionalCells = (
-  trade: any,
+  trade: OrderEntity | any,
   section: Sections,
   closePendingOrder: Function,
   setTPSLOpenOrder: Dispatch<SetStateAction<boolean>>,
@@ -197,17 +198,7 @@ const renderAdditionalCells = (
         </td>
         <td className={cn(tdStyle, "pr-5")}>
           <div className="flex items-center justify-end w-full h-full">
-            <button
-              onClick={() => {
-                setEditPendingPositionOpen(trade);
-                setOrderPositions([]);
-              }}
-              className="text-white bg-terciary border border-base_color text-bold font-poppins text-xs
-              h-[25px] px-2 rounded flex items-center
-          "
-            >
-              Edit
-            </button>
+            <EditModal order={trade} />
             <button
               onClick={() => {
                 closePendingOrder(trade.order_id);
@@ -337,9 +328,10 @@ const renderAdditionalCells = (
                   triggerAlert("Success", "Successfully closed");
                   setOrderPositions(["closed"]);
                 } catch (e) {
+                  console.log("e", e);
                   triggerAlert(
                     "Error",
-                    "Failed to close position. Please try again."
+                    "Unable to close position. Pending orders interfere with the position amount."
                   );
                 }
               }}

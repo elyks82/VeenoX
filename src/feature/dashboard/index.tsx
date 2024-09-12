@@ -25,7 +25,7 @@ import { TimeSeriesChart } from "./components/chart";
 const thStyle =
   "text-sm text-font-60 font-normal py-1.5 border-b border-borderColor-DARK text-end";
 const tdStyle =
-  "text-sm text-white font-normal py-2.5 border-b border-borderColor-DARK text-end";
+  "text-sm text-white font-normal py-3.5 border-b border-borderColor-DARK text-end";
 
 type DepositWithdrawTx = {
   id: string;
@@ -68,11 +68,10 @@ export const Dashboard = () => {
     totalValue,
     availableBalance,
     unsettledPnL,
-    positions,
-    accountInfo,
   } = useCollateral({
     dp: 2,
   });
+
   const { copyToClipboard, isCopied, error: copyError } = useCopyToClipboard();
   const { usdc } = useHoldingStream();
   const {
@@ -105,8 +104,8 @@ export const Dashboard = () => {
   }, [activeSection]);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center text-white pt-[50px] pb-[100px]">
-      <div className="max-w-[1350px] w-[90%] min-h-[80vh]">
+    <div className="w-full flex flex-col items-center text-white pt-[50px] pb-[100px] min-h-[90vh]">
+      <div className="max-w-[1350px] w-[90%] ">
         <div className="flex items-center justify-between mb-5 ">
           <h1 className="text-2xl text-white font-semibold">Dashboard</h1>
           <div className="flex items-center w-fit justify-start">
@@ -168,17 +167,17 @@ export const Dashboard = () => {
                 </div>{" "}
               </div>
               <div className="flex items-center justify-between gap-2.5 mt-5">
-                <div className="flex h-[100px] w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#15171B] border border-borderColor-DARK">
+                <div className="flex h-[100px] w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#2b2f3649] border border-borderColor-DARK">
                   <p className="text-xs text-font-60 text-center">Coin</p>
                   <p className="text-lg text-center">{usdc?.token || "--"}</p>
                 </div>
-                <div className="flex h-[100px]  w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#15171B] border border-borderColor-DARK">
+                <div className="flex h-[100px]  w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#2b2f3649] border border-borderColor-DARK">
                   <p className="text-xs text-font-60 text-center">Holding</p>
                   <p className="text-lg text-center">
                     {getFormattedAmount(usdc?.holding.toFixed(2)) || "--"}
                   </p>
                 </div>
-                <div className="flex h-[100px]  w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#15171B] border border-borderColor-DARK">
+                <div className="flex h-[100px]  w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#2b2f3649] border border-borderColor-DARK">
                   <p className="text-xs text-font-60 text-center">
                     Avabl. Withdraw
                   </p>
@@ -186,7 +185,7 @@ export const Dashboard = () => {
                     {getFormattedAmount(availableWithdraw?.toFixed(2)) || "--"}
                   </p>
                 </div>
-                <div className="flex h-[100px] w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#15171B] border border-borderColor-DARK">
+                <div className="flex h-[100px] w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#2b2f3649] border border-borderColor-DARK">
                   <p className="text-xs text-font-60 text-center">
                     Unsettled PnL
                   </p>
@@ -228,7 +227,7 @@ export const Dashboard = () => {
                   />
                 </div>
                 <div className="max-h-[500px] min-h-[500px] relative w-full overflow-y-scroll no-scrollbar">
-                  <table className="mt-0.5 w-full">
+                  <table className="mt-2.5 w-full">
                     <thead>
                       <tr>
                         <th className={cn(thStyle, "pl-2.5 text-start")}>
@@ -318,10 +317,10 @@ export const Dashboard = () => {
           <div className="w-[44%]">
             <div className="rounded-2xl p-5 border border-borderColor-DARK bg-secondary shadow-[rgba(0,0,0,0.2)] shadow-xl">
               <div className="flex items-center justify-between">
-                <p className="text-xl mb-7">Volume history</p>
+                <p className="text-xl mb-4">Volume history</p>
               </div>
-
               <TimeSeriesChart />
+              {/* <LabeledValuesSlider /> */}
             </div>
           </div>{" "}
         </div>
