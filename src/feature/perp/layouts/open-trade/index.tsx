@@ -235,7 +235,7 @@ export const OpenTrade = ({
       setOrderPositions(val as any);
       setValues({
         ...defaultValues,
-        quantity: "0",
+        quantity: maxQty.toString(),
         direction: values.direction,
       });
       setSliderValue(100);
