@@ -328,7 +328,6 @@ const renderAdditionalCells = (
                   triggerAlert("Success", "Successfully closed");
                   setOrderPositions(["closed"]);
                 } catch (e) {
-                  console.log("e", e);
                   triggerAlert(
                     "Error",
                     "Unable to close position. Pending orders interfere with the position amount."

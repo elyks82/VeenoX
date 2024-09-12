@@ -99,10 +99,7 @@ export const EditModal = ({ order }: EditModalType) => {
     }
   };
   return (
-    <Popover
-      open={editPendingPositionOpen?.order_id === order?.order_id}
-      onOpenChange={() => console.log("I change", editPendingPositionOpen)}
-    >
+    <Popover open={editPendingPositionOpen?.order_id === order?.order_id}>
       <PopoverTrigger
         className="h-full min-w-fit"
         onClick={() => {

@@ -260,30 +260,25 @@ export const OpenTrade = ({
   const barPosition = getSectionBarPosition();
 
   const handleButtonLongClick = async () => {
-    console.log("FORFOROF");
     if (state.status === 0) setIsWalletConnectorOpen(true);
     else if (state.status === 2 || state.status === 4)
       setIsEnableTradingModalOpen(true);
     else {
-      console.log("ELSE");
       if (values.type === "LIMIT") {
         if (Number(values.price) > (rangeInfo?.max as number)) {
           setInputErrors((prev) => ({
             ...prev,
             input_price_max: true,
           }));
-          console.log("EROR MAX");
           return;
         } else if (Number(values.price) < (rangeInfo?.min as number)) {
           setInputErrors((prev) => ({
             ...prev,
             input_price_min: true,
           }));
-          console.log("EROR MIN");
           return;
         }
       }
-      console.log("TRY SUBMIT");
       submitForm();
     }
   };
