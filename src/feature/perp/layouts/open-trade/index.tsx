@@ -235,7 +235,7 @@ export const OpenTrade = ({
       setOrderPositions(val as any);
       setValues({
         ...defaultValues,
-        quantity: maxQty.toString(),
+        quantity: newMaxQty.toString(),
         direction: values.direction,
       });
       setSliderValue(100);
@@ -903,7 +903,7 @@ function getInput(
     symbol,
     side: data.direction as OrderSide,
     order_type: data.type.toUpperCase() as any,
-    order_price: (data.price as any).toString() || undefined,
+    order_price: data.price ? (data.price as any).toString() : undefined,
     order_quantity: data.quantity?.toString(),
     trigger_price: data.triggerPrice,
     reduce_only: data.reduce_only,

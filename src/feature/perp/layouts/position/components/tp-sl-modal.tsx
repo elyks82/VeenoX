@@ -47,6 +47,7 @@ export const TPSLModal = ({ order }: any) => {
       setLoading(false);
       return;
     } else setError([""]);
+
     // const orderId = orders?.find(
     //   (entry) =>
     //     entry.average_executed_price === order.average_open_price &&
@@ -59,7 +60,8 @@ export const TPSLModal = ({ order }: any) => {
       setOrderPositions([]);
       setLoading(false);
     } catch (error) {
-      console.error("Erreur lors de la soumission de l'ordre:", error);
+      triggerAlert("Error", error?.message);
+      console.log("Erreur lors de la soumission de l'ordre:", error);
       setLoading(false);
     } finally {
       setLoading(false);
