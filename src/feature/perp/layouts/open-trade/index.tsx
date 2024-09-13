@@ -2,6 +2,7 @@ import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
 import { triggerAlert } from "@/lib/toaster";
+import { Leverage } from "@/modals/leverage";
 import { FuturesAssetProps } from "@/models";
 import { getFormattedAmount } from "@/utils/misc";
 import {
@@ -24,7 +25,6 @@ import { MdRefresh } from "react-icons/md";
 import { Oval } from "react-loader-spinner";
 import "rsuite/Slider/styles/index.css";
 import { useAccount } from "wagmi";
-import { Leverage } from "./components/leverage";
 
 type OpenTradeProps = {
   isMobile?: boolean;

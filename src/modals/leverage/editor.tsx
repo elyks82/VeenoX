@@ -6,7 +6,8 @@ import {
   checkValuesAgainstBoundaries,
   getTrackBackground,
 } from "react-range";
-import { getMaxLeverageToValue } from "../../utils";
+import { getMaxLeverageToValue } from "./utils";
+
 interface LeverageEditorProps {
   onSave?: (value: { leverage: number }) => Promise<void>;
   maxLeverage?: number;
