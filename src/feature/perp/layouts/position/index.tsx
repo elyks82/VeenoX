@@ -172,7 +172,7 @@ export const Position = ({ asset }: PositionProps) => {
   const noOrderMessage = getEmptyMessageFromActiveSection();
 
   return (
-    <div className="w-full">
+    <div className="w-full h-[250px] max-h-[250px]">
       <div className="w-full flex justify-between items-center border-b border-borderColor-DARK">
         <div className="flex items-center relative">
           {sections.map((section, index) => (
@@ -196,9 +196,8 @@ export const Position = ({ asset }: PositionProps) => {
       {activeSection === Sections.POSITION ? (
         <div className="p-2.5 flex items-center gap-5">
           <div>
-            <p className="text-xs text-font-60 mb-[3px]">Unreal. PnL</p>
-            <p
-              className={`text-base  font-medium ${
+            <p className="text-xs text-font-60 mb-[3px]">Unreal. PnL : <span
+              className={` ${
                 data?.aggregated.unrealPnL < 0
                   ? "text-red"
                   : data?.aggregated.unrealPnL > 0
@@ -208,17 +207,15 @@ export const Position = ({ asset }: PositionProps) => {
             >
               {getFormattedAmount(data?.aggregated.unrealPnL)} (
               {getTokenPercentage(pnl_change * currentLeverage)}%)
+            </span>
             </p>
           </div>
           <div>
-            <p className="text-xs text-font-60 mb-[3px]">Notional</p>
-            <p className="text-base text-white font-medium">
-              {getFormattedAmount(data?.aggregated.notional)}
-            </p>
+            <p className="text-xs text-font-60 mb-[3px]">Notional : {getFormattedAmount(data?.aggregated.notional)}</p>
           </div>
         </div>
       ) : null}
-      <div className="overflow-x-scroll min-h-[300px] max-h-[300px] overflow-y-scroll w-full no-scrollbar">
+      <div className="overflow-x-scroll min-h-[200px] max-h-[250px] overflow-y-scroll w-full no-scrollbar">
         <table className="w-full ">
           <thead>
             <tr>
@@ -258,16 +255,10 @@ export const Position = ({ asset }: PositionProps) => {
                 return (
                   <tr
                     key={i}
-                    className="flex flex-col justify-center text-xs text-white items-center absolute h-[260px] left-1/2"
+                    className="flex flex-col justify-center text-xs text-white items-center absolute h-[80px] left-1/2"
                   >
                     <div className="flex flex-col items-center justify-center w-full h-full">
-                      <Image
-                        src="/empty/no-result.svg"
-                        height={50}
-                        width={100}
-                        alt="Empty position image"
-                        className="mt-2"
-                      />
+                      
                       <p className="mt-2">{noOrderMessage}</p>{" "}
                     </div>
                   </tr>
@@ -285,15 +276,9 @@ export const Position = ({ asset }: PositionProps) => {
               );
             })}
             {!orders?.length && activeSection !== Sections.POSITION ? (
-              <tr className="flex flex-col justify-center text-xs text-white items-center absolute h-[260px] left-1/2">
+              <tr className="flex flex-col justify-center text-xs text-white items-center absolute h-[80px] left-1/2">
                 <div className="flex flex-col justify-center items-center">
-                  <Image
-                    src="/empty/no-result.svg"
-                    height={50}
-                    width={100}
-                    alt="Empty position image"
-                    className="mt-2"
-                  />
+                  
                   <p className="mt-2">{noOrderMessage}</p>{" "}
                 </div>
               </tr>
