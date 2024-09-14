@@ -8,7 +8,6 @@ import {
   useOrderStream,
   usePositionStream,
 } from "@orderly.network/hooks";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { RenderCells } from "./components/render-cells";
 import { thead } from "./constants";
@@ -194,24 +193,28 @@ export const Position = ({ asset }: PositionProps) => {
         </div>
       </div>
       {activeSection === Sections.POSITION ? (
-        <div className="p-2.5 flex items-center gap-5">
+        <div className="p-2.5 pt-3.5 flex items-center gap-5">
           <div>
-            <p className="text-xs text-font-60 mb-[3px]">Unreal. PnL : <span
-              className={` ${
-                data?.aggregated.unrealPnL < 0
-                  ? "text-red"
-                  : data?.aggregated.unrealPnL > 0
-                  ? "text-green"
-                  : "text-white"
-              }`}
-            >
-              {getFormattedAmount(data?.aggregated.unrealPnL)} (
-              {getTokenPercentage(pnl_change * currentLeverage)}%)
-            </span>
+            <p className="text-xs text-font-60 mb-[3px]">
+              Unreal. PnL :{" "}
+              <span
+                className={` ${
+                  data?.aggregated.unrealPnL < 0
+                    ? "text-red"
+                    : data?.aggregated.unrealPnL > 0
+                    ? "text-green"
+                    : "text-white"
+                }`}
+              >
+                {getFormattedAmount(data?.aggregated.unrealPnL)} (
+                {getTokenPercentage(pnl_change * currentLeverage)}%)
+              </span>
             </p>
           </div>
           <div>
-            <p className="text-xs text-font-60 mb-[3px]">Notional : {getFormattedAmount(data?.aggregated.notional)}</p>
+            <p className="text-xs text-font-60 mb-[3px]">
+              Notional : {getFormattedAmount(data?.aggregated.notional)}
+            </p>
           </div>
         </div>
       ) : null}
@@ -258,7 +261,6 @@ export const Position = ({ asset }: PositionProps) => {
                     className="flex flex-col justify-center text-xs text-white items-center absolute h-[80px] left-1/2"
                   >
                     <div className="flex flex-col items-center justify-center w-full h-full">
-                      
                       <p className="mt-2">{noOrderMessage}</p>{" "}
                     </div>
                   </tr>
@@ -278,7 +280,6 @@ export const Position = ({ asset }: PositionProps) => {
             {!orders?.length && activeSection !== Sections.POSITION ? (
               <tr className="flex flex-col justify-center text-xs text-white items-center absolute h-[80px] left-1/2">
                 <div className="flex flex-col justify-center items-center">
-                  
                   <p className="mt-2">{noOrderMessage}</p>{" "}
                 </div>
               </tr>
