@@ -1,11 +1,10 @@
 import { Slider, styled } from "@mui/material";
+import { useLeverage } from "@orderly.network/hooks";
 import { FC } from "react";
 import { marks } from "./constant";
 
 interface LeverageEditorProps {
   onSave?: (value: { leverage: number }) => Promise<void>;
-  maxLeverage?: number;
-  leverageLevers: number[];
 }
 
 const LeverageSlider: any = styled(Slider)({
@@ -87,11 +86,8 @@ const LeverageSlider: any = styled(Slider)({
   },
 });
 
-export const LeverageEditor: FC<LeverageEditorProps> = ({
-  maxLeverage,
-  leverageLevers,
-  onSave,
-}) => {
+export const LeverageEditor: FC<LeverageEditorProps> = ({ onSave }) => {
+  const [maxLeverage] = useLeverage();
   return (
     <div className="w-full mx-auto text-white">
       <LeverageSlider
