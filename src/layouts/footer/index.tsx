@@ -24,7 +24,7 @@ export const Footer = () => {
     };
   }, [ws]);
   return (
-    <footer className=" bg-secondary border-t text-sm text-white border-borderColor h-[70px] max-h-[70px]">
+    <footer className=" bg-secondary border-t text-sm text-white border-borderColor h-[30px] max-h-[30px]">
       <div className="h-[35px] max-h-[35px] sm:max-h-[40px] sm:h-[40px] flex items-center justify-between w-full">
         <div className="flex items-center px-2.5">
           <FaWifi className="text-green text-sm mr-2 font-bold" />
@@ -35,17 +35,12 @@ export const Footer = () => {
           </p>
         </div>
         <div className="flex items-center px-2.5">
-          <p className="text-font-60 text-xs whitespace-nowrap">Powered by</p>
-          <img
-            className="ml-2"
-            src="/logo/orderly-powered.svg"
-            alt="Orderly network logo"
-          />
+        <p className="text-font-60 text-xs">
+        © VeenoX - 2024 - All rights reserved{" "}
+      </p>
         </div>
       </div>
-      <p className="py-2.5 text-center w-full text-font-80 max-h-[30px]">
-        © VeenoX, 2024. All rights reserved.{" "}
-      </p>
+      
     </footer>
   );
 };

@@ -266,7 +266,7 @@ export const Perp = ({ asset }: PerpProps) => {
             </div>
           </div>
           <div className="resizerY hidden md:flex" onMouseDown={handleMouse} />
-          <div className=" w-full h-auto bottomPane">
+          <div className=" w-full h-[250px] max-h-[250px]">
             <div className="no-scrollbar">
               <Position asset={asset} />
             </div>
