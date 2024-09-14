@@ -213,7 +213,10 @@ export const Position = ({ asset }: PositionProps) => {
           </div>
           <div>
             <p className="text-xs text-font-60 mb-[3px]">
-              Notional : {getFormattedAmount(data?.aggregated.notional)}
+              Notional :{" "}
+              <span className="text-white">
+                {getFormattedAmount(data?.aggregated.notional)}
+              </span>
             </p>
           </div>
         </div>
