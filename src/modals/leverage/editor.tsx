@@ -1,12 +1,6 @@
-import { getLeverageValue } from "@/utils/misc";
-import { useAccount } from "@orderly.network/hooks";
-import { FC, useEffect, useState } from "react";
-import {
-  Range,
-  checkValuesAgainstBoundaries,
-  getTrackBackground,
-} from "react-range";
-import { getMaxLeverageToValue } from "./utils";
+import { Slider, styled } from "@mui/material";
+import { FC } from "react";
+import { marks } from "./constant";
 
 interface LeverageEditorProps {
   onSave?: (value: { leverage: number }) => Promise<void>;
@@ -14,144 +8,115 @@ interface LeverageEditorProps {
   leverageLevers: number[];
 }
 
-const MIN = 1;
-const MAX = 11;
-const STEP = 1;
+const LeverageSlider: any = styled(Slider)({
+  color: "#836ef9",
+  height: 7,
+  "& .MuiSlider-rail": {
+    backgroundColor: "#836ef979",
+    opacity: 1,
+  },
+  "& .MuiSlider-track": {
+    border: "none",
+    backgroundColor: "#836ef9",
+    opacity: 1,
+  },
+  "& .MuiSlider-thumb": {
+    height: 16,
+    width: 16,
+    backgroundColor: "currentColor",
+    border: "2px solid #FFFFFF60",
+    "&:focus, &:hover, &.Mui-active, &.Mui-focusVisible": {
+      boxShadow: "inherit",
+    },
+    "&::before": {
+      display: "none",
+    },
+  },
+  "& .MuiSlider-mark": {
+    backgroundColor: "transparent",
+    height: 10,
+    width: 3,
+    borderRadius: "4px",
+    top: "17px",
+    color: "#FFF",
+    "&::before": {
+      content: '""',
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      width: "100%",
+      height: "100%",
+      backgroundColor: "#836ef9",
+    },
+    "&.MuiSlider-markActive": {
+      opacity: 1,
+      backgroundColor: "transparent",
+      "&::before": {
+        backgroundColor: "#836ef9",
+      },
+    },
+  },
+  "& .MuiSlider-markLabel": {
+    color: "#FFFFFF70",
+    fontSize: 12,
+  },
+  "& .MuiSlider-markLabel:hover": {
+    color: "#FFFFFF",
+    fontSize: 12,
+  },
+
+  "& .MuiSlider-valueLabel": {
+    lineHeight: 1.2,
+    fontSize: 12,
+    background: "unset",
+    padding: 0,
+    width: 32,
+    height: 32,
+    borderRadius: "50% 50% 50% 0",
+    backgroundColor: "#836ef9",
+    transformOrigin: "bottom left",
+    transform: "translate(50%, -100%) rotate(-45deg) scale(0)",
+    "&::before": { display: "none" },
+    "&.MuiSlider-valueLabelOpen": {
+      transform: "translate(50%, -100%) rotate(-45deg) scale(1)",
+    },
+    "& > *": {
+      transform: "rotate(45deg)",
+    },
+  },
+});
 
 export const LeverageEditor: FC<LeverageEditorProps> = ({
   maxLeverage,
   leverageLevers,
   onSave,
 }) => {
-  const { state } = useAccount();
-  const [values, setValues] = useState<number[]>([MIN]);
-
-  useEffect(() => {
-    if (maxLeverage !== undefined) {
-      const formatMaxLeverage = getMaxLeverageToValue(maxLeverage);
-      setValues([formatMaxLeverage]);
-    }
-  }, [maxLeverage]);
-
-  useEffect(() => {
-    const valuesCopy = values.map((value) =>
-      checkValuesAgainstBoundaries(value, MIN, MAX)
-    );
-    setValues(valuesCopy);
-  }, []);
-
   return (
-    <div className="mb-2.5 w-[97%] mx-auto">
-      <Range
-        step={1}
-        min={1}
-        max={11}
-        disabled={state.status !== 5}
-        values={values}
-        onChange={(value) => setValues(value)}
-        onFinalChange={(value) => {
-          const _value = leverageLevers[value[0] - 1];
+    <div className="w-full mx-auto text-white">
+      <LeverageSlider
+        defaultValue={maxLeverage}
+        step={null}
+        max={50}
+        aria-label="Default"
+        valueLabelDisplay="auto"
+        marks={marks.map((mark) => ({
+          ...mark,
+          label: (
+            <span
+              style={{
+                color: mark.value === maxLeverage ? "#836ef9" : "#FFFFFF90",
+              }}
+            >
+              {mark.label}
+            </span>
+          ),
+        }))}
+        onChangeCommitted={(_: any, value: number) => {
           try {
-            onSave?.({ leverage: _value });
+            onSave?.({ leverage: value });
           } catch (err) {}
         }}
-        renderMark={({ props, index }) => {
-          const leverage = getLeverageValue(index);
-          return (
-            <div
-              {...props}
-              key={props.key}
-              style={{
-                ...props.style,
-                display: "flex",
-                flexDirection: "column",
-                marginTop: "-2px",
-                marginRight: "-2px",
-              }}
-            >
-              <div
-                className="mb-2 p-[2px]"
-                style={{
-                  height: "7px",
-                  width: "7px",
-                  borderRadius: "1px",
-                  transform: "rotate(45deg)",
-                  backgroundColor:
-                    index * STEP + MIN < values[0]
-                      ? "#836ef9"
-                      : "rgba(70,70,70,1)",
-                }}
-              >
-                <div
-                  className={`w-full h-full ${
-                    index * STEP + MIN < values[0]
-                      ? "bg-[#836ef9]"
-                      : "bg-borderColor-DARK"
-                  }  rounded-[1px]`}
-                />
-              </div>
-              <div className="text-font-80 text-[11px] -ml-1">{leverage}</div>
-            </div>
-          );
-        }}
-        renderTrack={({ props, children }) => (
-          <div
-            onMouseDown={props.onMouseDown}
-            onTouchStart={props.onTouchStart}
-            style={{
-              ...props.style,
-              height: "36px",
-              display: "flex",
-              width: "100%",
-            }}
-          >
-            <div
-              ref={props.ref}
-              style={{
-                height: "3px",
-                width: "100%",
-                borderRadius: "4px",
-                background: getTrackBackground({
-                  values,
-                  colors: ["#836ef9", "rgba(70,70,70,1)"],
-                  min: 1,
-                  max: 11,
-                  rtl: false,
-                }),
-                alignSelf: "center",
-              }}
-            >
-              {children}
-            </div>
-          </div>
-        )}
-        renderThumb={({ props, isDragged }) => (
-          <div
-            {...props}
-            key={props.key}
-            style={{
-              ...props.style,
-              height: "12px",
-              width: "12px",
-              borderRadius: "100%",
-              backgroundColor: "rgba(200,200,200,1)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              //   boxShadow: "0px 2px 6px #AAA",
-              padding: "2px",
-            }}
-          >
-            <div
-              style={{
-                height: "100%",
-                width: "100%",
-                borderRadius: "100%",
-                backgroundColor: "#836ef9",
-              }}
-            />
-          </div>
-        )}
       />
     </div>
   );
