@@ -401,7 +401,7 @@ export const OpenTrade = ({
                     : "text-white"
                 }`}
               >
-                {getFormattedAmount(data?.aggregated.unrealPnL)} (
+                {(data?.aggregated.unrealPnL).toFixed(2)} (
                 {data?.aggregated.unrealPnlROI.toFixed(2)}
                 %)
               </p>
