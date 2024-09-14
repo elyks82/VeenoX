@@ -204,7 +204,7 @@ export const Position = ({ asset }: PositionProps) => {
                     : data?.aggregated.unrealPnL > 0
                     ? "text-green"
                     : "text-white"
-                }`}
+                } font-medium`}
               >
                 {getFormattedAmount(data?.aggregated.unrealPnL)} (
                 {getTokenPercentage(pnl_change * currentLeverage)}%)
@@ -214,7 +214,7 @@ export const Position = ({ asset }: PositionProps) => {
           <div>
             <p className="text-xs text-font-60 mb-[3px]">
               Notional :{" "}
-              <span className="text-white">
+              <span className="text-white font-medium">
                 {getFormattedAmount(data?.aggregated.notional)}
               </span>
             </p>
