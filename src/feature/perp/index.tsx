@@ -43,6 +43,7 @@ export const Perp = ({ asset }: PerpProps) => {
   const { usdc } = useHoldingStream();
   const orderbookRef = useRef<HTMLDivElement>(null);
   const useParam = useParams();
+
   const [
     data,
     {
