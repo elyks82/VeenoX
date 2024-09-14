@@ -39,7 +39,7 @@ export const useCustomLeverage = () => {
             autoClose: 2000,
           });
         });
-    } catch (e) {
+    } catch (err: any) {
       toast.update(id, {
         render: <p className="mb-1">{err.message}</p>,
         type: "error",
