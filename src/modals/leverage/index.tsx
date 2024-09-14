@@ -6,13 +6,14 @@ import {
   DialogTrigger,
 } from "@/lib/shadcn/dialog";
 import { useLeverage, useMarginRatio } from "@orderly.network/hooks";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { LeverageEditor } from "./editor";
 
 export const Leverage = () => {
   const { currentLeverage } = useMarginRatio();
+  const [showPopup, setShowPopup] = useState(false);
   const [maxLeverage, { update, config: leverageLevers, isMutating }] =
     useLeverage();
   const nextLeverage = useRef(maxLeverage ?? 0);
@@ -21,32 +22,42 @@ export const Leverage = () => {
     const id = toast.loading("Please wait...");
     if (value.leverage === maxLeverage) return;
 
-    update({ leverage: value.leverage }).then(
-      () => {
+    update({ leverage: value.leverage })
+      .then(
+        () => {
+          setShowPopup(false);
+          toast.update(id, {
+            render: "Max leverage updated",
+            type: "success",
+            isLoading: false,
+            autoClose: 2000,
+          });
+        },
+        (error: { message: string }) => {
+          toast.update(id, {
+            render: <p className="mb-1">{error.message}</p>,
+            type: "error",
+            isLoading: false,
+            autoClose: 2000,
+          });
+        }
+      )
+      .catch((err: any) => {
         toast.update(id, {
-          render: "Max leverage updated",
-          type: "success",
-          isLoading: false,
-          autoClose: 2000,
-        });
-      },
-      (error: { message: string }) => {
-        toast.update(id, {
-          render: <p className="mb-1">{error.message}</p>,
+          render: <p className="mb-1">{err.message}</p>,
           type: "error",
           isLoading: false,
           autoClose: 2000,
         });
-      }
-    );
+      });
     return Promise.resolve().then(() => {
       nextLeverage.current = value.leverage;
     });
   };
 
   return (
-    <Dialog>
-      <DialogTrigger>
+    <Dialog open={showPopup}>
+      <DialogTrigger onClick={() => setShowPopup(true)}>
         <button className="text-white flex flex-col justify-center items-end">
           <p className="text-font-60 text-xs mb-[3px]">Account Leverage</p>
           <div className="flex items-center text-sm text-white hover:text-base_color transition-color duration-150 ease-in-out">
@@ -57,7 +68,9 @@ export const Leverage = () => {
       </DialogTrigger>
       <DialogContent
         className="max-w-[450px] w-[90%] flex flex-col gap-0 overflow-auto no-scrollbar"
-        close={() => {}}
+        close={() => {
+          setShowPopup(false);
+        }}
       >
         <DialogHeader className="text-xl">Edit Max Leverage</DialogHeader>
         <div className="flex flex-col mt-5">
