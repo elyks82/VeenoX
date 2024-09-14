@@ -482,7 +482,7 @@ input[type="number"] {
 .container {
   display: flex;
   flex-direction: column;
-  
+  height: 100vh;
 }
 
 .resizerY {
@@ -539,4 +539,20 @@ input[type="number"] {
 
 .shadowY {
   box-shadow: 0 -10px 15px rgba(0, 0, 0, 0.1), 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.MuiSlider-thumb {
+  color: #836ef9;
+  background: red;
+}
+.MuiSlider-rail {
+  color: #836ef979;
+}
+.MuiSlider-track {
+  color: #836ef9;
+}
+
+.MuiSlider-mark {
+  color: red;
+  height: 15px;
 }
