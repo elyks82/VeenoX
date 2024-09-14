@@ -537,7 +537,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
         pendingPosition?.forEach((entry) => {
           prices.push(entry.price);
         });
-        console.log("prices", prices);
 
         (prevPositionsRef as any).current = relevantPositions;
         (prevPendingPriceRef as any).current = prices;

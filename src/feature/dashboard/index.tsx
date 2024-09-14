@@ -1,4 +1,5 @@
 "use client";
+import LabeledValuesSlider from "@/components/slider";
 import { useGeneralContext } from "@/context";
 import { useCopyToClipboard } from "@/hook/useCopy";
 import { cn } from "@/utils/cn";
@@ -320,7 +321,7 @@ export const Dashboard = () => {
                 <p className="text-xl mb-4">Volume history</p>
               </div>
               <TimeSeriesChart />
-              {/* <LabeledValuesSlider /> */}
+              <LabeledValuesSlider />
             </div>
           </div>{" "}
         </div>

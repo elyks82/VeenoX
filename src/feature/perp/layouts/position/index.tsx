@@ -114,16 +114,6 @@ export const Position = ({ asset }: PositionProps) => {
     return true;
   };
 
-  const test = orders?.filter(
-    (entry) =>
-      entry.total_executed_quantity < entry.quantity &&
-      entry.type === "LIMIT" &&
-      (entry.status === "REPLACED" || entry.status === "NEW")
-  );
-
-  console.log("test", test);
-  console.log(data?.rows);
-
   // const [tt] = useOrderStream({
   //   includes: [AlgoOrderRootType.TP_SL, AlgoOrderRootType.POSITIONAL_TP_SL],
   // });

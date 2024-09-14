@@ -29,10 +29,7 @@ export const TPSLModal = ({ order }: any) => {
   const [algoOrder, { setValue, submit, errors }] = useTPSLOrder(position, {
     defaultOrder: TPSLOpenOrder.algo_order,
   });
-  const [
-    orders,
-    { cancelAllTPSLOrders, cancelTPSLChildOrder, updateTPSLOrder },
-  ] = useOrderStream(TPSLOpenOrder);
+  const [_, { cancelAllTPSLOrders }] = useOrderStream(TPSLOpenOrder);
   const { setOrderPositions } = useGeneralContext();
 
   const handleSubmit = async () => {
@@ -47,11 +44,7 @@ export const TPSLModal = ({ order }: any) => {
       setLoading(false);
       return;
     } else setError([""]);
-    // const orderId = orders?.find(
-    //   (entry) =>
-    //     entry.average_executed_price === order.average_open_price &&
-    //     entry.quantity === Math.abs(order.position_qty)
-    // )?.order_id;
+
     try {
       await submit();
       triggerAlert("Success", `Your TP/SL has been placed`);
@@ -59,7 +52,8 @@ export const TPSLModal = ({ order }: any) => {
       setOrderPositions([]);
       setLoading(false);
     } catch (error) {
-      console.error("Erreur lors de la soumission de l'ordre:", error);
+      triggerAlert("Error", (error as any)?.message);
+      console.log("Erreur lors de la soumission de l'ordre:", error);
       setLoading(false);
     } finally {
       setLoading(false);

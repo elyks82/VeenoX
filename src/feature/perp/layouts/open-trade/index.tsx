@@ -1,7 +1,14 @@
 import { Tooltip } from "@/components/tooltip";
 import { useGeneralContext } from "@/context";
 import { Slider } from "@/lib/shadcn/slider";
+import {
+  Tooltip as ShadTooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/lib/shadcn/tooltip";
 import { triggerAlert } from "@/lib/toaster";
+import { Leverage } from "@/modals/leverage";
 import { FuturesAssetProps } from "@/models";
 import { getFormattedAmount } from "@/utils/misc";
 import {
@@ -13,7 +20,6 @@ import {
   useOrderEntry,
   useAccount as useOrderlyAccount,
   usePositionStream,
-  useSettleSubscription,
   useSymbolPriceRange,
   useSymbolsInfo,
 } from "@orderly.network/hooks";
@@ -24,7 +30,6 @@ import { MdRefresh } from "react-icons/md";
 import { Oval } from "react-loader-spinner";
 import "rsuite/Slider/styles/index.css";
 import { useAccount } from "wagmi";
-import { Leverage } from "./components/leverage";
 
 type OpenTradeProps = {
   isMobile?: boolean;
@@ -100,30 +105,14 @@ export const OpenTrade = ({
     }
   }, [usdc]);
 
-  useSettleSubscription({
-    onMessage: (data: any) => {
-      const { status } = data;
-      switch (status) {
-        case "COMPLETED":
-          triggerAlert("Success", "Settlement has been completed.");
-          setIsSettleLoading(false);
-          break;
-        case "FAILED":
-          triggerAlert("Error", "Settlement has failed.");
-          setIsSettleLoading(false);
-          break;
-        default:
-          break;
-      }
-    },
-  });
-
   const [isTokenQuantity, setIsTokenQuantity] = useState(true);
   const [values, setValues] = useState(defaultValues);
   const [inputErrors, setInputErrors] = useState({
     input_quantity: false,
     input_price_max: false,
     input_price_min: false,
+    limit_max: false,
+    limit_min: false,
   });
   const {
     freeCollateral,
@@ -166,10 +155,28 @@ export const OpenTrade = ({
   const currentAsset = symbols?.find((cur) => cur.symbol === asset?.symbol);
 
   const submitForm = async () => {
-    console.log("I COME FOR MAX & MIN RANGE");
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
-    console.log("I PASSED MAX & MIN RANGE");
+    if (values.type === "LIMIT") {
+      if (values.direction === "BUY") {
+        if (parseInt(values.price as string) >= markPrice) {
+          triggerAlert(
+            "Error",
+            "A limit buy order cannot be placed above the current market price."
+          );
+          return;
+        }
+      } else {
+        if (parseInt(values.price as string) <= markPrice) {
+          triggerAlert(
+            "Error",
+            "A limit sell order cannot be placed under the current market price."
+          );
+          return;
+        }
+      }
+    }
+
     const errors = await getValidationErrors(
       values,
       asset.symbol,
@@ -177,7 +184,7 @@ export const OpenTrade = ({
       calculate,
       currentAsset?.base_tick
     );
-    console.log("I PASSED AWAIT _ERRORS", errors);
+
     if (errors && Object.keys(errors)?.length > 0) {
       if (errors?.total?.message) {
         triggerAlert("Error", errors?.total?.message);
@@ -187,7 +194,7 @@ export const OpenTrade = ({
         triggerAlert("Error", errors?.order_quantity?.message);
       return;
     }
-    console.log("I PASSED errors");
+
     if (Number(values.quantity || 0) >= currentAsset?.base_max) {
       triggerAlert(
         "Error",
@@ -195,9 +202,7 @@ export const OpenTrade = ({
       );
       return;
     }
-    console.log(
-      "I PASSED Number(values.quantity || 0) >= currentAsset?.base_max"
-    );
+
     if (Number(values.quantity || 0) <= currentAsset?.base_min) {
       triggerAlert(
         "Error",
@@ -205,29 +210,19 @@ export const OpenTrade = ({
       );
       return;
     }
-    console.log(
-      "I PASSED Number(values.quantity || 0) <= currentAsset?.base_min"
-    );
+
     try {
-      console.log("I RUN VAL");
-      const val = getInput(values, asset.symbol, currentAsset?.base_tick);
-      try {
-        const test = calculate(
-          getInput(values, asset.symbol, currentAsset?.base_tick),
-          "order_quantity",
-          values?.quantity
-        );
-        console.log("I RUN SUBMIT", test);
-        console.log("I RUN VAL", val);
-        await onSubmit(test as OrderEntity);
-      } catch (e) {
-        console.log("e", e);
-      }
+      const val = calculate(
+        getInput(values, asset.symbol, currentAsset?.base_tick),
+        "order_quantity",
+        values?.quantity
+      );
+      await onSubmit(val as OrderEntity);
       triggerAlert("Success", "Order executed.");
       setOrderPositions(val as any);
       setValues({
         ...defaultValues,
-        quantity: "0",
+        quantity: newMaxQty.toString(),
         direction: values.direction,
       });
       setSliderValue(100);
@@ -252,30 +247,25 @@ export const OpenTrade = ({
   const barPosition = getSectionBarPosition();
 
   const handleButtonLongClick = async () => {
-    console.log("FORFOROF");
     if (state.status === 0) setIsWalletConnectorOpen(true);
     else if (state.status === 2 || state.status === 4)
       setIsEnableTradingModalOpen(true);
     else {
-      console.log("ELSE");
       if (values.type === "LIMIT") {
         if (Number(values.price) > (rangeInfo?.max as number)) {
           setInputErrors((prev) => ({
             ...prev,
             input_price_max: true,
           }));
-          console.log("EROR MAX");
           return;
         } else if (Number(values.price) < (rangeInfo?.min as number)) {
           setInputErrors((prev) => ({
             ...prev,
             input_price_min: true,
           }));
-          console.log("EROR MIN");
           return;
         }
       }
-      console.log("TRY SUBMIT");
       submitForm();
     }
   };
@@ -372,9 +362,139 @@ export const OpenTrade = ({
     if (!depositAmount) setIsTooltipDepositOpen(false);
   }, [depositAmount]);
 
+  const [expendAccountInfo, setExpendAccountInfo] = useState(false);
+
   return (
     <section className="h-full w-full text-white">
-      {isMobile ? null : <Leverage />}
+      <div className="flex flex-col sm:px-4 px-2 border-b border-borderColor">
+        <div
+          className={`overflow-hidden h-full ${
+            expendAccountInfo ? "max-h-[300px]" : "max-h-[50px]"
+          } transition-all duration-200 ease-in-out`}
+        >
+          <div className="flex items-center justify-between py-3">
+            <div className="flex flex-col">
+              <p className="text-xs text-font-60 mb-[3px]">Total Value</p>
+              <p
+                className={`text-base font-medium ${
+                  depositAmount
+                    ? "animate-pulse text-base_color"
+                    : " text-white"
+                } transition-opacity duration-1000 ease-in-out`}
+              >
+                {totalValue} {positionPnL.aggregated.unrealizedPnl}{" "}
+                <span className="text-font-60">USDC</span>
+              </p>{" "}
+            </div>
+            {isMobile ? null : <Leverage />}
+          </div>
+          <div className="border-t border-borderColor-DARK pt-2 pb-1.5" />
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col w-fit">
+              <p className="text-xs text-font-60 mb-[3px]">Unreal PnL</p>
+              <p
+                className={`text-sm font-medium ${
+                  data?.aggregated.unrealPnL > 0
+                    ? "text-green"
+                    : data?.aggregated.unrealPnL < 0
+                    ? "text-red"
+                    : "text-white"
+                }`}
+              >
+                {(data?.aggregated.unrealPnL).toFixed(2)} (
+                {data?.aggregated.unrealPnlROI.toFixed(2)}
+                %)
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-font-60 mb-[3px]">Unsettled PnL</p>
+              <div
+                className={`text-sm font-medium text-end flex items-center justify-end `}
+              >
+                <TooltipProvider>
+                  <ShadTooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => {
+                          if (unsettledPnL !== 0 && accountInstance) {
+                            setIsSettleLoading(true);
+                            accountInstance
+                              ?.settle()
+                              .then((e) => {
+                                setIsSettleLoading(false);
+                                triggerAlert(
+                                  "Success",
+                                  "Settlement completed."
+                                );
+                              })
+                              .catch((e) => {
+                                setIsSettleLoading(false);
+                                triggerAlert("Error", "Settlement has failed.");
+                              });
+                          }
+                        }}
+                        className={`${
+                          unsettledPnL !== 0
+                            ? ""
+                            : "opacity-40 pointer-events-none"
+                        } flex items-center text-sm text-white transition-all duration-100 ease-in-out`}
+                      >
+                        {isSettleLoading ? (
+                          <Oval
+                            visible={true}
+                            height="13"
+                            width="13"
+                            color="#FFF"
+                            secondaryColor="rgba(255,255,255,0.6)"
+                            ariaLabel="oval-loading"
+                            strokeWidth={6}
+                            strokeWidthSecondary={6}
+                            wrapperStyle={{
+                              marginRight: "5px",
+                            }}
+                            wrapperClass=""
+                          />
+                        ) : (
+                          <MdRefresh className="text-base mr-[5px]" />
+                        )}
+                        <span
+                          className={`${
+                            unsettledPnL > 0
+                              ? "text-green"
+                              : unsettledPnL < 0
+                              ? "text-red"
+                              : "text-white"
+                          }`}
+                        >
+                          {getFormattedAmount(unsettledPnL)}{" "}
+                        </span>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="bottom"
+                      className="h-fit overflow-clip text-white max-w-[150px] w-full text-start p-2 bg-secondary border border-borderColor shadow-xl whitespace-pre-wrap"
+                    >
+                      Settlement will take up to 1 minute before you can
+                      withdraw your available balance.
+                    </TooltipContent>
+                  </ShadTooltip>
+                </TooltipProvider>
+              </div>
+            </div>
+          </div>{" "}
+        </div>
+        <button
+          className="w-full py-2 flex items-center justify-center"
+          onClick={() => setExpendAccountInfo((prev) => !prev)}
+        >
+          <IoChevronDown
+            className={`text-xl text-white ${
+              expendAccountInfo ? "-rotate-180" : "rotate-0"
+            } transition-all duration-200 ease-in-out`}
+          />
+        </button>
+      </div>
+
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
           <button
@@ -735,115 +855,7 @@ export const OpenTrade = ({
             {currentAsset?.min_notional} {currentAsset?.quote}
           </p>
         </div> */}
-        <div className="pt-4 border-t border-borderColor hidden md:block">
-          <div className="pb-4">
-            <div className="flex items-center justify-between">
-              <div
-                className="relative"
-                onMouseEnter={() => {
-                  if (depositAmount) {
-                    setIsTooltipDepositOpen(true);
-                  }
-                }}
-                onMouseLeave={() => {
-                  if (depositAmount) {
-                    setIsTooltipDepositOpen(false);
-                  }
-                }}
-              >
-                <div
-                  className={`absolute ${
-                    isTooltipDepositOpen
-                      ? "opacity-100 "
-                      : "opacity-0 pointer-events-none translate-y-[1%]"
-                  } transition-all duration-200 h-fit rounded-md border border-borderColor ease-in-out  top-[105%] w-[180px] p-2.5 left-1/2 -translate-x-1/2 bg-secondary z-[10] shadow-xl shadow-[rgba(0,0,0,0.2)]`}
-                >
-                  <p className="text-xs text-font-80">
-                    Your deposit has been successfully received. The funds will
-                    be available in your account shortly.
-                  </p>
-                </div>
-                <p className="text-xs text-font-60 mb-[3px]">Total Value</p>
-                <p
-                  className={`text-base font-medium ${
-                    depositAmount
-                      ? "animate-pulse text-base_color"
-                      : " text-white"
-                  } transition-opacity duration-1000 ease-in-out`}
-                >
-                  {totalValue} {positionPnL.aggregated.unrealizedPnl}
-                </p>
-              </div>
-              {/* <IoChevronDown className="text-xl" /> */}
-              <div>
-                <p className="text-xs text-font-60 mb-[3px] text-end">
-                  Unreal PnL
-                </p>
-                <p
-                  className={`text-sm font-medium ${
-                    data?.aggregated.unrealPnL > 0
-                      ? "text-green"
-                      : data?.aggregated.unrealPnL < 0
-                      ? "text-red"
-                      : "text-white"
-                  }`}
-                >
-                  {getFormattedAmount(data?.aggregated.unrealPnL)} (
-                  {data?.aggregated.unrealPnlROI.toFixed(2)}
-                  %)
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between mt-4">
-              <div>
-                <p className="text-xs text-font-60 mb-1">Unsettled PnL</p>
-                <p
-                  className={`text-sm font-medium ${
-                    unsettledPnL > 0
-                      ? "text-green"
-                      : unsettledPnL < 0
-                      ? "text-red"
-                      : "text-white"
-                  }`}
-                >
-                  {getFormattedAmount(unsettledPnL)}{" "}
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  if (unsettledPnL !== 0 && accountInstance) {
-                    setIsSettleLoading(true);
-                    accountInstance?.settle();
-                  }
-                }}
-                className={`${
-                  unsettledPnL !== 0 ? "" : "opacity-40 pointer-events-none"
-                } flex items-center border border-borderColor hover:bg-terciary 
-                rounded px-2 py-1 text-xs text-white transition-all duration-100 ease-in-out`}
-              >
-                {isSettleLoading ? (
-                  <Oval
-                    visible={true}
-                    height="13"
-                    width="13"
-                    color="#FFF"
-                    secondaryColor="rgba(255,255,255,0.6)"
-                    ariaLabel="oval-loading"
-                    strokeWidth={6}
-                    strokeWidthSecondary={6}
-                    wrapperStyle={{
-                      marginRight: "5px",
-                    }}
-                    wrapperClass=""
-                  />
-                ) : (
-                  <MdRefresh className="text-[13px] mr-[5px]" />
-                )}
-                <span>Settle PnL</span>
-              </button>
-            </div>
-          </div>
-        </div>
+
         <div className="flex items-center justify-between border-t border-borderColor pt-4">
           <p className="text-xs text-font-60">Margin Required</p>
           <p className="text-xs text-white font-medium">
@@ -895,7 +907,7 @@ function getInput(
     symbol,
     side: data.direction as OrderSide,
     order_type: data.type.toUpperCase() as any,
-    order_price: (data.price as any).toString() || undefined,
+    order_price: data.price ? (data.price as any).toString() : undefined,
     order_quantity: data.quantity?.toString(),
     trigger_price: data.triggerPrice,
     reduce_only: data.reduce_only,

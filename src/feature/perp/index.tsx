@@ -3,6 +3,7 @@ import { useGeneralContext } from "@/context";
 import { EnableTrading } from "@/layouts/enable-trading";
 import { FavoriteProps, FuturesAssetProps } from "@/models";
 import {
+  useAccount,
   useCollateral,
   useHoldingStream,
   useMarkets,
@@ -64,6 +65,12 @@ export const Perp = ({ asset }: PerpProps) => {
       updateSymbolFavoriteState,
     },
   ]: any = useMarkets(MarketsType.ALL);
+
+  const { account } = useAccount();
+
+  // ed25519:
+
+  console.log("account", account);
 
   const handleMouseDown = (index: number, e: any) => {
     if (window.innerWidth < 1268) return;
