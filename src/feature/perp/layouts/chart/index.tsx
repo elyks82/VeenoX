@@ -156,22 +156,16 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
 
   const saveChartState = useCallback(
     (chart: any) => {
-      if (!isInitialLoadComplete) {
-        return;
-      }
-
       const currentState: ChartState = {
         drawings: chart.getAllShapes(),
         studies: chart.getAllStudies(),
         symbol: chart.symbol(),
         interval: chart.resolution(),
       };
-
       const savedStateString = localStorage.getItem("chartState");
       const savedState: ChartState = savedStateString
         ? JSON.parse(savedStateString)
         : { drawings: [], studies: [], symbol: "", interval: "" };
-
       const updateElements = (
         currentElements: ChartElement[],
         savedElements: ChartElement[]
@@ -216,7 +210,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
       // });
       // console.log("arr", arr);
       // updatedState.drawings = [...updatedState.drawings, ...arr];
-
       localStorage.setItem("chartState", JSON.stringify(updatedState));
     },
     [isInitialLoadComplete]
@@ -368,12 +361,21 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
             console.error("Error loading saved state:", error);
           }
 
-          setIsInitialLoadComplete(true);
+          const chartChangedHandler = () => {
+            console.log("Chart changed");
+            saveChartState(chart);
+          };
+
+          widgetInstance.subscribe("onAutoSaveNeeded", chartChangedHandler);
+
           const cleanup = setupChangeListeners(widgetInstance);
 
           updatePositions();
 
-          return cleanup;
+          return () => {
+            cleanup();
+            widgetInstance.unsubscribe("onAutoSaveNeeded", chartChangedHandler);
+          };
         });
       }
     );

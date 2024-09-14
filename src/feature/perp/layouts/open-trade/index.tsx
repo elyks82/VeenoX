@@ -25,6 +25,7 @@ import {
 } from "@orderly.network/hooks";
 import { OrderEntity, OrderSide } from "@orderly.network/types";
 import { useEffect, useState } from "react";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { IoChevronDown } from "react-icons/io5";
 import { MdRefresh } from "react-icons/md";
 import { Oval } from "react-loader-spinner";
@@ -375,16 +376,19 @@ export const OpenTrade = ({
           <div className="flex items-center justify-between py-3">
             <div className="flex flex-col">
               <p className="text-xs text-font-60 mb-[3px]">Total Value</p>
-              <p
-                className={`text-base font-medium ${
+              <div
+                className={`text-base flex items-center font-medium ${
                   depositAmount
                     ? "animate-pulse text-base_color"
                     : " text-white"
                 } transition-opacity duration-1000 ease-in-out`}
               >
+                {depositAmount ? (
+                  <AiOutlineLoading3Quarters className="animate-spin text-base_color text-sm mr-2" />
+                ) : null}
                 {totalValue} {positionPnL.aggregated.unrealizedPnl}{" "}
-                <span className="text-font-60">USDC</span>
-              </p>{" "}
+                <span className="text-font-60 ml-1">USDC</span>
+              </div>{" "}
             </div>
             {isMobile ? null : <Leverage />}
           </div>
@@ -401,8 +405,10 @@ export const OpenTrade = ({
                     : "text-white"
                 }`}
               >
-                {(data?.aggregated.unrealPnL).toFixed(2)} (
-                {data?.aggregated.unrealPnlROI.toFixed(2)}
+                {data?.aggregated.unrealPnL
+                  ? (data?.aggregated.unrealPnL).toFixed(2)
+                  : data?.aggregated.unrealPnL}{" "}
+                ({data?.aggregated.unrealPnlROI.toFixed(2)}
                 %)
               </p>
             </div>

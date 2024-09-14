@@ -3,8 +3,6 @@ import { useGeneralContext } from "@/context";
 import { EnableTrading } from "@/layouts/enable-trading";
 import { FavoriteProps, FuturesAssetProps } from "@/models";
 import {
-  useAccount,
-  useCollateral,
   useHoldingStream,
   useMarkets,
   useWalletConnector,
@@ -45,17 +43,7 @@ export const Perp = ({ asset }: PerpProps) => {
   const { usdc } = useHoldingStream();
   const orderbookRef = useRef<HTMLDivElement>(null);
   const useParam = useParams();
-  const {
-    totalCollateral,
-    freeCollateral: freeCollat,
-    totalValue,
-    availableBalance,
-    unsettledPnL,
-    positions,
-    accountInfo,
-  } = useCollateral({
-    dp: 2,
-  });
+
   const [
     data,
     {
@@ -65,12 +53,6 @@ export const Perp = ({ asset }: PerpProps) => {
       updateSymbolFavoriteState,
     },
   ]: any = useMarkets(MarketsType.ALL);
-
-  const { account } = useAccount();
-
-  // ed25519:
-
-  console.log("account", account);
 
   const handleMouseDown = (index: number, e: any) => {
     if (window.innerWidth < 1268) return;
@@ -284,7 +266,7 @@ export const Perp = ({ asset }: PerpProps) => {
             </div>
           </div>
           <div className="resizerY hidden md:flex" onMouseDown={handleMouse} />
-          <div className=" w-full h-auto bottomPane">
+          <div className=" w-full h-[250px] max-h-[250px]">
             <div className="no-scrollbar">
               <Position asset={asset} />
             </div>
