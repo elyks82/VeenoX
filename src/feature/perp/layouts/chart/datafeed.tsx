@@ -44,7 +44,7 @@ export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
       has_intraday: true,
       intraday_multipliers: ["1", "5", "15", "30", "60"],
       supported_resolution: supportedResolutions,
-      volume_precision: 8,
+      volume_precision: 2,
       data_status: "streaming",
     };
     onResolve(params);
