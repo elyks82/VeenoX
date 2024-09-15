@@ -14,7 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: rgba(10, 10, 10, 1);
+    --foreground-rgb: rgb(10, 10, 10);
     --background-start-rgb: rgba(10, 10, 10, 1);
     --background-end-rgb: rgba(10, 10, 10, 1);
   }
@@ -482,7 +482,6 @@ input[type="number"] {
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
 }
 
 .resizerY {

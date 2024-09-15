@@ -10,43 +10,35 @@ export const useCustomLeverage = () => {
   const onSave = async (value: { leverage: number }) => {
     if (value.leverage === maxLeverage) return;
     const id = toast.loading("Please wait...");
-    try {
-      update({ leverage: value.leverage })
-        .then(
-          () => {
-            setShowPopup(false);
-            toast.update(id, {
-              render: "Max leverage updated",
-              type: "success",
-              isLoading: false,
-              autoClose: 2000,
-            });
-          },
-          (error: { message: string }) => {
-            toast.update(id, {
-              render: <p className="mb-1">{error.message}</p>,
-              type: "error",
-              isLoading: false,
-              autoClose: 2000,
-            });
-          }
-        )
-        .catch((err: any) => {
+    update({ leverage: value.leverage })
+      .then(
+        () => {
+          setShowPopup(false);
           toast.update(id, {
-            render: <p className="mb-1">{err.message}</p>,
+            render: "Max leverage updated",
+            type: "success",
+            isLoading: false,
+            autoClose: 2000,
+          });
+        },
+        (error: { message: string }) => {
+          toast.update(id, {
+            render: <p className="mb-1">{error.message}</p>,
             type: "error",
             isLoading: false,
             autoClose: 2000,
           });
+        }
+      )
+      .catch((err: { message: string }) => {
+        toast.update(id, {
+          render: <p className="mb-1">{err.message}</p>,
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
         });
-    } catch (err: any) {
-      toast.update(id, {
-        render: <p className="mb-1">{err.message}</p>,
-        type: "error",
-        isLoading: false,
-        autoClose: 2000,
       });
-    }
+
     return Promise.resolve().then(() => {
       nextLeverage.current = value.leverage;
     });
