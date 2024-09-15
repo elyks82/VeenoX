@@ -1,4 +1,5 @@
 import { Dialog, DialogContent } from "@/lib/shadcn/dialog";
+import { MaintenanceType } from "@/models";
 import { useQuery } from "@orderly.network/hooks";
 import { useEffect, useState } from "react";
 
@@ -7,15 +8,6 @@ interface TimeRemaining {
   hours: number;
   minutes: number;
   seconds: number;
-}
-
-interface MaintenanceType {
-  status: number;
-  msg: string;
-  scheduled_maintenance: {
-    startTime: number;
-    endTime: number;
-  } | null;
 }
 
 export const MaintenanceStatusModal = () => {

@@ -30,6 +30,8 @@ export const LandingHeader = () => {
             {" "}
             <Link
               href="https://x.com/veenox_xyz"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full h-full hover:text-base_color"
             >
               Twitter
@@ -39,6 +41,8 @@ export const LandingHeader = () => {
             {" "}
             <Link
               href="https://t.me/@veenox_xyz"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full h-full hover:text-base_color"
             >
               Telegram
@@ -48,6 +52,8 @@ export const LandingHeader = () => {
             {" "}
             <Link
               href="https://discord.com/invite/vwjQ24yZ"
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full h-full hover:text-base_color"
             >
               Discord

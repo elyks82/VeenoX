@@ -39,6 +39,7 @@ const config: Config = {
         "green-opacity-20": "rgba(14, 203, 129,0.2)",
 
         blue: "#3498DB",
+        yellow: "#D8A600",
 
         red: "rgb(234 57 67)",
         "red-opacity-10": "rgba(234, 57, 67, 0.1)",
