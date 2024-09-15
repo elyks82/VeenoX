@@ -129,7 +129,7 @@ export const PairSelector = ({ params }: FavoriteProps) => {
                           }}
                         >
                           {value.includes(token.symbol) ? (
-                            <FaStar className="text-xs text-yellow-400" />
+                            <FaStar className="text-xs text-yellow" />
                           ) : (
                             <FaRegStar className="text-xs text-white" />
                           )}
