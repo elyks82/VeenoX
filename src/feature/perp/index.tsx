@@ -44,6 +44,15 @@ export const Perp = ({ asset }: PerpProps) => {
   const { usdc } = useHoldingStream();
   const orderbookRef = useRef<HTMLDivElement>(null);
   const useParam = useParams();
+  const [topHeightPx, setTopHeightPx] = useState(0);
+
+  const calculateInitialHeight = () => {
+    return Math.round(window.innerHeight * 0.7);
+  };
+
+  useEffect(() => {
+    setTopHeightPx(calculateInitialHeight());
+  }, []);
 
   const [
     data,
@@ -93,33 +102,27 @@ export const Perp = ({ asset }: PerpProps) => {
   const handleMouse = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (window.innerWidth < 1268) return;
     const startY = e.clientY;
-    const containerHeight = (
-      containerRef.current as HTMLDivElement
-    ).getBoundingClientRect().height;
-    const startTopHeight = (topHeight / 100) * containerHeight;
+    const startTopHeight = topHeightPx;
 
     const handleMouseMove = (e: MouseEvent) => {
       const deltaY = e.clientY - startY;
       const newTopHeight = startTopHeight + deltaY;
-      const newTopHeightPercent = (newTopHeight / containerHeight) * 100;
-      let rowUpHeight = rowUpRef.current?.clientHeight || 0;
+      const containerHeight =
+        containerRef.current?.clientHeight || window.innerHeight;
 
-      if (rowUpHeight > 720) {
-        setTopHeight(Math.max(Math.min(newTopHeightPercent, 90), 10));
-      } else {
-        const isMovingDown = deltaY > 0;
-        if (isMovingDown)
-          setTopHeight(Math.max(Math.min(newTopHeightPercent, 90), 10));
-      }
+      const minHeight = Math.round(containerHeight * 0.55);
+      const maxHeight = Math.round(containerHeight * 0.9);
+
+      setTopHeightPx(Math.max(Math.min(newTopHeight, maxHeight), minHeight));
     };
 
     const handleMouseUp = () => {
-      (chartRef?.current as any).style.pointerEvents = "auto";
+      if (chartRef.current) chartRef.current.style.pointerEvents = "auto";
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
 
-    (chartRef?.current as any).style.pointerEvents = "none";
+    if (chartRef.current) chartRef.current.style.pointerEvents = "none";
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
   };
@@ -134,13 +137,18 @@ export const Perp = ({ asset }: PerpProps) => {
       } else {
         setColWidths([8, 2]);
       }
+      setTopHeightPx((prevHeight) => {
+        const minHeight = Math.round(window.innerHeight * 0.6);
+        const maxHeight = Math.round(window.innerHeight * 0.9);
+        return Math.min(Math.max(prevHeight, minHeight), maxHeight);
+      });
     };
 
     window.addEventListener("resize", handleResize);
     handleResize();
 
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  }, [topHeightPx]);
 
   const [widths, setWidths] = useState([90, 10]);
   const resizerRef = useRef(null);
@@ -193,7 +201,10 @@ export const Perp = ({ asset }: PerpProps) => {
             ref={rowUpRef}
             className="relative w-full  border-b border-borderColor topPane md:flex-grow "
             style={{
-              height: `${window.innerWidth < 1168 ? "auto" : `${topHeight}%`}`,
+              height: `${
+                window.innerWidth < 1168 ? "auto" : `${topHeightPx}px`
+              }`,
+              minHeight: `${window.innerWidth < 1168 ? "auto" : "20vh"}`,
               zIndex: 1,
             }}
           >
@@ -267,7 +278,7 @@ export const Perp = ({ asset }: PerpProps) => {
             </div>
           </div>
           <div className="resizerY hidden md:flex" onMouseDown={handleMouse} />
-          <div className=" w-full h-[250px] max-h-[250px]">
+          <div className=" w-full min-h-[320px] h-[320px] max-h-[320px]">
             <div className="no-scrollbar">
               <Position asset={asset} />
             </div>

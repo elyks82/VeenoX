@@ -171,7 +171,7 @@ export const Position = ({ asset }: PositionProps) => {
   const noOrderMessage = getEmptyMessageFromActiveSection();
 
   return (
-    <div className="w-full h-[250px] max-h-[250px]">
+    <div className="w-full min-h-[320px] h-[320px] max-h-[320px]">
       <div className="w-full flex justify-between items-center border-b border-borderColor-DARK">
         <div className="flex items-center relative">
           {sections.map((section, index) => (
