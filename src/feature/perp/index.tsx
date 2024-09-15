@@ -196,6 +196,7 @@ export const Perp = ({ asset }: PerpProps) => {
           style={{
             width: window.innerWidth > 1168 ? `${widths[0]}%` : "100%",
           }}
+          className="border-borderColor border-r"
         >
           <div
             ref={rowUpRef}
@@ -287,7 +288,7 @@ export const Perp = ({ asset }: PerpProps) => {
 
         <div
           style={{ width: `${widths[1]}%` }}
-          className="hidden md:block h-full min-w-[300px] max-w-[500px]  border-l relative border-borderColor "
+          className="hidden md:block h-full min-w-[300px] max-w-[500px] relative"
         >
           {window.innerWidth >= 1268 && (
             <div
