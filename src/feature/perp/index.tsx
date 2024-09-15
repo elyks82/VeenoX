@@ -189,14 +189,13 @@ export const Perp = ({ asset }: PerpProps) => {
   };
 
   return (
-    <div ref={containerRef} className="container w-full max-w-full">
+    <div ref={containerRef} className="container w-full max-w-full pb-[35px]">
       <EnableTrading />
       <div className="w-full flex h-full">
         <div
           style={{
             width: window.innerWidth > 1168 ? `${widths[0]}%` : "100%",
           }}
-          className="border-borderColor border-r"
         >
           <div
             ref={rowUpRef}
@@ -260,7 +259,7 @@ export const Perp = ({ asset }: PerpProps) => {
                 )}
               </div>
               <div
-                className="hidden md:block h-full relative"
+                className="hidden md:block h-full relative border-r border-borderColor"
                 ref={orderbookRef}
               >
                 <Orderbook asset={asset} />{" "}
@@ -278,17 +277,22 @@ export const Perp = ({ asset }: PerpProps) => {
               </div>
             </div>
           </div>
-          <div className="resizerY hidden md:flex" onMouseDown={handleMouse} />
-          <div className=" w-full min-h-[320px] h-[320px] max-h-[320px]">
-            <div className="no-scrollbar">
-              <Position asset={asset} />
-            </div>
+          <div className="border-r border-borderColor">
+            <div
+              className="resizerY hidden md:flex"
+              onMouseDown={handleMouse}
+            />
+            <div className=" w-full min-h-[350px] h-[350px] ">
+              <div className="no-scrollbar">
+                <Position asset={asset} />
+              </div>
+            </div>{" "}
           </div>
         </div>
 
         <div
           style={{ width: `${widths[1]}%` }}
-          className="hidden md:block h-full min-w-[300px] max-w-[500px] relative"
+          className="hidden md:block h-full min-w-[300px] max-w-[500px] relative min-h-screen "
         >
           {window.innerWidth >= 1268 && (
             <div

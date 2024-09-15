@@ -12,8 +12,8 @@ export const Footer = () => {
   );
 
   return (
-    <footer className=" bg-secondary border-t text-sm text-white border-borderColor h-[30px] max-h-[30px]">
-      <div className="h-[35px] max-h-[35px] sm:max-h-[40px] sm:h-[40px] flex items-center justify-between w-full">
+    <footer className="h-[35px] bg-secondary border-t text-sm text-white w-full border-borderColor flex items-center fixed bottom-0 left-0">
+      <div className="flex items-center justify-between w-full">
         <div className="flex items-center px-2.5">
           {maintenance?.status === 0 ? (
             <RiWifiLine className="text-green text-sm mr-2 font-bold" />
