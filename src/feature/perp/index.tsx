@@ -1,6 +1,7 @@
 "use client";
 import { useGeneralContext } from "@/context";
 import { EnableTrading } from "@/layouts/enable-trading";
+import { MaintenanceStatusModal } from "@/modals/maintenance";
 import { FavoriteProps, FuturesAssetProps } from "@/models";
 import {
   useHoldingStream,
@@ -288,7 +289,7 @@ export const Perp = ({ asset }: PerpProps) => {
           <OpenTrade asset={asset} holding={usdc?.holding} />
         </div>
       </div>
-
+      <MaintenanceStatusModal />
       <MobileOpenTrade asset={asset} holding={usdc?.holding} />
     </div>
   );
