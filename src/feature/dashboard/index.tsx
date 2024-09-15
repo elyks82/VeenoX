@@ -1,7 +1,7 @@
 "use client";
-import LabeledValuesSlider from "@/components/slider";
 import { useGeneralContext } from "@/context";
 import { useCopyToClipboard } from "@/hook/useCopy";
+import { LeverageContent } from "@/modals/leverage/leverage";
 import { cn } from "@/utils/cn";
 import {
   addressSlicer,
@@ -180,10 +180,13 @@ export const Dashboard = () => {
                 </div>
                 <div className="flex h-[100px]  w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#2b2f3649] border border-borderColor-DARK">
                   <p className="text-xs text-font-60 text-center">
-                    Avabl. Withdraw
+                    Avbl. Withdraw
                   </p>
                   <p className="text-lg text-center">
-                    {getFormattedAmount(availableWithdraw?.toFixed(2)) || "--"}
+                    {availableWithdraw > 0
+                      ? getFormattedAmount(availableWithdraw?.toFixed(2)) ||
+                        "--"
+                      : "0.00"}
                   </p>
                 </div>
                 <div className="flex h-[100px] w-full flex-col items-center px-2 py-2 justify-center rounded-xl bg-[#2b2f3649] border border-borderColor-DARK">
@@ -321,9 +324,14 @@ export const Dashboard = () => {
                 <p className="text-xl mb-4">Volume history</p>
               </div>
               <TimeSeriesChart />
-              <LabeledValuesSlider />
             </div>
-          </div>{" "}
+            <div className="rounded-2xl p-5  mt-7 border border-borderColor-DARK bg-secondary shadow-[rgba(0,0,0,0.2)] shadow-xl">
+              <p className="text-xl">Edit Leverage</p>
+              <div className="flex items-center justify-between w-full ">
+                <LeverageContent className="w-full" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
