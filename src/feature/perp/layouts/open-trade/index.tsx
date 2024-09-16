@@ -235,7 +235,6 @@ export const OpenTrade = ({
       });
       setSliderValue(100);
     } catch (err: any) {
-      console.log("err", err);
       toast.update(id, {
         render: err?.message,
         type: "error",

@@ -361,7 +361,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           }
 
           const chartChangedHandler = () => {
-            console.log("Chart changed");
             saveChartState(chart);
           };
 
