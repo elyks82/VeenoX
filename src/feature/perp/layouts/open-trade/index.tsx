@@ -826,7 +826,6 @@ export const OpenTrade = ({
               {estLeverage || "--"}x
             </p>
           </div>
-
           <button
             className="text-xs text-white mt-3 flex items-center justify-between w-full"
             onClick={() => {
@@ -836,19 +835,35 @@ export const OpenTrade = ({
               }));
             }}
           >
-            <p>Reduce only</p>
-            <div
-              className={`w-[15px] p-0.5 h-[15px] rounded border ${
-                values.reduce_only
-                  ? "border-base_color"
-                  : "border-[rgba(255,255,255,0.3)]"
-              } transition-all duration-100 ease-in-out`}
-            >
+            <div className="flex items-center justify-between w-full">
+              <TooltipProvider>
+                <ShadTooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <p className="underline w-fit text-white">Reduce only</p>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    side="bottom"
+                    className="h-fit overflow-clip max-w-[200px] w-full p-2 bg-secondary border border-borderColor shadow-xl whitespace-pre-wrap"
+                  >
+                    This order allows you to only reduce or close an existing
+                    position. It prevents opening new positions or increasing
+                    current ones
+                  </TooltipContent>
+                </ShadTooltip>
+              </TooltipProvider>
               <div
-                className={`w-full h-full rounded-[1px] bg-base_color ${
-                  values.reduce_only ? "opacity-100" : "opacity-0"
+                className={`w-[15px] p-0.5 h-[15px] rounded border ${
+                  values.reduce_only
+                    ? "border-base_color"
+                    : "border-[rgba(255,255,255,0.3)]"
                 } transition-all duration-100 ease-in-out`}
-              />
+              >
+                <div
+                  className={`w-full h-full rounded-[1px] bg-base_color ${
+                    values.reduce_only ? "opacity-100" : "opacity-0"
+                  } transition-all duration-100 ease-in-out`}
+                />
+              </div>
             </div>
           </button>
           {/* <button
