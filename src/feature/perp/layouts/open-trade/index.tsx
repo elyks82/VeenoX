@@ -399,9 +399,7 @@ export const OpenTrade = ({
     <section className="h-full w-full text-white">
       <div className="flex flex-col sm:px-4 px-2 border-b border-borderColor">
         <div
-          className={`overflow-hidden h-full ${
-            expendAccountInfo ? "max-h-[300px]" : "max-h-[50px]"
-          } transition-all duration-200 ease-in-out`}
+          className={`overflow-hidden h-full transition-all duration-200 ease-in-out`}
         >
           <div className="flex items-center justify-between py-3">
             <div className="flex flex-col">
@@ -423,7 +421,7 @@ export const OpenTrade = ({
             {isMobile ? null : <Leverage />}
           </div>
           <div className="border-t border-borderColor-DARK pt-2 pb-1.5" />
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pb-3">
             <div className="flex flex-col w-fit">
               <p className="text-xs text-font-60 mb-[3px]">Unreal PnL</p>
               <p
@@ -519,7 +517,7 @@ export const OpenTrade = ({
             </div>
           </div>{" "}
         </div>
-        <button
+        {/* <button
           className="w-full py-2 flex items-center justify-center"
           onClick={() => setExpendAccountInfo((prev) => !prev)}
         >
@@ -528,7 +526,7 @@ export const OpenTrade = ({
               expendAccountInfo ? "-rotate-180" : "rotate-0"
             } transition-all duration-200 ease-in-out`}
           />
-        </button>
+        </button> */}
       </div>
 
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
