@@ -30,6 +30,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { IoChevronDown } from "react-icons/io5";
 import { MdRefresh } from "react-icons/md";
 import { Oval } from "react-loader-spinner";
+import { toast } from "react-toastify";
 import "rsuite/Slider/styles/index.css";
 import { useAccount } from "wagmi";
 
@@ -212,7 +213,7 @@ export const OpenTrade = ({
       );
       return;
     }
-
+    const id = toast.loading("Executing Order");
     try {
       const val = calculate(
         getInput(values, asset.symbol, currentAsset?.base_tick),
@@ -220,7 +221,12 @@ export const OpenTrade = ({
         values?.quantity
       );
       await onSubmit(val as OrderEntity);
-      triggerAlert("Success", "Order executed.");
+      toast.update(id, {
+        render: "Order executed",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
       setOrderPositions(val as any);
       setValues({
         ...defaultValues,
@@ -228,9 +234,14 @@ export const OpenTrade = ({
         direction: values.direction,
       });
       setSliderValue(100);
-    } catch (err) {
+    } catch (err: any) {
       console.log("err", err);
-      triggerAlert("Error", "The margin will be insufficient after");
+      toast.update(id, {
+        render: err?.message,
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
     }
   };
 

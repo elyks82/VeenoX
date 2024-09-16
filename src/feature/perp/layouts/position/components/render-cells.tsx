@@ -1,5 +1,4 @@
 import { useGeneralContext } from "@/context";
-import { triggerAlert } from "@/lib/toaster";
 import { PosterModal } from "@/modals/poster";
 import { cn } from "@/utils/cn";
 import {
@@ -10,6 +9,7 @@ import {
 import { useMarginRatio, useOrderEntry } from "@orderly.network/hooks";
 import { OrderEntity } from "@orderly.network/types";
 import { Dispatch, SetStateAction } from "react";
+import { toast } from "react-toastify";
 import { EditModal } from "./edit-modal";
 import { TPSLModal } from "./tp-sl-modal";
 
@@ -322,16 +322,25 @@ const renderAdditionalCells = (
                   trigger_price: undefined,
                   reduce_only: true,
                 };
+                const idToast = toast.loading("Closing Order");
 
                 try {
                   await onSubmit(cancelOrder);
-                  triggerAlert("Success", "Successfully closed");
+                  toast.update(idToast, {
+                    render: "Order closed",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 2000,
+                  });
                   setOrderPositions(["closed"]);
                 } catch (e) {
-                  triggerAlert(
-                    "Error",
-                    "Unable to close position. Pending orders interfere with the position amount."
-                  );
+                  toast.update(idToast, {
+                    render:
+                      "Unable to close position. Pending orders interfere with the position amount.",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 2000,
+                  });
                 }
               }}
               className="h-[25px] w-fit px-2 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
