@@ -354,3 +354,44 @@
 }
 
 /* TIMEFRAME END */
+
+/*  CHART SETTINGS */
+
+.dialog-2AogBbC7 {
+  background-color: #1b1d22 !important;
+  border: 1px solid rgba(200, 200, 200, 0.2) !important;
+  border-radius: 10px;
+}
+
+.active-DggvOZTm {
+  background-color: #836ef9 !important;
+  border: 1px solid rgba(200, 200, 200, 0.2) !important;
+}
+
+.box-2eXD4rIf {
+  background-color: #836ef9 !important;
+  border: 1px solid rgba(200, 200, 200, 0.2) !important;
+}
+
+.box-2eXD4rIf:before {
+  border: 1px solid rgba(200, 200, 200, 0.2) !important;
+}
+
+.variant-primary-xRobF0EE {
+  background-color: #836ef9 !important;
+  border: 1px solid rgba(200, 200, 200, 0.2) !important;
+}
+
+.variant-secondary-xRobF0EE {
+  border: 1px solid #836ef9 !important;
+  color: #836ef9 !important;
+}
+
+.container-QDd7xRJ1.focused-QDd7xRJ1 {
+  border: 1px solid #836ef9 !important;
+}
+
+.container-QDd7xRJ1.intent-primary-QDd7xRJ1 {
+  border: 1px solid #836ef9 !important;
+}
+/* box-2eXD4rIf check-2eXD4rIf */

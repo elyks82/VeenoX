@@ -2,7 +2,6 @@ import { Loader } from "@/components/loader";
 import { useGeneralContext } from "@/context";
 import { FuturesAssetProps } from "@/models";
 import { cn } from "@/utils/cn";
-import { formatSymbol } from "@/utils/misc";
 import {
   useOrderStream,
   usePositionStream,
@@ -319,7 +318,7 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
     import("../../../../../public/static/charting_library").then(
       ({ widget: Widget }) => {
         const widgetOptions: WidgetOptions = {
-          symbol: formatSymbol(asset?.symbol),
+          symbol: asset?.symbol,
           datafeed: Datafeed(asset, ws) as never,
           container: ref.current as never,
           container_id: ref.current?.id as never,
@@ -362,7 +361,6 @@ const TradingViewChart: React.FC<TradingViewChartProps> = ({
           }
 
           const chartChangedHandler = () => {
-            console.log("Chart changed");
             saveChartState(chart);
           };
 

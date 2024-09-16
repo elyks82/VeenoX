@@ -6,12 +6,12 @@ import {
   DialogTitle,
 } from "@/lib/shadcn/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/lib/shadcn/popover";
-import { triggerAlert } from "@/lib/toaster";
 import { useOrderStream, useTPSLOrder } from "@orderly.network/hooks";
 import { useState } from "react";
 import { GrPowerReset } from "react-icons/gr";
 import { IoChevronDown } from "react-icons/io5";
 import { Oval } from "react-loader-spinner";
+import { toast } from "react-toastify";
 
 export const TPSLModal = ({ order }: any) => {
   const [activePnlOrOffset, setActivePnlOrOffset] = useState("$");
@@ -44,16 +44,26 @@ export const TPSLModal = ({ order }: any) => {
       setLoading(false);
       return;
     } else setError([""]);
+    const idToast = toast.loading("Closing Order");
 
     try {
       await submit();
-      triggerAlert("Success", `Your TP/SL has been placed`);
+      toast.update(idToast, {
+        render: "TP/SL set",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
       setTPSLOpenOrder(null);
       setOrderPositions([]);
       setLoading(false);
     } catch (error) {
-      triggerAlert("Error", (error as any)?.message);
-      console.log("Erreur lors de la soumission de l'ordre:", error);
+      toast.update(idToast, {
+        render: (error as any)?.message,
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
       setLoading(false);
     } finally {
       setLoading(false);
@@ -61,13 +71,25 @@ export const TPSLModal = ({ order }: any) => {
   };
 
   const handleRemoveTPSL = async (): Promise<void> => {
+    const idToast = toast.loading("Closing Order");
+
     try {
       await cancelAllTPSLOrders();
-      triggerAlert("Success", "TP/SL has been reset");
+      toast.update(idToast, {
+        render: "TP/SL reset",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
       setOrderPositions([]);
       setTPSLOpenOrder(null);
     } catch (e) {
-      triggerAlert("Error", "An error happened during cancel tp/sl order");
+      toast.update(idToast, {
+        render: "Error while cancelling tp/sl",
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
       setTPSLOpenOrder(null);
     }
   };

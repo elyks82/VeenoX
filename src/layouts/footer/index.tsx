@@ -32,7 +32,6 @@ export const Footer = () => {
             <p className="text-font-60 text-xs hidden sm:block">
               Join our community
             </p>
-
             <Link
               href="https://discord.com/invite/vwjQ24yZ"
               target="_blank"
@@ -63,10 +62,18 @@ export const Footer = () => {
           </div>
         </div>
         <div className="flex items-center px-2.5">
+          <p className="text-font-60 text-xs whitespace-nowrap">Powered by</p>
+          <img
+            className="ml-2"
+            src="/logo/orderly-powered.svg"
+            alt="Orderly network logo"
+          />
+        </div>
+        {/* <div className="flex items-center px-2.5">
           <p className="text-font-60 text-xs">
             © VeenoX - 2024 - All rights reserved{" "}
           </p>
-        </div>
+        </div> */}
       </div>
     </footer>
   );

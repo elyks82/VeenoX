@@ -1,14 +1,13 @@
 import { useGeneralContext } from "@/context";
-import { triggerAlert } from "@/lib/toaster";
 import { FuturesAssetProps } from "@/models";
 import { getFormattedAmount, getTokenPercentage } from "@/utils/misc";
 import {
   useMarginRatio,
-  useOrderEntry,
   useOrderStream,
   usePositionStream,
 } from "@orderly.network/hooks";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
 import { RenderCells } from "./components/render-cells";
 import { thead } from "./constants";
 
@@ -62,22 +61,24 @@ export const Position = ({ asset }: PositionProps) => {
     return () => window.removeEventListener("resize", updateUnderline);
   }, [activeSection]);
 
-  const { onSubmit } = useOrderEntry(
-    {
-      symbol: asset.symbol,
-      side:
-        (data?.rows?.[0]?.position_qty as number) >= 0
-          ? "SELL"
-          : ("BUY" as any),
-      order_type: "MARKET" as any,
-      order_quantity: data.rows?.[0]?.position_qty,
-    },
-    { watchOrderbook: true }
-  );
-
   const closePendingOrder = async (id: number) => {
-    await cancelOrder(id, asset?.symbol);
-    triggerAlert("Success", "Pending order successfully closed");
+    const idToast = toast.loading("Closing Order");
+    try {
+      await cancelOrder(id, asset?.symbol);
+      toast.update(idToast, {
+        render: "Order closed",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    } catch (error: any) {
+      toast.update(idToast, {
+        render: error?.message,
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
+    }
   };
 
   const filterSide = (entry: any) => {

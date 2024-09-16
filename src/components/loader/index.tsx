@@ -14,7 +14,7 @@ export const Loader = ({ className = "" }: LoaderType) => {
       disablePictureInPicture
       preload="auto"
       controlsList="nodownload nofullscreen noremoteplayback"
-      className={cn("w-[90px] pointer-events-none", className)}
+      className={cn("w-[80px] pointer-events-none", className)}
     >
       <source src="/loader/load.mp4" type="video/mp4" />
       Loading...
