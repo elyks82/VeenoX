@@ -161,8 +161,9 @@ export const OpenTrade = ({
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
     if (values.type === "LIMIT") {
+      console.log("values", values.price);
       if (values.direction === "BUY") {
-        if (parseInt(values.price as string) >= markPrice) {
+        if (parseFloat(values.price as string) > markPrice) {
           triggerAlert(
             "Error",
             "A limit buy order cannot be placed above the current market price."
@@ -170,7 +171,7 @@ export const OpenTrade = ({
           return;
         }
       } else {
-        if (parseInt(values.price as string) <= markPrice) {
+        if (parseFloat(values.price as string) < markPrice) {
           triggerAlert(
             "Error",
             "A limit sell order cannot be placed under the current market price."
@@ -220,7 +221,8 @@ export const OpenTrade = ({
         "order_quantity",
         values?.quantity
       );
-      await onSubmit(val as OrderEntity);
+      const res = await onSubmit(val as OrderEntity);
+      console.log(res);
       toast.update(id, {
         render: "Order executed",
         type: "success",
@@ -317,7 +319,6 @@ export const OpenTrade = ({
     return ((percentage as number) / 100) * newMaxQty;
   }
   function toPercentage(value: number | string) {
-    if (!value) console.log(value);
     let newValue: number;
     if (typeof value === "string") newValue = parseFloat(value);
     else newValue = value;
@@ -350,7 +351,6 @@ export const OpenTrade = ({
 
   useEffect(() => {
     if (newMaxQty) {
-      console.log("I come here");
       setValues((prev) => ({
         ...prev,
         quantity: newMaxQty.toString(),
@@ -709,7 +709,13 @@ export const OpenTrade = ({
               }}
               type="number"
               disabled={!freeCollateral || !address}
-              value={getFormattedAmount(values.quantity).toString() || 0}
+              value={
+                values.quantity
+                  ? typeof values.quantity === "string"
+                    ? parseFloat(values.quantity).toFixed(2)
+                    : (values.quantity as number)?.toFixed(2)
+                  : 0
+              }
             />
             <button
               className="rounded text-[12px] flex items-center
