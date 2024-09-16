@@ -34,8 +34,8 @@ const LeverageSlider: any = styled(Slider)({
   "& .MuiSlider-mark": {
     backgroundColor: "transparent",
     height: 10,
-    width: 3,
-    borderRadius: "4px",
+    width: 2,
+    borderRadius: "10px",
     top: "17px",
     color: "#FFF",
     "&::before": {
