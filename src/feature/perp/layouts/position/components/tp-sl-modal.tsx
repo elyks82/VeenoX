@@ -49,7 +49,7 @@ export const TPSLModal = ({ order }: any) => {
     try {
       await submit();
       toast.update(idToast, {
-        render: "TP/SL placed",
+        render: "TP/SL set",
         type: "success",
         isLoading: false,
         autoClose: 2000,
@@ -60,7 +60,7 @@ export const TPSLModal = ({ order }: any) => {
     } catch (error) {
       toast.update(idToast, {
         render: (error as any)?.message,
-        type: "success",
+        type: "error",
         isLoading: false,
         autoClose: 2000,
       });
@@ -86,7 +86,7 @@ export const TPSLModal = ({ order }: any) => {
     } catch (e) {
       toast.update(idToast, {
         render: "Error while cancelling tp/sl",
-        type: "success",
+        type: "error",
         isLoading: false,
         autoClose: 2000,
       });
