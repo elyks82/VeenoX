@@ -4,7 +4,11 @@ import {
   CustomBarProps,
   FuturesAssetProps,
 } from "@/models";
-import { getNextBarTime, resolutionToTimeframe } from "@/utils/misc";
+import {
+  formatSymbol,
+  getNextBarTime,
+  resolutionToTimeframe,
+} from "@/utils/misc";
 import { WS } from "@orderly.network/net";
 
 export const supportedResolutions = [
@@ -31,7 +35,7 @@ export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
   resolveSymbol: (symbolName: string, onResolve: Function) => {
     const price = asset?.mark_price || 1;
     const params = {
-      name: symbolName,
+      name: formatSymbol(asset?.symbol),
       description: "",
       type: "crypto",
       session: "24x7",
@@ -44,7 +48,7 @@ export const Datafeed = (asset: FuturesAssetProps, ws: WS) => ({
       has_intraday: true,
       intraday_multipliers: ["1", "5", "15", "30", "60"],
       supported_resolution: supportedResolutions,
-      volume_precision: 8,
+      volume_precision: 2,
       data_status: "streaming",
     };
     onResolve(params);

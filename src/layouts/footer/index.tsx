@@ -32,7 +32,6 @@ export const Footer = () => {
             <p className="text-font-60 text-xs hidden sm:block">
               Join our community
             </p>
-
             <Link
               href="https://discord.com/invite/vwjQ24yZ"
               target="_blank"

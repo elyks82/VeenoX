@@ -16,6 +16,7 @@ import {
   useCollateral,
   useHoldingStream,
   useLeverage,
+  useMarginRatio,
   useMaxQty,
   useOrderEntry,
   useAccount as useOrderlyAccount,
@@ -353,8 +354,6 @@ export const OpenTrade = ({
     return (value / 100).toFixed(3) + "%";
   };
 
-  const imrFactor = accountInfo?.imr_factor[currentAsset?.symbol] || 0;
-  const maxNotional = accountInfo?.max_notional[currentAsset?.symbol] || 0;
   const [positionPnL, proxy, states] = usePositionStream();
 
   const [isTooltipDepositOpen, setIsTooltipDepositOpen] = useState(false);
@@ -364,6 +363,37 @@ export const OpenTrade = ({
   }, [depositAmount]);
 
   const [expendAccountInfo, setExpendAccountInfo] = useState(false);
+  const { marginRatio } = useMarginRatio();
+
+  const totalMarginRequired = data?.rows?.reduce(
+    (sum, position) => sum + position.notional * position.imr,
+    0
+  );
+  const totalMaintenanceMargin = data?.rows?.reduce(
+    (sum, position) => sum + position.mm,
+    0
+  );
+
+  const formatCurrency = (value: number) => {
+    if (value == null) return "$0";
+    return new Intl.NumberFormat("fr-FR", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+      .format(value)
+      .replace("US", "");
+  };
+
+  const formatPercentages = (value: number) => {
+    if (value == null) return "0%";
+    return new Intl.NumberFormat("fr-FR", {
+      style: "percent",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value / 100);
+  };
 
   return (
     <section className="h-full w-full text-white">
@@ -834,42 +864,7 @@ export const OpenTrade = ({
         >
           {buttonStatus?.title}
         </button>
-        {/* <div className="flex items-center justify-between mt-2">
-          <p className="text-xs text-font-60">Initial Margin Ratio</p>
-          <p className="text-xs text-white font-medium">
-            {(currentAsset?.base_imr * 100).toFixed(2)}%
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-xs text-font-60">Maintenance Margin Ratio</p>
-          <p className="text-xs text-white font-medium">
-            {(currentAsset?.base_mmr * 100).toFixed(2)}%
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-xs text-font-60">Max Quantity</p>
-          <p className="text-xs text-white font-medium">
-            {currentAsset?.base_max} {currentAsset?.base}
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-xs text-font-60">Min Notional</p>
-          <p className="text-xs text-white font-medium">
-            {currentAsset?.min_notional} {currentAsset?.quote}
-          </p>
-        </div> */}
-
-        <div className="flex items-center justify-between border-t border-borderColor pt-4">
-          <p className="text-xs text-font-60">Margin Required</p>
-          <p className="text-xs text-white font-medium">
-            {(imrFactor * 100).toFixed(4)}%
-          </p>
-        </div>
-
-        <div className="flex items-center justify-between mt-2 pb-4">
+        <div className="flex items-center justify-between pt-4 border-t border-borderColor">
           <p className="text-xs text-font-60">Fees (Maker / Taker)</p>
           <p className="text-xs text-white font-medium">
             {accountInfo?.futures_maker_fee_rate
@@ -879,6 +874,24 @@ export const OpenTrade = ({
             {accountInfo?.futures_taker_fee_rate
               ? formatPercentage(accountInfo?.futures_taker_fee_rate as number)
               : "0.03"}
+          </p>
+        </div>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-font-60">Cross Margin Ratio</p>
+          <p className="text-xs text-white font-medium">
+            {formatPercentages(marginRatio as number)}
+          </p>
+        </div>
+        <div className="flex items-center justify-between mt-2">
+          <p className="text-xs text-font-60">Margin Required</p>
+          <p className="text-xs text-white font-medium">
+            {formatCurrency(totalMarginRequired as number)}
+          </p>
+        </div>
+        <div className="flex items-center justify-between mt-2 pb-4">
+          <p className="text-xs text-font-60">Maintenance Margin</p>
+          <p className="text-xs text-white font-medium">
+            {formatCurrency(totalMaintenanceMargin as number)}
           </p>
         </div>
       </div>
