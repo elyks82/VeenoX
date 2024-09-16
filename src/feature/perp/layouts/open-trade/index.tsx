@@ -709,7 +709,7 @@ export const OpenTrade = ({
               }}
               type="number"
               disabled={!freeCollateral || !address}
-              value={Number(values.quantity)}
+              value={getFormattedAmount(values.quantity).toString() || 0}
             />
             <button
               className="rounded text-[12px] flex items-center
