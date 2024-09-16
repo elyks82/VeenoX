@@ -161,8 +161,9 @@ export const OpenTrade = ({
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
     if (values.type === "LIMIT") {
+      console.log("values", values.price);
       if (values.direction === "BUY") {
-        if (parseInt(values.price as string) >= markPrice) {
+        if (parseFloat(values.price as string) > markPrice) {
           triggerAlert(
             "Error",
             "A limit buy order cannot be placed above the current market price."
@@ -170,7 +171,7 @@ export const OpenTrade = ({
           return;
         }
       } else {
-        if (parseInt(values.price as string) <= markPrice) {
+        if (parseFloat(values.price as string) < markPrice) {
           triggerAlert(
             "Error",
             "A limit sell order cannot be placed under the current market price."
@@ -220,7 +221,8 @@ export const OpenTrade = ({
         "order_quantity",
         values?.quantity
       );
-      await onSubmit(val as OrderEntity);
+      const res = await onSubmit(val as OrderEntity);
+      console.log(res);
       toast.update(id, {
         render: "Order executed",
         type: "success",
@@ -316,9 +318,12 @@ export const OpenTrade = ({
   function percentageToValue(percentage: number | undefined) {
     return ((percentage as number) / 100) * newMaxQty;
   }
-  function toPercentage(value: number) {
-    const percentage = (value / newMaxQty) * 100;
-    return percentage;
+  function toPercentage(value: number | string) {
+    let newValue: number;
+    if (typeof value === "string") newValue = parseFloat(value);
+    else newValue = value;
+    const percentage = (newValue / newMaxQty) * 100;
+    return Math.floor(percentage);
   }
 
   const getSymbolForPair = () => {
@@ -328,15 +333,9 @@ export const OpenTrade = ({
   const handleValueChange = (name: string, value: string) => {
     setValues((prev) => ({
       ...prev,
-      [name]:
-        value === ""
-          ? ""
-          : Number(value) === 0 || name !== "quantity"
-          ? value
-          : getFormattedAmount(value),
+      [name]: value,
     }));
-
-    if (name === "quantity") setSliderValue(toPercentage(Number(value)));
+    if (name === "quantity") setSliderValue(toPercentage(value));
   };
 
   const [data] = usePositionStream();
@@ -711,9 +710,11 @@ export const OpenTrade = ({
               type="number"
               disabled={!freeCollateral || !address}
               value={
-                parseFloat(values.quantity as string) === 0
-                  ? values.quantity
-                  : getFormattedAmount(values.quantity).toString()
+                values.quantity
+                  ? typeof values.quantity === "string"
+                    ? parseFloat(values.quantity).toFixed(2)
+                    : (values.quantity as number)?.toFixed(2)
+                  : 0
               }
             />
             <button
@@ -762,7 +763,7 @@ export const OpenTrade = ({
             Quantity can&apos;t exceed {getFormattedAmount(maxQty)}{" "}
             {getSymbolForPair()}
           </p>
-          <div className={`mt-2 flex items-center `}>
+          <div className={`mt-2 flex items-center text-white`}>
             <Slider
               value={[sliderValue]}
               max={100}
@@ -771,7 +772,7 @@ export const OpenTrade = ({
                 setSliderValue(value[0]);
                 handleInputErrors(false, "input_quantity");
                 const newQuantity = percentageToValue(value[0]);
-
+                console.log("newQuantity", newQuantity);
                 handleValueChange("quantity", newQuantity.toString());
               }}
               isBuy={values.direction === "BUY"}
@@ -786,6 +787,7 @@ export const OpenTrade = ({
                 disabled={!freeCollateral || !address}
                 onChange={(e) => {
                   if (!e.target.value) {
+                    console.log("YO BRO");
                     setSliderValue(0);
                     const newQuantity = percentageToValue(undefined);
                     handleValueChange("quantity", newQuantity.toString());
@@ -802,11 +804,7 @@ export const OpenTrade = ({
                     setSliderValue(Number(e.target.value));
                   }
                 }}
-                value={
-                  toPercentage(values.quantity as never)
-                    .toFixed(0)
-                    .toString() || "0"
-                }
+                value={toPercentage(values.quantity as string) || "0"}
               />
               <p className="text-font-80 text-sm">%</p>
             </div>

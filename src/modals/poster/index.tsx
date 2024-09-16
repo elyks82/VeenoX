@@ -31,6 +31,12 @@ export const PosterModal = ({ order }: any) => {
   const { currentLeverage } = useMarginRatio();
   const canvasRef = useRef(null);
 
+  const calculateLeverage = (position: { imr: number; notional: number }) => {
+    if (!position || position.imr === 0) return 0;
+    const result = position.notional / (position.notional * position.imr);
+    return Math.round(result);
+  };
+
   useEffect(() => {
     const canvas: any = canvasRef.current;
     if (!canvas) return;
@@ -95,7 +101,7 @@ export const PosterModal = ({ order }: any) => {
 
       ctx.fillStyle = "rgb(255,255,255)";
       ctx.fillText(
-        `${Math.round(currentLeverage)}X`,
+        `${calculateLeverage(order)}X`,
         50 + sideWidth + pipeWidth1 + symbolWidth + pipeWidth2,
         100
       );
