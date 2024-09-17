@@ -434,7 +434,7 @@ const renderAdditionalCells = (
         <td className={tdStyle}>
           {filledOrder.algo_type?.split("_").join(" ")}
         </td>
-        <td className={tdStyle}>{filledOrder.average_executed_price}</td>
+        <td className={tdStyle}>{filledOrder.trigger_trade_price}</td>
         <td className={tdStyle}>{filledOrder.trigger_price}</td>
 
         <td

@@ -161,7 +161,6 @@ export const OpenTrade = ({
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
     if (values.type === "LIMIT") {
-      console.log("values", values.price);
       if (values.direction === "BUY") {
         if (parseFloat(values.price as string) > markPrice) {
           triggerAlert(
@@ -222,7 +221,6 @@ export const OpenTrade = ({
         values?.quantity
       );
       const res = await onSubmit(val as OrderEntity);
-      console.log(res);
       toast.update(id, {
         render: "Order executed",
         type: "success",
@@ -772,7 +770,6 @@ export const OpenTrade = ({
                 setSliderValue(value[0]);
                 handleInputErrors(false, "input_quantity");
                 const newQuantity = percentageToValue(value[0]);
-                console.log("newQuantity", newQuantity);
                 handleValueChange("quantity", newQuantity.toString());
               }}
               isBuy={values.direction === "BUY"}
@@ -787,7 +784,6 @@ export const OpenTrade = ({
                 disabled={!freeCollateral || !address}
                 onChange={(e) => {
                   if (!e.target.value) {
-                    console.log("YO BRO");
                     setSliderValue(0);
                     const newQuantity = percentageToValue(undefined);
                     handleValueChange("quantity", newQuantity.toString());
