@@ -278,6 +278,7 @@ export const Position = ({ asset }: PositionProps) => {
                     activeSection={activeSection}
                     closePendingOrder={closePendingOrder}
                     rows={data?.rows}
+                    refresh={refresh}
                   />
                 </tr>
               );

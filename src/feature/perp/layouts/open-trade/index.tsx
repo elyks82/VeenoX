@@ -20,6 +20,7 @@ import {
   useMaxQty,
   useOrderEntry,
   useAccount as useOrderlyAccount,
+  useOrderStream,
   usePositionStream,
   useSymbolPriceRange,
   useSymbolsInfo,
@@ -137,7 +138,9 @@ export const OpenTrade = ({
   );
 
   const newMaxQty = useMaxQty(asset?.symbol, values.direction as OrderSide);
-
+  const [orders, { cancelOrder, refresh }] = useOrderStream({
+    symbol: asset?.symbol,
+  });
   // const isAlgoOrder = values?.algo_order_id !== undefined;
 
   const rangeInfo = useSymbolPriceRange(
@@ -220,7 +223,7 @@ export const OpenTrade = ({
         "order_quantity",
         values?.quantity
       );
-      const res = await onSubmit(val as OrderEntity);
+      await onSubmit(val as OrderEntity);
       toast.update(id, {
         render: "Order executed",
         type: "success",
@@ -233,6 +236,7 @@ export const OpenTrade = ({
         quantity: newMaxQty.toString(),
         direction: values.direction,
       });
+      refresh();
       setSliderValue(100);
     } catch (err: any) {
       toast.update(id, {
@@ -427,12 +431,11 @@ export const OpenTrade = ({
             </div>
             {isMobile ? null : <Leverage />}
           </div>
-          <div className="border-t border-borderColor-DARK pt-2 pb-1.5" />
           <div className="flex items-center justify-between pb-3">
             <div className="flex flex-col w-fit">
               <p className="text-xs text-font-60 mb-[3px]">Unreal PnL</p>
               <p
-                className={`text-sm font-medium ${
+                className={`text-[13px]  ${
                   data?.aggregated.unrealPnL > 0
                     ? "text-green"
                     : data?.aggregated.unrealPnL < 0
@@ -450,7 +453,7 @@ export const OpenTrade = ({
             <div>
               <p className="text-xs text-font-60 mb-[3px]">Unsettled PnL</p>
               <div
-                className={`text-sm font-medium text-end flex items-center justify-end `}
+                className={`text-[13px] text-end flex items-center justify-end `}
               >
                 <TooltipProvider>
                   <ShadTooltip delayDuration={0}>
@@ -478,7 +481,7 @@ export const OpenTrade = ({
                           unsettledPnL !== 0
                             ? ""
                             : "opacity-40 pointer-events-none"
-                        } flex items-center text-sm text-white transition-all duration-100 ease-in-out`}
+                        } flex items-center text-[13px] text-white transition-all duration-100 ease-in-out`}
                       >
                         {isSettleLoading ? (
                           <Oval
@@ -496,7 +499,7 @@ export const OpenTrade = ({
                             wrapperClass=""
                           />
                         ) : (
-                          <MdRefresh className="text-base mr-[5px]" />
+                          <MdRefresh className="text-[15px] mr-[5px]" />
                         )}
                         <span
                           className={`${
@@ -535,7 +538,6 @@ export const OpenTrade = ({
           />
         </button> */}
       </div>
-
       <div className="flex items-center w-full h-[36px] sm:h-[44px] relative">
         {marketType.map((type, i) => (
           <button
@@ -853,6 +855,23 @@ export const OpenTrade = ({
               </div>
             </div>
           </button>
+          <button
+            className="text-xs text-white mt-2 opacity-50 cursor-not-allowed flex items-center justify-between w-full"
+            disabled
+          >
+            <div className="flex items-center justify-between w-full">
+              <p className="w-fit text-white">Take Profit / Stop Loss</p>
+
+              <div
+                className={`w-[15px] p-0.5 h-[15px] rounded border  border-[rgba(255,255,255,0.3)]
+                 transition-all duration-100 ease-in-out`}
+              >
+                <div
+                  className={`w-full h-full rounded-[1px] bg-base_color opacity-0 transition-all duration-100 ease-in-out`}
+                />
+              </div>
+            </div>
+          </button>
           {/* <button
             className="text-xs text-white mt-2 flex items-center justify-between w-full"
             onClick={() => handleBooleanChange("tp_sl")}
@@ -875,6 +894,7 @@ export const OpenTrade = ({
         >
           {buttonStatus?.title}
         </button>
+
         <div className="flex items-center justify-between pt-4 border-t border-borderColor">
           <p className="text-xs text-font-60">Fees (Maker / Taker)</p>
           <p className="text-xs text-white font-medium">
