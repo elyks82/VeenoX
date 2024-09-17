@@ -18,7 +18,7 @@ const images = [
   "8.webp",
   "16.avif",
   "17.avif",
-  "20.avif",
+  "21.avif",
 ];
 
 export const PosterModal = ({ order }: any) => {
