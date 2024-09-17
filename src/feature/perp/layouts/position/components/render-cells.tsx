@@ -420,7 +420,6 @@ const renderAdditionalCells = (
       trade.child_orders[0].algo_status === "FILLED"
         ? trade.child_orders[0]
         : trade.child_orders[1];
-    console.log(filledOrder, trade);
     return (
       <>
         <td

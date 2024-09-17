@@ -770,7 +770,6 @@ export const OpenTrade = ({
                 setSliderValue(value[0]);
                 handleInputErrors(false, "input_quantity");
                 const newQuantity = percentageToValue(value[0]);
-                console.log("newQuantity", newQuantity);
                 handleValueChange("quantity", newQuantity.toString());
               }}
               isBuy={values.direction === "BUY"}
@@ -785,7 +784,6 @@ export const OpenTrade = ({
                 disabled={!freeCollateral || !address}
                 onChange={(e) => {
                   if (!e.target.value) {
-                    console.log("YO BRO");
                     setSliderValue(0);
                     const newQuantity = percentageToValue(undefined);
                     handleValueChange("quantity", newQuantity.toString());
