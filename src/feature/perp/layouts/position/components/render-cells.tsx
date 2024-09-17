@@ -122,7 +122,9 @@ const renderAdditionalCells = (
         </td>
         <td className={tdStyle}>{filledOrder.total_executed_quantity}</td>
         <td className={tdStyle}>
-          {getFormattedAmount(filledOrder.trigger_price)}
+          {filledOrder.trigger_price
+            ? getFormattedAmount(filledOrder.trigger_price)
+            : getFormattedAmount(trade?.average_executed_price)}
         </td>
         <td className={tdStyle}>{filledOrder.trigger_price || "--"}</td>
         <td
@@ -218,8 +220,6 @@ const renderAdditionalCells = (
       trade.mark_price *
       trade.IMR_withdraw_orders;
     const totalMargin = initialMargin + trade.unrealized_pnl;
-    const maintenanceMargin =
-      Math.abs(trade.position_qty) * trade.mark_price * trade.MMR_with_orders;
 
     return (
       <>
