@@ -880,11 +880,11 @@ export const OpenTrade = ({
           <p className="text-xs text-white font-medium">
             {accountInfo?.futures_maker_fee_rate
               ? formatPercentage(accountInfo?.futures_maker_fee_rate as number)
-              : "0.03"}{" "}
+              : "0.025"}{" "}
             /{" "}
             {accountInfo?.futures_taker_fee_rate
               ? formatPercentage(accountInfo?.futures_taker_fee_rate as number)
-              : "0.03"}
+              : "0.05"}
           </p>
         </div>
         <div className="flex items-center justify-between mt-2">
