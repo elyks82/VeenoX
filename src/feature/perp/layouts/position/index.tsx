@@ -72,6 +72,7 @@ export const Position = ({ asset }: PositionProps) => {
         isLoading: false,
         autoClose: 2000,
       });
+      refresh();
     } catch (error: any) {
       toast.update(idToast, {
         render: error?.message,
