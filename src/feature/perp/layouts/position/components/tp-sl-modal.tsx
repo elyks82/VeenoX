@@ -44,12 +44,12 @@ export const TPSLModal = ({ order }: any) => {
       setLoading(false);
       return;
     } else setError([""]);
-    const idToast = toast.loading("Closing Order");
+    const idToast = toast.loading("Setting TP/SL");
 
     try {
       await submit();
       toast.update(idToast, {
-        render: "TP/SL set",
+        render: "TP/SL set successfully",
         type: "success",
         isLoading: false,
         autoClose: 2000,
@@ -71,7 +71,7 @@ export const TPSLModal = ({ order }: any) => {
   };
 
   const handleRemoveTPSL = async (): Promise<void> => {
-    const idToast = toast.loading("Closing Order");
+    const idToast = toast.loading("Reseting TP/SL");
 
     try {
       await cancelAllTPSLOrders();

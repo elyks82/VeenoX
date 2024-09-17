@@ -408,7 +408,7 @@ export function truncatePrice(price: string | number): string {
   }
 
   if (numPrice >= 1) {
-    return numPrice.toFixed(8);
+    return numPrice.toFixed(3);
   }
 
   if (numPrice < 0.01) {
