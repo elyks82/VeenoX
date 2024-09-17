@@ -420,6 +420,7 @@ const renderAdditionalCells = (
       trade.child_orders[0].algo_status === "FILLED"
         ? trade.child_orders[0]
         : trade.child_orders[1];
+    console.log(filledOrder, trade);
     return (
       <>
         <td
@@ -434,7 +435,7 @@ const renderAdditionalCells = (
         <td className={tdStyle}>
           {filledOrder.algo_type?.split("_").join(" ")}
         </td>
-        <td className={tdStyle}>{filledOrder.average_executed_price}</td>
+        <td className={tdStyle}>{filledOrder.trigger_trade_price}</td>
         <td className={tdStyle}>{filledOrder.trigger_price}</td>
 
         <td

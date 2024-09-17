@@ -161,7 +161,6 @@ export const OpenTrade = ({
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) return;
     if (rangeInfo?.min && Number(values?.price) < rangeInfo?.min) return;
     if (values.type === "LIMIT") {
-      console.log("values", values.price);
       if (values.direction === "BUY") {
         if (parseFloat(values.price as string) > markPrice) {
           triggerAlert(
@@ -222,7 +221,6 @@ export const OpenTrade = ({
         values?.quantity
       );
       const res = await onSubmit(val as OrderEntity);
-      console.log(res);
       toast.update(id, {
         render: "Order executed",
         type: "success",
