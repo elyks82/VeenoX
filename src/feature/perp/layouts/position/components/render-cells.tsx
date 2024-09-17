@@ -45,7 +45,7 @@ export const RenderCells = ({
         ? order.side
         : order?.algo_order?.side
         ? order?.algo_order?.side
-        : (order.position_qty as number) >= 0
+        : parseFloat(order.position_qty) < 0
         ? "SELL"
         : ("BUY" as any),
       order_type: order.type || "MARKET",

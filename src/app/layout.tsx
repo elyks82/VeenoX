@@ -3,6 +3,7 @@ import { Footer } from "@/layouts/footer";
 import { config } from "@/lib/wallet-connect/config";
 import WagmiProvider from "@/lib/wallet-connect/provider";
 import { Providers } from "@/provider/wrapper";
+import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import dotenv from "dotenv";
 import type { Metadata } from "next";
@@ -73,6 +74,7 @@ export default function RootLayout({
               />
               <DynamicHeader />
               {children}
+              <Analytics />
               <SpeedInsights />
               <Footer />
             </Providers>{" "}
