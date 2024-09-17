@@ -10,7 +10,7 @@ import {
 import { triggerAlert } from "@/lib/toaster";
 import { Leverage } from "@/modals/leverage";
 import { FuturesAssetProps } from "@/models";
-import { getFormattedAmount } from "@/utils/misc";
+import { getFormattedAmount, truncatePrice } from "@/utils/misc";
 import {
   useAccountInstance,
   useCollateral,
@@ -707,13 +707,7 @@ export const OpenTrade = ({
               }}
               type="number"
               disabled={!freeCollateral || !address}
-              value={
-                values.quantity
-                  ? typeof values.quantity === "string"
-                    ? parseFloat(values.quantity).toFixed(2)
-                    : (values.quantity as number)?.toFixed(2)
-                  : 0
-              }
+              value={truncatePrice(values.quantity as string)}
             />
             <button
               className="rounded text-[12px] flex items-center
