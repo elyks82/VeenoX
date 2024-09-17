@@ -201,7 +201,7 @@ const renderAdditionalCells = (
             <EditModal order={trade} />
             <button
               onClick={() => {
-                closePendingOrder(trade.order_id);
+                closePendingOrder(trade.order_id, trade.symbol);
                 setOrderPositions([]);
               }}
               className="h-[25px] w-fit px-2 text-xs ml-2.5 text-white bg-base_color border-borderColor-DARK rounded"
