@@ -27,6 +27,8 @@ export const RenderCells = ({
   activeSection,
   closePendingOrder,
   rows,
+  refreshPosition,
+  refresh,
 }: any) => {
   const {
     TPSLOpenOrder,
@@ -64,7 +66,8 @@ export const RenderCells = ({
         setOrderPositions,
         onSubmit,
         setEditPendingPositionOpen,
-        currentLeverage
+        currentLeverage,
+        refreshPosition
       )}
 
       {TPSLOpenOrder ? <TPSLModal order={order} /> : null}
@@ -100,7 +103,8 @@ const renderAdditionalCells = (
   setOrderPositions: any,
   onSubmit: any,
   setEditPendingPositionOpen: Dispatch<SetStateAction<boolean>>,
-  currentLeverage: number | null
+  currentLeverage: number | null,
+  refreshPosition: any
 ) => {
   if (section === Sections.FILLED) {
     let filledOrder =
@@ -332,6 +336,7 @@ const renderAdditionalCells = (
                     isLoading: false,
                     autoClose: 2000,
                   });
+                  refreshPosition();
                   setOrderPositions(["closed"]);
                 } catch (e) {
                   toast.update(idToast, {

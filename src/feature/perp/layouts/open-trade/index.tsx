@@ -20,6 +20,7 @@ import {
   useMaxQty,
   useOrderEntry,
   useAccount as useOrderlyAccount,
+  useOrderStream,
   usePositionStream,
   useSymbolPriceRange,
   useSymbolsInfo,
@@ -136,6 +137,13 @@ export const OpenTrade = ({
     { watchOrderbook: true }
   );
 
+  const [_, { refresh }] = useOrderStream(
+    {
+      symbol: asset.symbol,
+    },
+    { keeplive: true }
+  );
+
   const newMaxQty = useMaxQty(asset?.symbol, values.direction as OrderSide);
 
   // const isAlgoOrder = values?.algo_order_id !== undefined;
@@ -220,13 +228,15 @@ export const OpenTrade = ({
         "order_quantity",
         values?.quantity
       );
-      const res = await onSubmit(val as OrderEntity);
+      await onSubmit(val as OrderEntity);
       toast.update(id, {
         render: "Order executed",
         type: "success",
         isLoading: false,
         autoClose: 2000,
       });
+      refresh();
+      refreshPosition();
       setOrderPositions(val as any);
       setValues({
         ...defaultValues,
@@ -336,7 +346,8 @@ export const OpenTrade = ({
     if (name === "quantity") setSliderValue(toPercentage(value));
   };
 
-  const [data] = usePositionStream();
+  const [data, _info, { refresh: refreshPosition, loading }] =
+    usePositionStream();
 
   const [sliderValue, setSliderValue] = useState(toPercentage(newMaxQty));
 

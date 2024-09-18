@@ -5,6 +5,7 @@ import {
   useMarginRatio,
   useOrderStream,
   usePositionStream,
+  useWS,
 } from "@orderly.network/hooks";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -32,10 +33,23 @@ export const Position = ({ asset }: PositionProps) => {
     width: string;
     left: string;
   }>({ width: "20%", left: "0%" });
-  const [data] = usePositionStream();
-  const [orders, { cancelOrder, refresh }] = useOrderStream({
-    symbol: asset.symbol,
-  });
+  const [data, _info, { refresh: refreshPosition, loading }] =
+    usePositionStream();
+  const [orders, { cancelOrder, refresh }] = useOrderStream(
+    {
+      symbol: asset.symbol,
+    },
+    { keeplive: true }
+  );
+
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(orders?.[0]);
+    }, 1000);
+  }, [orders]);
+
+  console.log("orderlyWs", orders);
+
   const { currentLeverage } = useMarginRatio();
   console.log("data", data);
   useEffect(() => {
@@ -43,6 +57,42 @@ export const Position = ({ asset }: PositionProps) => {
       setOrderPositions(data?.rows as any);
     }
   }, [data?.rows]);
+
+  const ws = useWS();
+  const lastPongRef = useRef(Date.now());
+
+  useEffect(() => {
+    if (!ws) return;
+
+    const pingInterval = setInterval(() => {
+      ws.send({ event: "ping", ts: Date.now() });
+
+      // Vérifiez si nous n'avons pas reçu de pong depuis plus de 60 secondes
+      if (Date.now() - lastPongRef.current > 60000) {
+        console.log(
+          "Pas de pong reçu depuis 60 secondes, réinitialisation de la connexion"
+        );
+        ws.close();
+        // La connexion devrait se réinitialiser automatiquement
+      }
+    }, 30000);
+
+    // Utilisez la méthode 'on' au lieu de 'addEventListener'
+    const handleMessage = (data: any) => {
+      if (JSON.parse(data).event === "pong") {
+        console.log("Pong reçu");
+
+        lastPongRef.current = Date.now();
+      }
+    };
+
+    ws.on("message", handleMessage);
+
+    return () => {
+      clearInterval(pingInterval);
+      ws.off("message", handleMessage); // Utilisez 'off' pour retirer l'écouteur
+    };
+  }, [ws]);
 
   useEffect(() => {
     const updateUnderline = () => {
@@ -71,6 +121,8 @@ export const Position = ({ asset }: PositionProps) => {
         isLoading: false,
         autoClose: 2000,
       });
+      refreshPosition();
+      refresh();
     } catch (error: any) {
       toast.update(idToast, {
         render: error?.message,
@@ -277,6 +329,8 @@ export const Position = ({ asset }: PositionProps) => {
                     activeSection={activeSection}
                     closePendingOrder={closePendingOrder}
                     rows={data?.rows}
+                    refreshPosition={refreshPosition}
+                    refresh={refresh}
                   />
                 </tr>
               );
