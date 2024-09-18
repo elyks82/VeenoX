@@ -318,6 +318,9 @@ const renderAdditionalCells = (
                     isLoading: false,
                     autoClose: 2000,
                   });
+                  setTimeout(() => {
+                    refresh();
+                  }, 1000);
                   refresh();
                   setOrderPositions(["closed"]);
                 } catch (e) {

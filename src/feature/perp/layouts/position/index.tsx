@@ -39,7 +39,9 @@ export const Position = ({ asset }: PositionProps) => {
     return { symbol: asset.symbol };
   };
   const orderStreamFilter = getStatusFilterFromActiveSection();
-  const [orders, { cancelOrder, refresh }] = useOrderStream(orderStreamFilter);
+  const [orders, { cancelOrder, refresh }] = useOrderStream({
+    symbol: asset.symbol,
+  });
   const { currentLeverage } = useMarginRatio();
 
   useEffect(() => {
@@ -90,9 +92,7 @@ export const Position = ({ asset }: PositionProps) => {
     if (activeSection === Sections.PENDING) {
       return (
         entry.total_executed_quantity < entry.quantity &&
-        (entry.status === "REPLACED" ||
-          entry.status === "NEW" ||
-          entry.status === "PARTIALLY_FILLED")
+        (entry.status === "REPLACED" || entry.status === "NEW")
       );
     } else if (activeSection === Sections.TP_SL) {
       if (entry.algo_order_id) {

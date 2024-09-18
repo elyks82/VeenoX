@@ -9,7 +9,7 @@ import {
   useSymbolPriceRange,
   useSymbolsInfo,
 } from "@orderly.network/hooks";
-import { OrderEntity, OrderSide, OrderStatus } from "@orderly.network/types";
+import { OrderEntity, OrderSide } from "@orderly.network/types";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Oval } from "react-loader-spinner";
@@ -39,6 +39,18 @@ export const EditModal = ({ order }: EditModalType) => {
     sl_trigger_price: undefined,
   });
 
+  const {
+    helper: { calculate, validator },
+  } = useOrderEntry(
+    {
+      symbol: order.symbol,
+      side: values.direction as OrderSide,
+      order_type: values.type as any,
+      order_quantity: values.quantity,
+    },
+    { watchOrderbook: true }
+  );
+
   const symbolInfo = useSymbolsInfo();
   const symbols = Object.values(symbolInfo)
     .filter((cur) => typeof cur !== "boolean")
@@ -48,15 +60,17 @@ export const EditModal = ({ order }: EditModalType) => {
       return symbol;
     });
   const currentAsset = symbols?.find((cur) => cur.symbol === order?.symbol);
-  const [_, { updateOrder }] = useOrderStream({
-    status: OrderStatus.INCOMPLETE,
+  const [_, { updateOrder, refresh }] = useOrderStream({
+    symbol: order?.symbol,
   });
 
   const rangeInfo = useSymbolPriceRange(order.symbol, order.side, undefined);
 
   const onEdit = async () => {
     setLoading(true);
+
     const value = getInput(values, order.symbol, currentAsset.base_tick);
+    const finalData = calculate(value, "order_quantity", value.order_quantity);
     if (rangeInfo?.max && Number(values?.price) > rangeInfo?.max) {
       triggerAlert("Error", `Price should be bellow ${rangeInfo?.max}`);
       return;
@@ -83,9 +97,10 @@ export const EditModal = ({ order }: EditModalType) => {
     }
     try {
       if (order.price !== values.price) {
-        await updateOrder(order.order_id, value);
+        await updateOrder(order.order_id, finalData as OrderEntity);
         setLoading(false);
-        triggerAlert("Success", `Your position as successfully been updated`);
+        triggerAlert("Success", `Position updated`);
+        refresh();
         setEditPendingPositionOpen(null);
         setOrderPositions([]);
       } else {
@@ -95,6 +110,7 @@ export const EditModal = ({ order }: EditModalType) => {
       setLoading(false);
     } catch (e) {
       setLoading(false);
+      console.log("e", e);
       triggerAlert("Error", JSON.stringify(e));
     }
   };
