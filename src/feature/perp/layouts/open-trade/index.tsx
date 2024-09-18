@@ -10,7 +10,7 @@ import {
 import { triggerAlert } from "@/lib/toaster";
 import { Leverage } from "@/modals/leverage";
 import { FuturesAssetProps } from "@/models";
-import { getFormattedAmount } from "@/utils/misc";
+import { getFormattedAmount, truncatePrice } from "@/utils/misc";
 import {
   useAccountInstance,
   useCollateral,
@@ -707,13 +707,7 @@ export const OpenTrade = ({
               }}
               type="number"
               disabled={!freeCollateral || !address}
-              value={
-                values.quantity
-                  ? typeof values.quantity === "string"
-                    ? parseFloat(values.quantity).toFixed(2)
-                    : (values.quantity as number)?.toFixed(2)
-                  : 0
-              }
+              value={truncatePrice(values.quantity as string)}
             />
             <button
               className="rounded text-[12px] flex items-center
@@ -770,7 +764,6 @@ export const OpenTrade = ({
                 setSliderValue(value[0]);
                 handleInputErrors(false, "input_quantity");
                 const newQuantity = percentageToValue(value[0]);
-                console.log("newQuantity", newQuantity);
                 handleValueChange("quantity", newQuantity.toString());
               }}
               isBuy={values.direction === "BUY"}
@@ -785,7 +778,6 @@ export const OpenTrade = ({
                 disabled={!freeCollateral || !address}
                 onChange={(e) => {
                   if (!e.target.value) {
-                    console.log("YO BRO");
                     setSliderValue(0);
                     const newQuantity = percentageToValue(undefined);
                     handleValueChange("quantity", newQuantity.toString());
@@ -888,11 +880,11 @@ export const OpenTrade = ({
           <p className="text-xs text-white font-medium">
             {accountInfo?.futures_maker_fee_rate
               ? formatPercentage(accountInfo?.futures_maker_fee_rate as number)
-              : "0.03"}{" "}
+              : "0.025%"}{" "}
             /{" "}
             {accountInfo?.futures_taker_fee_rate
               ? formatPercentage(accountInfo?.futures_taker_fee_rate as number)
-              : "0.03"}
+              : "0.05%"}
           </p>
         </div>
         <div className="flex items-center justify-between mt-2">
