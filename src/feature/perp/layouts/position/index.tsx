@@ -6,7 +6,6 @@ import {
   useOrderStream,
   usePositionStream,
 } from "@orderly.network/hooks";
-import { OrderType } from "@orderly.network/types";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { RenderCells } from "./components/render-cells";
@@ -34,16 +33,11 @@ export const Position = ({ asset }: PositionProps) => {
     left: string;
   }>({ width: "20%", left: "0%" });
   const [data] = usePositionStream();
-  const getStatusFilterFromActiveSection = () => {
-    if (activeSection === Sections.PENDING) return { type: OrderType.LIMIT };
-    return { symbol: asset.symbol };
-  };
-  const orderStreamFilter = getStatusFilterFromActiveSection();
   const [orders, { cancelOrder, refresh }] = useOrderStream({
     symbol: asset.symbol,
   });
   const { currentLeverage } = useMarginRatio();
-
+  console.log("data", data);
   useEffect(() => {
     if (!orderPositions?.length && (data?.rows?.length as number) > 0) {
       setOrderPositions(data?.rows as any);
@@ -67,17 +61,16 @@ export const Position = ({ asset }: PositionProps) => {
     return () => window.removeEventListener("resize", updateUnderline);
   }, [activeSection]);
 
-  const closePendingOrder = async (id: number, symbol: string) => {
+  const closePendingOrder = async (id: number) => {
     const idToast = toast.loading("Closing Order");
     try {
-      await cancelOrder(id, symbol);
+      await cancelOrder(id, asset?.symbol);
       toast.update(idToast, {
         render: "Order closed",
         type: "success",
         isLoading: false,
         autoClose: 2000,
       });
-      refresh();
     } catch (error: any) {
       toast.update(idToast, {
         render: error?.message,
@@ -92,6 +85,7 @@ export const Position = ({ asset }: PositionProps) => {
     if (activeSection === Sections.PENDING) {
       return (
         entry.total_executed_quantity < entry.quantity &&
+        entry.type === "LIMIT" &&
         (entry.status === "REPLACED" || entry.status === "NEW")
       );
     } else if (activeSection === Sections.TP_SL) {
@@ -119,6 +113,20 @@ export const Position = ({ asset }: PositionProps) => {
 
     return true;
   };
+
+  // const [tt] = useOrderStream({
+  //   includes: [AlgoOrderRootType.TP_SL, AlgoOrderRootType.POSITIONAL_TP_SL],
+  // });
+
+  // const tpslOrder = findPositionTPSLFromOrders(orders, asset?.symbol);
+  // console.log("tt", tt, orders);
+  // if (tpslOrder) {
+  //   console.log("TP/SL order trouvé pour BTC-USDT:", tpslOrder);
+  //   console.log("Take Profit:", tpslOrder.tp_trigger_price);
+  //   console.log("Stop Loss:", tpslOrder.sl_trigger_price);
+  // } else {
+  //   console.log("Aucun ordre TP/SL trouvé pour BTC-USDT");
+  // }
 
   const getPnLChange = () => {
     const arr =
@@ -269,7 +277,6 @@ export const Position = ({ asset }: PositionProps) => {
                     activeSection={activeSection}
                     closePendingOrder={closePendingOrder}
                     rows={data?.rows}
-                    refresh={refresh}
                   />
                 </tr>
               );
