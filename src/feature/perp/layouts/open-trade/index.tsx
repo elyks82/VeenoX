@@ -853,6 +853,16 @@ export const OpenTrade = ({
               </div>
             </div>
           </button>
+          {/* <button
+            onClick={() => handleBooleanChange("tp_sl")}
+          >
+            <p>Take profit / Stop loss</p>
+            <div className="w-[15px] h-[15px] rounded border border-borderColor-DARK bg-terciary flex items-center jusitfy-center">
+              {values.tp_sl ? (
+                <IoCheckmarkOutline className="text-blue-400" />
+              ) : null}
+            </div>
+          </button> */}
         </div>
         <div className={`${isMobile ? "hidden" : "flex"} h-[100px] w-full`} />
         <button
