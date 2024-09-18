@@ -5,8 +5,8 @@ import {
   useMarginRatio,
   useOrderStream,
   usePositionStream,
+  useWS,
 } from "@orderly.network/hooks";
-import { OrderType } from "@orderly.network/types";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { RenderCells } from "./components/render-cells";
@@ -33,22 +33,66 @@ export const Position = ({ asset }: PositionProps) => {
     width: string;
     left: string;
   }>({ width: "20%", left: "0%" });
-  const [data] = usePositionStream();
-  const getStatusFilterFromActiveSection = () => {
-    if (activeSection === Sections.PENDING) return { type: OrderType.LIMIT };
-    return { symbol: asset.symbol };
-  };
-  const orderStreamFilter = getStatusFilterFromActiveSection();
-  const [orders, { cancelOrder, refresh }] = useOrderStream({
-    symbol: asset.symbol,
-  });
-  const { currentLeverage } = useMarginRatio();
+  const [data, _info, { refresh: refreshPosition, loading }] =
+    usePositionStream();
+  const [orders, { cancelOrder, refresh }] = useOrderStream(
+    {
+      symbol: asset.symbol,
+    },
+    { keeplive: true }
+  );
 
+  useEffect(() => {
+    setTimeout(() => {
+      console.log(orders?.[0]);
+    }, 1000);
+  }, [orders]);
+
+  console.log("orderlyWs", orders);
+
+  const { currentLeverage } = useMarginRatio();
+  console.log("data", data);
   useEffect(() => {
     if (!orderPositions?.length && (data?.rows?.length as number) > 0) {
       setOrderPositions(data?.rows as any);
     }
   }, [data?.rows]);
+
+  const ws = useWS();
+  const lastPongRef = useRef(Date.now());
+
+  useEffect(() => {
+    if (!ws) return;
+
+    const pingInterval = setInterval(() => {
+      ws.send({ event: "ping", ts: Date.now() });
+
+      // Vérifiez si nous n'avons pas reçu de pong depuis plus de 60 secondes
+      if (Date.now() - lastPongRef.current > 60000) {
+        console.log(
+          "Pas de pong reçu depuis 60 secondes, réinitialisation de la connexion"
+        );
+        ws.close();
+        // La connexion devrait se réinitialiser automatiquement
+      }
+    }, 30000);
+
+    // Utilisez la méthode 'on' au lieu de 'addEventListener'
+    const handleMessage = (data: any) => {
+      if (JSON.parse(data).event === "pong") {
+        console.log("Pong reçu");
+
+        lastPongRef.current = Date.now();
+      }
+    };
+
+    ws.on("message", handleMessage);
+
+    return () => {
+      clearInterval(pingInterval);
+      ws.off("message", handleMessage); // Utilisez 'off' pour retirer l'écouteur
+    };
+  }, [ws]);
 
   useEffect(() => {
     const updateUnderline = () => {
@@ -67,16 +111,17 @@ export const Position = ({ asset }: PositionProps) => {
     return () => window.removeEventListener("resize", updateUnderline);
   }, [activeSection]);
 
-  const closePendingOrder = async (id: number, symbol: string) => {
+  const closePendingOrder = async (id: number) => {
     const idToast = toast.loading("Closing Order");
     try {
-      await cancelOrder(id, symbol);
+      await cancelOrder(id, asset?.symbol);
       toast.update(idToast, {
         render: "Order closed",
         type: "success",
         isLoading: false,
         autoClose: 2000,
       });
+      refreshPosition();
       refresh();
     } catch (error: any) {
       toast.update(idToast, {
@@ -92,6 +137,7 @@ export const Position = ({ asset }: PositionProps) => {
     if (activeSection === Sections.PENDING) {
       return (
         entry.total_executed_quantity < entry.quantity &&
+        entry.type === "LIMIT" &&
         (entry.status === "REPLACED" || entry.status === "NEW")
       );
     } else if (activeSection === Sections.TP_SL) {
@@ -119,6 +165,20 @@ export const Position = ({ asset }: PositionProps) => {
 
     return true;
   };
+
+  // const [tt] = useOrderStream({
+  //   includes: [AlgoOrderRootType.TP_SL, AlgoOrderRootType.POSITIONAL_TP_SL],
+  // });
+
+  // const tpslOrder = findPositionTPSLFromOrders(orders, asset?.symbol);
+  // console.log("tt", tt, orders);
+  // if (tpslOrder) {
+  //   console.log("TP/SL order trouvé pour BTC-USDT:", tpslOrder);
+  //   console.log("Take Profit:", tpslOrder.tp_trigger_price);
+  //   console.log("Stop Loss:", tpslOrder.sl_trigger_price);
+  // } else {
+  //   console.log("Aucun ordre TP/SL trouvé pour BTC-USDT");
+  // }
 
   const getPnLChange = () => {
     const arr =
@@ -269,6 +329,7 @@ export const Position = ({ asset }: PositionProps) => {
                     activeSection={activeSection}
                     closePendingOrder={closePendingOrder}
                     rows={data?.rows}
+                    refreshPosition={refreshPosition}
                     refresh={refresh}
                   />
                 </tr>
