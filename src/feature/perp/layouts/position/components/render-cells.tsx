@@ -6,8 +6,8 @@ import {
   getFormattedAmount,
   getFormattedDate,
 } from "@/utils/misc";
-import { useMarginRatio, useOrderEntry } from "@orderly.network/hooks";
-import { OrderEntity } from "@orderly.network/types";
+import { useOrderEntry } from "@orderly.network/hooks";
+import { API, OrderEntity, OrderSide, OrderType } from "@orderly.network/types";
 import { Dispatch, SetStateAction } from "react";
 import { toast } from "react-toastify";
 import { EditModal } from "./edit-modal";
@@ -26,28 +26,16 @@ export const RenderCells = ({
   order,
   activeSection,
   closePendingOrder,
-  rows,
+  refresh,
 }: any) => {
-  const {
-    TPSLOpenOrder,
-    setTPSLOpenOrder,
-    setOrderPositions,
-    editPendingPositionOpen,
-    setEditPendingPositionOpen,
-  } = useGeneralContext();
-
-  const { currentLeverage } = useMarginRatio();
+  const { TPSLOpenOrder, setTPSLOpenOrder, setOrderPositions } =
+    useGeneralContext();
 
   const { onSubmit } = useOrderEntry(
     {
       symbol: order.symbol,
-      side: order?.side
-        ? order.side
-        : order?.algo_order?.side
-        ? order?.algo_order?.side
-        : (order.position_qty as number) >= 0
-        ? "SELL"
-        : ("BUY" as any),
+      side:
+        (order.position_qty as number) >= 0 ? OrderSide.SELL : OrderSide.BUY,
       order_type: order.type || "MARKET",
       order_quantity: order?.position_qty,
     },
@@ -63,8 +51,7 @@ export const RenderCells = ({
         setTPSLOpenOrder,
         setOrderPositions,
         onSubmit,
-        setEditPendingPositionOpen,
-        currentLeverage
+        refresh
       )}
 
       {TPSLOpenOrder ? <TPSLModal order={order} /> : null}
@@ -99,8 +86,7 @@ const renderAdditionalCells = (
   setTPSLOpenOrder: Dispatch<SetStateAction<boolean>>,
   setOrderPositions: any,
   onSubmit: any,
-  setEditPendingPositionOpen: Dispatch<SetStateAction<boolean>>,
-  currentLeverage: number | null
+  refresh: import("swr/_internal").KeyedMutator<API.PositionInfo>
 ) => {
   if (section === Sections.FILLED) {
     let filledOrder =
@@ -122,7 +108,9 @@ const renderAdditionalCells = (
         </td>
         <td className={tdStyle}>{filledOrder.total_executed_quantity}</td>
         <td className={tdStyle}>
-          {getFormattedAmount(filledOrder.trigger_price)}
+          {filledOrder.trigger_price
+            ? getFormattedAmount(filledOrder.trigger_price)
+            : getFormattedAmount(trade?.average_executed_price)}
         </td>
         <td className={tdStyle}>{filledOrder.trigger_price || "--"}</td>
         <td
@@ -218,8 +206,6 @@ const renderAdditionalCells = (
       trade.mark_price *
       trade.IMR_withdraw_orders;
     const totalMargin = initialMargin + trade.unrealized_pnl;
-    const maintenanceMargin =
-      Math.abs(trade.position_qty) * trade.mark_price * trade.MMR_with_orders;
 
     return (
       <>
@@ -310,18 +296,18 @@ const renderAdditionalCells = (
             </button>
             <button
               onClick={async () => {
-                const qty = trade.position_qty as number;
-                const side = qty >= 0 ? "SELL" : "BUY";
-
-                const cancelOrder: any = {
+                const qty = trade.position_qty;
+                const side = qty >= 0 ? OrderSide.SELL : OrderSide.BUY;
+                const cancelOrder: OrderEntity = {
                   symbol: trade.symbol,
-                  side: side as any,
-                  order_type: "MARKET" as any,
-                  order_price: undefined,
-                  order_quantity: Math.abs(qty as number),
-                  trigger_price: undefined,
+                  side,
+                  order_type: OrderType.MARKET,
+                  order_quantity: String(Math.abs(qty)),
                   reduce_only: true,
+                  order_price: undefined,
+                  trigger_price: undefined,
                 };
+
                 const idToast = toast.loading("Closing Order");
 
                 try {
@@ -332,12 +318,13 @@ const renderAdditionalCells = (
                     isLoading: false,
                     autoClose: 2000,
                   });
+                  refresh();
                   setOrderPositions(["closed"]);
                 } catch (e) {
+                  console.log("eee", e);
                   toast.update(idToast, {
-                    render:
-                      "Unable to close position. Pending orders interfere with the position amount.",
-                    type: "success",
+                    render: "Error while closing",
+                    type: "error",
                     isLoading: false,
                     autoClose: 2000,
                   });
@@ -434,7 +421,6 @@ const renderAdditionalCells = (
         <td className={tdStyle}>
           {filledOrder.algo_type?.split("_").join(" ")}
         </td>
-        <td className={tdStyle}>{filledOrder.trigger_trade_price}</td>
         <td className={tdStyle}>{filledOrder.trigger_price}</td>
 
         <td

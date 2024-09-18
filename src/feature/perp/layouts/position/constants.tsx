@@ -31,7 +31,6 @@ export const thead = {
     "Side",
     "Quantity",
     "Trigger Type",
-    "Entry Price",
     "Trigger Price",
     "PnL",
     "Fees",

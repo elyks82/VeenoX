@@ -26,10 +26,11 @@ export const TPSLModal = ({ order }: any) => {
     sl_trigger_price: TPSLOpenOrder.sl_trigger_price,
     quantity: String(Math.abs(TPSLOpenOrder.position_qty)),
   };
+
   const [algoOrder, { setValue, submit, errors }] = useTPSLOrder(position, {
     defaultOrder: TPSLOpenOrder.algo_order,
   });
-  const [_, { cancelAllTPSLOrders }] = useOrderStream(TPSLOpenOrder);
+  const [_, { cancelAllTPSLOrders, refresh }] = useOrderStream(TPSLOpenOrder);
   const { setOrderPositions } = useGeneralContext();
 
   const handleSubmit = async () => {
@@ -54,6 +55,7 @@ export const TPSLModal = ({ order }: any) => {
         isLoading: false,
         autoClose: 2000,
       });
+      refresh();
       setTPSLOpenOrder(null);
       setOrderPositions([]);
       setLoading(false);
@@ -81,6 +83,7 @@ export const TPSLModal = ({ order }: any) => {
         isLoading: false,
         autoClose: 2000,
       });
+      refresh();
       setOrderPositions([]);
       setTPSLOpenOrder(null);
     } catch (e) {
