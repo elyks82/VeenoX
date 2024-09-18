@@ -6,6 +6,7 @@ import {
   useOrderStream,
   usePositionStream,
 } from "@orderly.network/hooks";
+import { OrderType } from "@orderly.network/types";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { RenderCells } from "./components/render-cells";
@@ -33,9 +34,12 @@ export const Position = ({ asset }: PositionProps) => {
     left: string;
   }>({ width: "20%", left: "0%" });
   const [data] = usePositionStream();
-  const [orders, { cancelOrder, refresh }] = useOrderStream({
-    symbol: asset.symbol,
-  });
+  const getStatusFilterFromActiveSection = () => {
+    if (activeSection === Sections.PENDING) return { type: OrderType.LIMIT };
+    return { symbol: asset.symbol };
+  };
+  const orderStreamFilter = getStatusFilterFromActiveSection();
+  const [orders, { cancelOrder, refresh }] = useOrderStream(orderStreamFilter);
   const { currentLeverage } = useMarginRatio();
 
   useEffect(() => {
@@ -63,7 +67,6 @@ export const Position = ({ asset }: PositionProps) => {
 
   const closePendingOrder = async (id: number, symbol: string) => {
     const idToast = toast.loading("Closing Order");
-    console.log("symbol", symbol);
     try {
       await cancelOrder(id, symbol);
       toast.update(idToast, {
@@ -87,8 +90,9 @@ export const Position = ({ asset }: PositionProps) => {
     if (activeSection === Sections.PENDING) {
       return (
         entry.total_executed_quantity < entry.quantity &&
-        entry.type === "LIMIT" &&
-        (entry.status === "REPLACED" || entry.status === "NEW")
+        (entry.status === "REPLACED" ||
+          entry.status === "NEW" ||
+          entry.status === "PARTIALLY_FILLED")
       );
     } else if (activeSection === Sections.TP_SL) {
       if (entry.algo_order_id) {
@@ -115,20 +119,6 @@ export const Position = ({ asset }: PositionProps) => {
 
     return true;
   };
-
-  // const [tt] = useOrderStream({
-  //   includes: [AlgoOrderRootType.TP_SL, AlgoOrderRootType.POSITIONAL_TP_SL],
-  // });
-
-  // const tpslOrder = findPositionTPSLFromOrders(orders, asset?.symbol);
-  // console.log("tt", tt, orders);
-  // if (tpslOrder) {
-  //   console.log("TP/SL order trouvé pour BTC-USDT:", tpslOrder);
-  //   console.log("Take Profit:", tpslOrder.tp_trigger_price);
-  //   console.log("Stop Loss:", tpslOrder.sl_trigger_price);
-  // } else {
-  //   console.log("Aucun ordre TP/SL trouvé pour BTC-USDT");
-  // }
 
   const getPnLChange = () => {
     const arr =
