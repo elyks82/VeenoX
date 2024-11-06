@@ -16,51 +16,7 @@ export const LandingHeader = () => {
         alt="Veeno Logo"
         className="h-[30px] md:h-[35px] w-auto max-w-auto max-h-[25px] sm:max-w-auto md:max-h-[35px]"
       />
-      <nav className="h-full cursor-pointer">
-        <ul className="text-white text-medium text-sm md:text-base flex items-center gap-2.5 md:gap-5 h-full">
-          {/* <li>
-            <Link
-              href="/perp/PERP_BTC_USDC"
-              className="w-full h-full hover:text-base_color"
-            >
-              Perps
-            </Link>
-          </li> */}
-          <li>
-            {" "}
-            <Link
-              href="https://x.com/veenox_xyz"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full h-full hover:text-base_color"
-            >
-              Twitter
-            </Link>
-          </li>
-          <li>
-            {" "}
-            <Link
-              href="https://t.me/@veenox_xyz"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full h-full hover:text-base_color"
-            >
-              Telegram
-            </Link>
-          </li>
-          <li>
-            {" "}
-            <Link
-              href="https://discord.com/invite/vwjQ24yZ"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full h-full hover:text-base_color"
-            >
-              Discord
-            </Link>
-          </li>
-        </ul>
-      </nav>
+     
       <button className="h-[35px] md:h-[45px] px-1 lg:px-3 rounded-full text-white text-sm lg:text-lg cursor-pointer bg-base_color sm:block hidden">
         <Link
           href="/perp/PERP_BTC_USDC"

@@ -28,7 +28,7 @@ export const Footer = () => {
             {maintenance?.status === 0 ? "Operational" : "Under maintenance"}
           </p>
           <div className="h-[30px] w-[1px] bg-borderColor mx-5 sm:block hidden" />
-          <div className="flex items-center gap-2.5 text-white">
+          {/* <div className="flex items-center gap-2.5 text-white">
             <p className="text-font-60 text-xs hidden sm:block">
               Join our community
             </p>
@@ -59,7 +59,7 @@ export const Footer = () => {
                 <FaXTwitter />
               </p>
             </Link>
-          </div>
+          </div> */}
         </div>
         <div className="flex items-center px-2.5">
           <p className="text-font-60 text-xs whitespace-nowrap">Powered by</p>
